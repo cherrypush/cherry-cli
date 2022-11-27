@@ -6,29 +6,19 @@ npm install -g cherrypush
 
 # Usage
 
-Set up a .cherry.js config file inside your project.
+Create your `.cherry.js` configuration file:
 
 ```sh
-module.exports = {
-  repo: 'cherrypush/cherry-cli',
-  metrics: [
-    {
-      name: 'todos',
-      pattern: /TODO:/,
-    },
-    {
-      name: 'rubocop',
-      pattern: /rubocop:disable/,
-    },
-  ],
-}
+cherry init
 ```
 
-Run the script locally. Useful for debugging your config file.
+Check if everything is working properly:
 
 ```sh
 cherry run
 ```
+
+You should see a list of occurences matching the rules in your `.cherry.js` configuration file:
 
 ```json
 [
@@ -44,7 +34,7 @@ cherry run
 ]
 ```
 
-Submit the latest occurrences to your cherry server.
+Submit the latest occurrences to your cherry server:
 
 ```sh
 cherry push
