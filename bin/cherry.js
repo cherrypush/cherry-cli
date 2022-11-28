@@ -15,12 +15,12 @@ program.command('init').action(async () => {
     process.exit(0)
   }
 
-  prompt.message = 'Enter'
+  prompt.message = ''
   prompt.start()
-  const { name } = await prompt.get({
-    properties: { name: { description: 'Project name', default: guessRepoName(), required: true } },
+  const { repo } = await prompt.get({
+    properties: { repo: { message: 'Enter the path to your repo', default: guessRepoName(), required: true } },
   })
-  createConfigurationFile(name)
+  createConfigurationFile(repo)
   console.log('.cherry.js file successfully created! You can now run `cherry run` to test it')
 })
 
