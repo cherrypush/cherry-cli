@@ -25,14 +25,15 @@ program.command('init').action(async () => {
   console.log('.cherry.js file successfully created! You can now run `cherry run` to test it')
 })
 
-program.command('run')
-  .option('-o, --outputfile [outputfile]', 'Specify output file')
+program
+  .command('run')
+  .option('-o, --outputFile [outputFile]', 'Specify output file')
   .action(async (options) => {
     const configuration = await getConfiguration()
-    const occurrences = findOccurrences(configuration, options.outputfile)
-    if (options.outputfile) {
-      fs.writeFileSync(options.outputfile, JSON.stringify(occurrences))
-      console.log(`Output saved to ${options.outputfile}`)
+    const occurrences = findOccurrences(configuration, options.outputFile)
+    if (options.outputFile) {
+      fs.writeFileSync(options.outputFile, JSON.stringify(occurrences, null, 4))
+      console.log(`Output saved to ${options.outputFile}`)
     } else {
       console.log(occurrences)
     }
