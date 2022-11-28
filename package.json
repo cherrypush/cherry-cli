@@ -8,7 +8,7 @@
     "cherry": "./bin/cherry.js"
   },
   "scripts": {
-    "publish": "npm version minor && npm publish"
+    "publish": "npm version patch && npm publish"
   },
   "repository": {
     "type": "git",
