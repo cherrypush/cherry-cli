@@ -4,11 +4,11 @@ import * as git from './git.js'
 
 const owners = new Codeowners()
 
-export const findOccurrences = (configuration, fileToIgnore) => {
+export const findOccurrences = (configuration) => {
   const occurrences = []
 
   const sha = git.sha()
-  git.files(fileToIgnore).forEach((filePath) => {
+  git.files().forEach((filePath) => {
     try {
       configuration.metrics.forEach(({ name, pattern }) => {
         readlines(filePath, (line, lineNumber) => {
