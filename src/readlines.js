@@ -1,6 +1,10 @@
 import lineByLine from 'n-readlines'
+import fs from 'fs'
 
 export const readlines = (path, callback) => {
+  if (!fs.existsSync(path)) {
+    return
+  }
   const liner = new lineByLine(path)
 
   let lineNumber = 1

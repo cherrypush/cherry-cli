@@ -4,10 +4,10 @@ const REPO_NAME_REGEX = /([\w\-_\.]+\/[\w\-_\.]+)\.git/g
 
 const git = (cmd) => execSync(`git ${cmd}`).toString().split('\n').filter(Boolean)
 
-export const files = () => {
+export const files = (fileToIgnore) => {
   const trackedFiles = git('ls-files')
   const untrackedFiles = git('ls-files --others --exclude-standard')
-  const deletedFiles = git('ls-files -d')
+  const deletedFiles = git('ls-files -d').concat(!!fileToIgnore ? [fileToIgnore] : [])
 
   return trackedFiles.concat(untrackedFiles).filter((file) => !deletedFiles.includes(file))
 }

@@ -1,5 +1,6 @@
 #! /usr/bin/env node
 
+import fs from 'fs'
 import axios from 'axios'
 import { program } from 'commander'
 import { findOccurrences } from '../src/occurrences.js'
@@ -24,13 +25,20 @@ program.command('init').action(async () => {
   console.log('.cherry.js file successfully created! You can now run `cherry run` to test it')
 })
 
-program.command('run').action(async () => {
-  const configuration = await getConfiguration()
-  const occurrences = findOccurrences(configuration)
-  console.log(occurrences)
-  console.log(`There are ${occurrences.length} occurrences ready to be reported.`)
-  console.log('Run `cherry push` to push them to your public dashboard.')
-})
+program.command('run')
+  .option('-o, --outputfile [outputfile]', 'Specify output file')
+  .action(async (options) => {
+    const configuration = await getConfiguration()
+    const occurrences = findOccurrences(configuration, options.outputfile)
+    if (options.outputfile) {
+      fs.writeFileSync(options.outputfile, JSON.stringify(occurrences))
+      console.log(`Output saved to ${options.outputfile}`)
+    } else {
+      console.log(occurrences)
+    }
+    console.log(`There are ${occurrences.length} occurrences ready to be reported.`)
+    console.log('Run `cherry push` to push them to your public dashboard.')
+  })
 
 program.command('push').action(async () => {
   const configuration = await getConfiguration()
