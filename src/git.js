@@ -22,4 +22,4 @@ export const guessRepoName = () => {
   return matches[1] || ''
 }
 
-export const sha = () => git('rev-parse HEAD')
+export const sha = () => git('rev-parse HEAD').toString()
