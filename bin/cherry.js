@@ -4,16 +4,12 @@ import fs from 'fs'
 import axios from 'axios'
 import { program } from 'commander'
 import { findOccurrences } from '../src/occurrences.js'
-import {
-  configurationExists,
-  getConfiguration,
-  createConfigurationFile,
-  JSON_EXPORT_PATH,
-} from '../src/configuration.js'
+import { configurationExists, getConfiguration, createConfigurationFile } from '../src/configuration.js'
 import prompt from 'prompt'
 import { guessRepoName } from '../src/git.js'
 
 const API_BASE_URL = 'https://www.cherrypush.com/api'
+export const JSON_EXPORT_PATH = 'cherry.json'
 
 program.command('init').action(async () => {
   if (configurationExists()) {
