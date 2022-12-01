@@ -42,14 +42,22 @@ program
     console.log('Run `cherry push` to push them to your public dashboard.')
   })
 
-program.command('push').action(async () => {
-  const configuration = await getConfiguration()
-  const occurrences = findOccurrences(configuration)
-  console.log(`Uploading ${occurrences.length} occurrences...`)
-  axios
-    .post(API_BASE_URL + '/occurrences', { occurrences: JSON.stringify(occurrences) })
-    .then(({ data }) => console.log('Response:', data))
-    .catch((error) => console.error(error.message))
-})
+program
+  .command('push')
+  .option('--api-key <api_key>')
+  .action(async (options) => {
+    const configuration = await getConfiguration()
+    const apiKey = options.apiKey || configuration.api_key
+    const occurrences = findOccurrences(configuration)
+    console.log(`Uploading ${occurrences.length} occurrences...`)
+    axios
+      .post(
+        API_BASE_URL + '/occurrences',
+        { occurrences: JSON.stringify(occurrences) },
+        { params: { api_key: apiKey } }
+      )
+      .then(({ data }) => console.log('Response:', data))
+      .catch((error) => console.error(error.message))
+  })
 
 program.parse(process.argv)
