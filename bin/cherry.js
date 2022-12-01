@@ -8,7 +8,8 @@ import { configurationExists, getConfiguration, createConfigurationFile } from '
 import prompt from 'prompt'
 import { guessRepoName } from '../src/git.js'
 
-const API_BASE_URL = 'https://www.cherrypush.com/api'
+const API_BASE_URL = process.env.API_URL ?? 'https://www.cherrypush.com/api'
+
 export const JSON_EXPORT_PATH = 'cherry.json'
 
 program.command('init').action(async () => {
@@ -56,7 +57,10 @@ program
         { occurrences: JSON.stringify(occurrences) },
         { params: { api_key: apiKey } }
       )
-      .then(({ data }) => console.log('Response:', data))
+      .then(({ data }) => {
+        console.log('Response:', data)
+        console.log(`Your dashboard is available at ${API_BASE_URL}`)
+      })
       .catch((error) => console.error(error.message))
   })
 
