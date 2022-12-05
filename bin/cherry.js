@@ -61,7 +61,9 @@ program
         console.log('Response:', data)
         console.log(`Your dashboard is available at ${API_BASE_URL}`)
       })
-      .catch((error) => console.error(error.message))
+      .catch((error) =>
+        console.error(`Error ${error.response.status}: ${error.response.data.error || error.response.statusText}`)
+      )
   })
 
 program.parse(process.argv)
