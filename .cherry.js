@@ -10,7 +10,7 @@ export default {
       pattern: /FIXME:/i,
     },
     {
-      name: 'rubobop',
+      name: 'rubocop',
       pattern: /rubocop:disable/,
     },
     {
