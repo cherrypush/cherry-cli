@@ -7,6 +7,8 @@ import { findOccurrences } from '../src/occurrences.js'
 import { configurationExists, getConfiguration, createConfigurationFile } from '../src/configuration.js'
 import prompt from 'prompt'
 import { guessRepoName } from '../src/git.js'
+import groupBy from 'lodash/groupBy.js'
+import mapValues from 'lodash/mapValues.js'
 
 const API_BASE_URL = process.env.API_URL ?? 'https://www.cherrypush.com/api'
 
@@ -20,8 +22,9 @@ program.command('init').action(async () => {
 
   prompt.message = ''
   prompt.start()
+  const defaultRepoName = await guessRepoName()
   const { repo } = await prompt.get({
-    properties: { repo: { message: 'Enter the path to your repo', default: guessRepoName(), required: true } },
+    properties: { repo: { message: 'Enter the path to your repo', default: defaultRepoName, required: true } },
   })
   createConfigurationFile(repo)
   console.log('.cherry.js file successfully created! You can now run `cherry run` to test it')
@@ -32,15 +35,16 @@ program
   .option('--json', 'exports occurrences into a json file')
   .action(async (options) => {
     const configuration = await getConfiguration()
-    const occurrences = findOccurrences(configuration)
+    const occurrences = await findOccurrences(configuration)
     if (options.json) {
       fs.writeFileSync(JSON_EXPORT_PATH, JSON.stringify(occurrences, null, 2))
       console.log(`${occurrences.length} occurrences saved to: ${process.cwd() + '/' + JSON_EXPORT_PATH}`)
     } else {
-      console.log(occurrences)
+      const table = mapValues(groupBy(occurrences, 'metric_name'), (occurrences) => occurrences.length)
+      console.table(table)
       console.log(`${occurrences.length} occurrences ready to be reported.`)
     }
-    console.log('Run `cherry push` to push them to your public dashboard.')
+    console.log('Run `cherry push` to push them to your dashboard.')
   })
 
 program

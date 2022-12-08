@@ -1,17 +1,18 @@
-import { readlines } from './readlines.js'
+import { eachLines } from './file.js'
 import Codeowners from './owners.js'
 import * as git from './git.js'
 
-const owners = new Codeowners()
+const codeOwners = new Codeowners()
 
-export const findOccurrences = (configuration) => {
+export const findOccurrences = async (configuration) => {
   const occurrences = []
+  const sha = await git.sha()
 
-  const sha = git.sha()
-  git.files().forEach((filePath) => {
+  const files = await git.files()
+  files.forEach((filePath) => {
     try {
-      configuration.metrics.forEach(({ name, pattern }) => {
-        readlines(filePath, (line, lineNumber) => {
+      eachLines(filePath, (line, lineNumber) => {
+        configuration.metrics.forEach(({ name, pattern }) => {
           if (!line.match(pattern)) return
 
           occurrences.push({
@@ -20,7 +21,7 @@ export const findOccurrences = (configuration) => {
             line_number: lineNumber,
             line_content: line.trim().slice(0, 120).replace(/\0/, ''),
             repo: configuration.repo,
-            owners: owners.getOwner(filePath),
+            owners: codeOwners.getOwners(filePath),
             metric_name: name,
           })
         })
