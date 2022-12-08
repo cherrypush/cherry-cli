@@ -1,5 +1,5 @@
 export default {
-  repo: 'cherrypush/cherry-cli',
+  project_name: 'cherrypush/cherry-cli',
   metrics: [
     {
       name: 'todo',

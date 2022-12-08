@@ -1,37 +1,41 @@
 import { eachLines } from './file.js'
 import Codeowners from './owners.js'
 import * as git from './git.js'
+import glob from 'glob'
+import cliProgress from 'cli-progress'
 
 const codeOwners = new Codeowners()
 
 export const findOccurrences = async (configuration) => {
   const occurrences = []
-  const sha = await git.sha()
+  const progress = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic)
 
-  const files = await git.files()
-  files.forEach((filePath) => {
-    try {
-      eachLines(filePath, (line, lineNumber) => {
-        configuration.metrics.forEach(({ name, pattern }) => {
-          if (!line.match(pattern)) return
+  const allFiles = await git.files()
+  const allMetrics = configuration.metrics.map((metric) => ({
+    ...metric,
+    _files: metric.include ? new Set(glob(metric.include)) : new Set(allFiles),
+  }))
+  progress.start(allFiles.length, 0)
 
-          occurrences.push({
-            commit_sha: sha,
-            file_path: filePath,
-            line_number: lineNumber,
-            line_content: line.trim().slice(0, 120).replace(/\0/, ''),
-            repo: configuration.repo,
-            owners: codeOwners.getOwners(filePath),
-            metric_name: name,
-          })
+  allFiles.forEach((path) => {
+    const metrics = allMetrics.filter((metric) => metric._files.has(path))
+
+    eachLines(path, (line, lineNumber) => {
+      metrics.forEach((metric) => {
+        if (!line.match(metric.pattern)) return
+
+        occurrences.push({
+          file_path: path,
+          line_number: lineNumber,
+          line_content: line.trim().slice(0, 120).replace(/\0/, ''),
+          owners: codeOwners.getOwners(path) || [],
+          metric_name: metric.name,
         })
       })
-    } catch (error) {
-      if (error.code === 'ENOENT') return // TODO: understand why a file could not exist
-      if (error.code === 'EISDIR') return
-      throw error
-    }
+    })
+    progress.increment()
   })
+  progress.stop()
 
   return occurrences
 }

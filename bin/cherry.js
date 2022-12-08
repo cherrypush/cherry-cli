@@ -9,6 +9,7 @@ import prompt from 'prompt'
 import { guessRepoName } from '../src/git.js'
 import groupBy from 'lodash/groupBy.js'
 import mapValues from 'lodash/mapValues.js'
+import * as git from '../src/git.js'
 
 const API_BASE_URL = process.env.API_URL ?? 'https://www.cherrypush.com/api'
 
@@ -53,17 +54,18 @@ program
   .action(async (options) => {
     const configuration = await getConfiguration()
     const apiKey = options.apiKey || configuration.api_key
-    const occurrences = findOccurrences(configuration)
+    const occurrences = await findOccurrences(configuration)
+    const sha = await git.sha()
     console.log(`Uploading ${occurrences.length} occurrences...`)
     axios
       .post(
-        API_BASE_URL + '/occurrences',
-        { occurrences: JSON.stringify(occurrences) },
+        API_BASE_URL + '/reports',
+        { commit_sha: sha, project_name: configuration.project_name, occurrences: JSON.stringify(occurrences) },
         { params: { api_key: apiKey } }
       )
       .then(({ data }) => {
         console.log('Response:', data)
-        console.log(`Your dashboard is available at ${API_BASE_URL}`)
+        console.log('Your dashboard is available at https://www.cherrypush.com/user/projects')
       })
       .catch((error) =>
         console.error(`Error ${error.response.status}: ${error.response.data.error || error.response.statusText}`)

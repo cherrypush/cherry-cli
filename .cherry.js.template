@@ -1,5 +1,5 @@
 module.exports = {
-  repo: 'PROJECT_NAME',
+  project_name: 'PROJECT_NAME',
   metrics: [
     {
       name: 'todo',
