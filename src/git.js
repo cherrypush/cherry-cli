@@ -1,5 +1,6 @@
 import { JSON_EXPORT_PATH } from '../bin/cherry.js'
 import { CONFIG_FILE_NAME } from './configuration.js'
+import { toISODate } from './date.js'
 import sh from './sh.js'
 
 const REPO_NAME_REGEX = /([\w\-_\.]+\/[\w\-_\.]+)\.git/g
@@ -28,3 +29,11 @@ export const guessRepoName = async () => {
 }
 
 export const sha = async () => (await git('rev-parse HEAD')).toString()
+
+export const commitDate = async (sha) => new Date((await git(`show -s --format=%ci ${sha}`))[0])
+
+export const commitShaAt = async (date) => (await git(`rev-list -n 1 --before="${toISODate(date)}" HEAD`))[0]
+
+export const checkout = async (sha) => await git(`checkout ${sha}`)
+
+export const branchName = async () => (await git(`branch --show-current  `))[0]

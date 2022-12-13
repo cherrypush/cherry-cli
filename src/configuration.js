@@ -1,6 +1,7 @@
 import fs from 'fs'
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
+import { panic } from './error.js'
 
 export const CONFIG_FILE_NAME = '.cherry.js'
 
@@ -16,10 +17,8 @@ export const createConfigurationFile = (projectName) =>
 export const configurationExists = () => fs.existsSync(CONFIG_FILE_FULL_PATH)
 
 export const getConfiguration = async () => {
-  if (!configurationExists()) {
-    console.error('No .cherry.js file found in the current directory, run "cherry init" to create one')
-    process.exit(1)
-  }
+  if (!configurationExists())
+    panic('No .cherry.js file found in the current directory, run "cherry init" to create one')
 
   return (await import(CONFIG_FILE_FULL_PATH)).default
 }

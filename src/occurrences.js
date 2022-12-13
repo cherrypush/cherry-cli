@@ -8,7 +8,10 @@ const codeOwners = new Codeowners()
 
 export const findOccurrences = async (configuration) => {
   const occurrences = []
-  const progress = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic)
+  const progress = new cliProgress.SingleBar(
+    { format: '{bar} {value}/{total} files inspected' },
+    cliProgress.Presets.shades_classic
+  )
 
   const allFiles = await git.files()
   const allMetrics = configuration.metrics.map((metric) => ({
@@ -27,7 +30,6 @@ export const findOccurrences = async (configuration) => {
         occurrences.push({
           file_path: path,
           line_number: lineNumber,
-          line_content: line.trim().slice(0, 120).replace(/\0/, ''),
           owners: codeOwners.getOwners(path) || [],
           metric_name: metric.name,
         })
