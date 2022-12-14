@@ -54,10 +54,8 @@ class Codeowners {
 
   getFiles(codeownersPath) {
     if (codeownersPath.includes('*')) return glob.sync(codeownersPath, { nodir: true })
-    if (isDirectory(codeownersPath)) {
-      return glob.sync(path.join(codeownersPath, '**/*'), { nodir: true })
-    }
-    return codeownersPath
+    if (isDirectory(codeownersPath)) return glob.sync(path.join(codeownersPath, '**/*'), { nodir: true })
+    return [codeownersPath]
   }
 
   getOwners(file) {

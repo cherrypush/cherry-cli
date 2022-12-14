@@ -4,9 +4,9 @@ import * as git from './git.js'
 import glob from 'glob'
 import cliProgress from 'cli-progress'
 
-const codeOwners = new Codeowners()
-
 export const findOccurrences = async (configuration) => {
+  const codeOwners = new Codeowners()
+
   const occurrences = []
   const progress = new cliProgress.SingleBar(
     { format: '{bar} {value}/{total} files inspected' },

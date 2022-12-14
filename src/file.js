@@ -21,7 +21,7 @@ export const eachLines = (path, callback) => {
 
 export const isDirectory = (path) => {
   try {
-    fs.statSync(path).isDirectory()
+    return fs.statSync(path).isDirectory()
   } catch (error) {
     if (error.code === 'ENOENT') return false
     throw error
