@@ -1,6 +1,7 @@
 #! /usr/bin/env node
 
 import fs from 'fs'
+import dotenv from 'dotenv'
 import axios from 'axios'
 import { program } from 'commander'
 import { findOccurrences } from '../src/occurrences.js'
@@ -12,6 +13,8 @@ import mapValues from 'lodash/mapValues.js'
 import * as git from '../src/git.js'
 import { substractDays, toISODate } from '../src/date.js'
 import { panic } from '../src/error.js'
+
+dotenv.config()
 
 const API_BASE_URL = process.env.API_URL ?? 'https://www.cherrypush.com/api'
 
@@ -52,10 +55,10 @@ program
 
 program
   .command('push')
-  .requiredOption('--api-key <api_key>', 'Your cherrypush.com api key')
+  .option('--api-key <api_key>', 'Your cherrypush.com api key')
   .action(async (options) => {
     const configuration = await getConfiguration()
-    const apiKey = options.apiKey || configuration.api_key
+    const apiKey = options.apiKey || process.env.CHERRY_API_KEY
     const occurrences = await findOccurrences(configuration)
     const sha = await git.sha()
     const committedAt = await git.commitDate(sha)
@@ -72,7 +75,7 @@ program
 
 program
   .command('backfill')
-  .requiredOption('--api-key <api_key>', 'Your cherrypush.com api key')
+  .option('--api-key <api_key>', 'Your cherrypush.com api key')
   .requiredOption('--since <since>', 'yyyy-mm-dd | The date at which the backfill will start')
   .option('--until <until>', 'yyyy-mm-dd | The date at which the backfill will stop (defaults to today)')
   .action(async (options) => {
@@ -86,7 +89,7 @@ program
 
     try {
       const configuration = await getConfiguration()
-      const apiKey = options.apiKey || configuration.api_key
+      const apiKey = options.apiKey || process.env.CHERRY_API_KEY
       let date = until
       while (date >= since) {
         console.log(`Backfilling day ${toISODate(date)}...`)
