@@ -4,7 +4,7 @@ import fs from 'fs'
 import dotenv from 'dotenv'
 import axios from 'axios'
 import { program } from 'commander'
-import { findOccurrences } from '../src/occurrences.js'
+import { aggregateOccurences, findOccurrences } from '../src/occurences.js'
 import { configurationExists, getConfiguration, createConfigurationFile } from '../src/configuration.js'
 import prompt from 'prompt'
 import { guessRepoName } from '../src/git.js'
@@ -13,6 +13,7 @@ import mapValues from 'lodash/mapValues.js'
 import * as git from '../src/git.js'
 import { substractDays, toISODate } from '../src/date.js'
 import { panic } from '../src/error.js'
+import codeOwners from '../src/codeowners.js'
 
 dotenv.config()
 
@@ -39,16 +40,31 @@ program.command('init').action(async () => {
 program
   .command('run')
   .option('--json', 'exports occurrences into a json file')
+  .option('--owner <owner>', 'only consider given owner code')
+  .option('--metric <metric>', 'only consider given metric')
   .action(async (options) => {
     const configuration = await getConfiguration()
-    const occurrences = await findOccurrences(configuration)
+    if (options.owner) {
+      const owners = codeOwners.listOwners()
+      if (!owners.includes(options.owner))
+        panic(`Owner "${options.owner}" does not exist, valid owners:\n${owners.sort().join('\n')}.`)
+    }
+    if (options.metric) {
+      if (!configuration.metrics.map((metric) => metric.name).includes(options.metric))
+        panic(`Metric ${options.metric} does not exist`)
+    }
+    const occurrences = await findOccurrences(configuration, options.owner, options.metric)
     if (options.json) {
       fs.writeFileSync(JSON_EXPORT_PATH, JSON.stringify(occurrences, null, 2))
       console.log(`${occurrences.length} occurrences saved to: ${process.cwd() + '/' + JSON_EXPORT_PATH}`)
     } else {
-      const table = mapValues(groupBy(occurrences, 'metric_name'), (occurrences) => occurrences.length)
-      console.table(table)
-      console.log(`${occurrences.length} occurrences ready to be reported.`)
+      if (options.owner && options.metric) {
+        occurrences.forEach((occurrence) => console.log(`${occurrence.file_path}:${occurrence.line_number}`))
+      } else {
+        const table = mapValues(groupBy(occurrences, 'metric_name'), (occurrences) => occurrences.length)
+        console.table(table)
+        console.log(`${occurrences.length} occurrences ready to be reported.`)
+      }
     }
     console.log('Run `cherry push` to push them to your dashboard.')
   })
@@ -67,7 +83,7 @@ program
       commit_sha: sha,
       commit_date: committedAt.toISOString(),
       project_name: configuration.project_name,
-      occurrences: JSON.stringify(occurrences),
+      metrics: aggregateOccurences(occurrences),
     })
     console.log('Response:', data)
     console.log('Your dashboard is available at https://www.cherrypush.com/user/projects')
@@ -87,6 +103,10 @@ program
     const initialBranch = await git.branchName()
     if (!initialBranch) panic('Not on a branch, checkout a branch before running the backfill.')
 
+    const configuration = await getConfiguration()
+    const apiKey = options.apiKey || configuration.api_key
+    let date = until
+
     try {
       const configuration = await getConfiguration()
       const apiKey = options.apiKey || process.env.CHERRY_API_KEY
@@ -103,7 +123,7 @@ program
           commit_sha: sha,
           commit_date: committedAt.toISOString(),
           project_name: configuration.project_name,
-          occurrences: JSON.stringify(occurrences),
+          metrics: aggregateOccurences(occurrences),
         })
         date = substractDays(committedAt, 1)
       }

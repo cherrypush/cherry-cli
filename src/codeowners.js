@@ -1,6 +1,7 @@
 import { findUpSync } from 'find-up'
 import fs from 'fs'
 import glob from 'glob'
+import uniq from 'lodash/uniq.js'
 import path from 'path'
 import trueCasePath from 'true-case-path'
 import { isDirectory } from './file.js'
@@ -8,13 +9,19 @@ import { isDirectory } from './file.js'
 const { trueCasePathSync } = trueCasePath
 
 class Codeowners {
-  constructor(currentPath, fileName = 'CODEOWNERS') {
+  constructor() {
     this.ownersByFile = {}
-    const pathOrCwd = currentPath || process.cwd()
+    this.initialized = false
+  }
+
+  init() {
+    if (this.initialized) return
+
+    const fileName = 'CODEOWNERS'
 
     const codeownersPath = findUpSync(
       [`.github/${fileName}`, `.gitlab/${fileName}`, `docs/${fileName}`, `${fileName}`],
-      { cwd: pathOrCwd }
+      { cwd: process.cwd() }
     )
 
     if (!codeownersPath) throw new Error(`Could not find a CODEOWNERS file`)
@@ -45,22 +52,39 @@ class Codeowners {
 
       const [codeownersPath, ...owners] = line.split(/\s+/)
 
-      for (const file of this.getFiles(codeownersPath)) {
+      for (const file of this.globFiles(codeownersPath)) {
         const existingOwners = this.ownersByFile[file] || []
         this.ownersByFile[file] = [...new Set(existingOwners.concat(owners))]
       }
     }
+    this.initialized = true
   }
 
-  getFiles(codeownersPath) {
+  globFiles(codeownersPath) {
     if (codeownersPath.includes('*')) return glob.sync(codeownersPath, { nodir: true })
     if (isDirectory(codeownersPath)) return glob.sync(path.join(codeownersPath, '**/*'), { nodir: true })
     return [codeownersPath]
   }
 
+  getFiles(owner) {
+    this.init()
+    return uniq(
+      Object.entries(this.ownersByFile)
+        .filter(([, owners]) => owners.includes(owner))
+        .map(([file]) => file)
+        .flat()
+    )
+  }
+
   getOwners(file) {
-    return this.ownersByFile[file]
+    this.init()
+    return this.ownersByFile[file] || []
+  }
+
+  listOwners() {
+    this.init()
+    return uniq(Object.values(this.ownersByFile).flat())
   }
 }
 
-export default Codeowners
+export default new Codeowners()
