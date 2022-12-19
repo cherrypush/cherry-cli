@@ -94,9 +94,11 @@ program
   .option('--api-key <api_key>', 'Your cherrypush.com api key')
   .requiredOption('--since <since>', 'yyyy-mm-dd | The date at which the backfill will start')
   .option('--until <until>', 'yyyy-mm-dd | The date at which the backfill will stop (defaults to today)')
+  .option('--interval <interval>', 'The number of days between backfills (defaults to 1)')
   .action(async (options) => {
     const since = new Date(options.since)
     const until = options.until ? new Date(options.until) : substractDays(new Date(), 1)
+    const interval = options.interval ? parseInt(options.interval) : 1
     if (isNaN(since)) panic('Invalid since date')
     if (isNaN(until)) panic('Invalid until date')
     if (since > until) panic('The since date must be before the until date')
@@ -121,7 +123,7 @@ program
           project_name: configuration.project_name,
           metrics: aggregateOccurences(occurrences),
         })
-        date = substractDays(committedAt, 1)
+        date = substractDays(committedAt, interval)
       }
     } finally {
       await git.checkout(initialBranch)
