@@ -14,7 +14,7 @@ export const findOccurrences = async (configuration, owner, metric) => {
   const allFiles = await git.files()
   const allMetrics = configuration.metrics.map((metric) => ({
     ...metric,
-    _files: metric.include ? new Set(glob(metric.include)) : new Set(allFiles),
+    _files: metric.include ? new Set(glob.sync(metric.include)) : new Set(allFiles),
   }))
   const metrics = metric ? allMetrics.filter(({ name }) => name === metric) : allMetrics
 
