@@ -103,10 +103,6 @@ program
     const initialBranch = await git.branchName()
     if (!initialBranch) panic('Not on a branch, checkout a branch before running the backfill.')
 
-    const configuration = await getConfiguration()
-    const apiKey = options.apiKey || configuration.api_key
-    let date = until
-
     try {
       const configuration = await getConfiguration()
       const apiKey = options.apiKey || process.env.CHERRY_API_KEY
