@@ -37,3 +37,13 @@ export const commitShaAt = async (date) => (await git(`rev-list -n 1 --before="$
 export const checkout = async (sha) => await git(`checkout ${sha}`)
 
 export const branchName = async () => (await git(`branch --show-current  `))[0]
+
+// Returns commits between beginSha (excluded) and endSha(included), from most recent to oldest
+export const getCommits = async (beginSha, endSha) =>
+  (await git(`rev-list ${beginSha}..${endSha} --format=%an|%ae|%H --no-commit-header`)).map((line) => {
+    // TODO: is it safe to split git output on "|"?
+    const [authorName, authorEmail, sha] = line.split('|')
+    return { sha, authorName, authorEmail }
+  })
+
+export const contentAtSha = (sha, path) => git(`show ${sha}:${path}`)

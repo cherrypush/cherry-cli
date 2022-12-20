@@ -14,6 +14,7 @@ import * as git from '../src/git.js'
 import { substractDays, toISODate } from '../src/date.js'
 import { panic } from '../src/error.js'
 import codeOwners from '../src/codeowners.js'
+import { findContributors } from '../src/contributions.js'
 
 dotenv.config()
 
@@ -54,6 +55,11 @@ program
         panic(`Metric ${options.metric} does not exist`)
     }
     const occurrences = await findOccurrences(configuration, options.owner, options.metric)
+    // await findContributors(
+    //   configuration,
+    //   '76b440f287ebfaaa01fade03b3e94ddc9a43d106',
+    //   '263efecc64eb991302ea482ba4ac8f37cae27520'
+    // )
     if (options.json) {
       fs.writeFileSync(JSON_EXPORT_PATH, JSON.stringify(occurrences, null, 2))
       console.log(`${occurrences.length} occurrences saved to: ${process.cwd() + '/' + JSON_EXPORT_PATH}`)

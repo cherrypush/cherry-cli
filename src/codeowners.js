@@ -66,6 +66,7 @@ class Codeowners {
     return [codeownersPath]
   }
 
+  // TODO: respect ignored files
   getFiles(owner) {
     this.init()
     return uniq(
