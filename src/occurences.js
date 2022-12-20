@@ -12,16 +12,15 @@ export const findOccurrences = async (configuration, owner, metric) => {
   )
 
   const allFiles = await git.files()
-  const allMetrics = configuration.metrics.map((metric) => ({
+  const allMetrics = configuration.metrics
+  const metrics = (metric ? allMetrics.filter(({ name }) => name === metric) : allMetrics).map((metric) => ({
     ...metric,
-    _files: metric.include ? new Set(glob.sync(metric.include)) : new Set(allFiles),
+    _files: metric.include ? new Set(glob.sync(metric.include)) : true,
   }))
-  const metrics = metric ? allMetrics.filter(({ name }) => name === metric) : allMetrics
-
   const files = owner ? codeOwners.getFiles(owner) : allFiles
   progress.start(files.length, 0)
   files.forEach((path) => {
-    const fileMetrics = metrics.filter((metric) => metric._files.has(path))
+    const fileMetrics = metrics.filter((metric) => metric._files === true || metric._files.has(path))
 
     eachLines(path, (line, lineNumber) => {
       fileMetrics.forEach((metric) => {
