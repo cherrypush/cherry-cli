@@ -46,4 +46,7 @@ export const getCommits = async (beginSha, endSha) =>
     return { sha, authorName, authorEmail }
   })
 
-export const contentAtSha = (sha, path) => git(`show ${sha}:${path}`)
+// Catch to prevent "fatal: path '...' exists on disk, but not in 'sha'"
+export const contentAtSha = (path, sha) => git(`show ${sha}:${path}`).catch(() => [])
+
+export const changedFiles = (sha) => git(`diff-tree --no-commit-id --name-only -r ${sha}`)
