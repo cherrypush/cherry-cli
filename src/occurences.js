@@ -17,15 +17,13 @@ export const findOccurrences = async ({ configuration, files, metric, progress }
   for (const file of files) {
     const fileMetrics = metrics.filter((metric) => !metric.include || matchInclude(file.path, metric.include))
     if (fileMetrics.length) {
-      let lineNumber = 0
       const lines = await file.readLines()
-      lines.forEach((line) => {
+      lines.forEach((line, lineIndex) => {
         fileMetrics.forEach((metric) => {
           if (!line.match(metric.pattern)) return
           const owners = codeOwners.getOwners(file.path)
-          occurrences.push({ file_path: file.path, line_number: lineNumber, owners, metric_name: metric.name })
+          occurrences.push({ file_path: file.path, line_number: lineIndex + 1, owners, metric_name: metric.name })
         })
-        lineNumber++
       })
     }
     progress?.increment()
