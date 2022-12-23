@@ -7,13 +7,16 @@ import { program } from 'commander'
 import { aggregateOccurences, findOccurrences } from '../src/occurences.js'
 import { configurationExists, getConfiguration, createConfigurationFile } from '../src/configuration.js'
 import prompt from 'prompt'
-import { guessRepoName } from '../src/git.js'
 import groupBy from 'lodash/groupBy.js'
+import cliProgress from 'cli-progress'
+import { guessRepoName } from '../src/git.js'
 import mapValues from 'lodash/mapValues.js'
 import * as git from '../src/git.js'
 import { substractDays, toISODate } from '../src/date.js'
 import { panic } from '../src/error.js'
 import codeOwners from '../src/codeowners.js'
+import { findContributors } from '../src/contributions.js'
+import { buildFiles } from '../src/files.js'
 
 dotenv.config()
 
@@ -53,7 +56,13 @@ program
       if (!configuration.metrics.map((metric) => metric.name).includes(options.metric))
         panic(`Metric ${options.metric} does not exist`)
     }
-    const occurrences = await findOccurrences(configuration, options.owner, options.metric)
+    const files = await buildFiles(options.owner)
+    const progress = new cliProgress.SingleBar(
+      { format: '{bar} {value}/{total} files inspected' },
+      cliProgress.Presets.shades_classic
+    )
+    const occurrences = await findOccurrences({ configuration, files, metric: options.metric, progress })
+    // await findContributors(configuration, 'HEAD~1000', 'HEAD')
     if (options.json) {
       fs.writeFileSync(JSON_EXPORT_PATH, JSON.stringify(occurrences, null, 2))
       console.log(`${occurrences.length} occurrences saved to: ${process.cwd() + '/' + JSON_EXPORT_PATH}`)
@@ -63,7 +72,6 @@ program
       } else {
         const table = mapValues(groupBy(occurrences, 'metric_name'), (occurrences) => occurrences.length)
         console.table(table)
-        console.log(`${occurrences.length} occurrences ready to be reported.`)
       }
     }
     console.log('Run `cherry push` to push them to your dashboard.')
@@ -75,7 +83,8 @@ program
   .action(async (options) => {
     const configuration = await getConfiguration()
     const apiKey = options.apiKey || process.env.CHERRY_API_KEY
-    const occurrences = await findOccurrences(configuration)
+    const files = await buildFiles()
+    const occurrences = await findOccurrences({ configuration, files })
     const sha = await git.sha()
     const committedAt = await git.commitDate(sha)
     console.log(`Uploading ${occurrences.length} occurrences...`)
@@ -116,7 +125,8 @@ program
 
         const committedAt = await git.commitDate(sha)
         await git.checkout(sha)
-        const occurrences = await findOccurrences(configuration)
+        const files = await buildFiles(options.owner)
+        const occurrences = await findOccurrences({ configuration, files })
         await uploadReport(apiKey, {
           commit_sha: sha,
           commit_date: committedAt.toISOString(),

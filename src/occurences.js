@@ -1,7 +1,4 @@
-import cliProgress from 'cli-progress'
-import { eachLines } from './file.js'
 import codeOwners from './codeowners.js'
-import * as git from './git.js'
 import minimatch from 'minimatch'
 
 const minimatchCache = {}
@@ -12,30 +9,26 @@ const matchInclude = (path, include) => {
   return minimatchCache[key]
 }
 
-export const findOccurrences = async (configuration, owner, metric) => {
+export const findOccurrences = async ({ configuration, files, metric, progress }) => {
   const occurrences = []
-  const progress = new cliProgress.SingleBar(
-    { format: '{bar} {value}/{total} files inspected' },
-    cliProgress.Presets.shades_classic
-  )
 
-  const allFiles = await git.files()
   const metrics = metric ? configuration.metrics.filter(({ name }) => name === metric) : configuration.metrics
-  const files = owner ? codeOwners.getFiles(owner) : allFiles
-  progress.start(files.length, 0)
-  files.forEach((path) => {
-    const fileMetrics = metrics.filter((metric) => !metric.include || matchInclude(path, metric.include))
-    if (fileMetrics.length)
-      eachLines(path, (line, lineNumber) => {
+  progress?.start(files.length, 0)
+  for (const file of files) {
+    const fileMetrics = metrics.filter((metric) => !metric.include || matchInclude(file.path, metric.include))
+    if (fileMetrics.length) {
+      const lines = await file.readLines()
+      lines.forEach((line, lineIndex) => {
         fileMetrics.forEach((metric) => {
           if (!line.match(metric.pattern)) return
-          const owners = codeOwners.getOwners(path)
-          occurrences.push({ file_path: path, line_number: lineNumber, owners, metric_name: metric.name })
+          const owners = codeOwners.getOwners(file.path)
+          occurrences.push({ file_path: file.path, line_number: lineIndex + 1, owners, metric_name: metric.name })
         })
       })
-    progress.increment()
-  })
-  progress.stop()
+    }
+    progress?.increment()
+  }
+  progress?.stop()
 
   return occurrences
 }
