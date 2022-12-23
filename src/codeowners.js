@@ -24,7 +24,7 @@ class Codeowners {
       { cwd: process.cwd() }
     )
 
-    if (!codeownersPath) throw new Error(`Could not find a CODEOWNERS file`)
+    if (!codeownersPath) return
 
     const codeownersFilePath = trueCasePathSync(codeownersPath)
     let codeownersDirectory = path.dirname(codeownersFilePath)
