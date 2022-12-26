@@ -2,8 +2,7 @@ name: Upload metrics to cherrypush.com
 
 on:
   push:
-    branches:
-      - ${{ github.event.repository.default_branch }}
+    branches: [master]
 
 jobs:
   cherry:
