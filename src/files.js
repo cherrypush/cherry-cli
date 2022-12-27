@@ -9,9 +9,15 @@ class File {
   }
 
   async readLines() {
-    return Buffer.from(await fs.readFile(this.path))
-      .toString()
-      .split(/\r\n|\r|\n/)
+    try {
+      return Buffer.from(await fs.readFile(this.path))
+        .toString()
+        .split(/\r\n|\r|\n/)
+    } catch (error) {
+      if (error.code === 'ENOENT') return []
+      if (error.code === 'EISDIR') return []
+      throw error
+    }
   }
 }
 

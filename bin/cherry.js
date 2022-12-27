@@ -9,13 +9,13 @@ import { configurationExists, getConfiguration, createConfigurationFile } from '
 import prompt from 'prompt'
 import groupBy from 'lodash/groupBy.js'
 import cliProgress from 'cli-progress'
-import { guessRepoName } from '../src/git.js'
+import { guessProjectName } from '../src/git.js'
 import mapValues from 'lodash/mapValues.js'
 import * as git from '../src/git.js'
 import { substractDays, toISODate } from '../src/date.js'
 import { panic } from '../src/error.js'
 import codeOwners from '../src/codeowners.js'
-import { findContributors } from '../src/contributions.js'
+import { findContributions } from '../src/contributions.js'
 import { buildFiles } from '../src/files.js'
 
 dotenv.config()
@@ -26,15 +26,15 @@ export const JSON_EXPORT_PATH = 'cherry.json'
 
 program.command('init').action(async () => {
   if (configurationExists()) {
-    console.error('.cherry.js already exists, run `cherry run` instead')
+    console.error('.cherry.js already exists.')
     process.exit(0)
   }
 
   prompt.message = ''
   prompt.start()
-  const defaultRepoName = await guessRepoName()
+  const defaultProjectName = await guessProjectName()
   const { repo } = await prompt.get({
-    properties: { repo: { message: 'Enter the path to your repo', default: defaultRepoName, required: true } },
+    properties: { repo: { message: 'Enter your project name', default: defaultProjectName, required: true } },
   })
   createConfigurationFile(repo)
   console.log('.cherry.js file successfully created! You can now run `cherry run` to test it')
@@ -62,12 +62,14 @@ program
       cliProgress.Presets.shades_classic
     )
     const occurrences = await findOccurrences({ configuration, files, metric: options.metric, progress })
-    // await findContributors(configuration, 'HEAD~1000', 'HEAD')
+    // const contrib = await findContributions(configuration, 'HEAD~5', 'HEAD')
+    // console.log(contrib)
+    // process.exit()
     if (options.json) {
       fs.writeFileSync(JSON_EXPORT_PATH, JSON.stringify(occurrences, null, 2))
       console.log(`${occurrences.length} occurrences saved to: ${process.cwd() + '/' + JSON_EXPORT_PATH}`)
     } else {
-      if (options.owner && options.metric) {
+      if (options.owner || options.metric) {
         occurrences.forEach((occurrence) => console.log(`${occurrence.file_path}:${occurrence.line_number}`))
       } else {
         const table = mapValues(groupBy(occurrences, 'metric_name'), (occurrences) => occurrences.length)
@@ -84,17 +86,20 @@ program
     const configuration = await getConfiguration()
     const apiKey = options.apiKey || process.env.CHERRY_API_KEY
     const files = await buildFiles()
+    console.log(`Computing metrics values...`)
     const occurrences = await findOccurrences({ configuration, files })
     const sha = await git.sha()
     const committedAt = await git.commitDate(sha)
-    console.log(`Uploading ${occurrences.length} occurrences...`)
-    const data = await uploadReport(apiKey, {
+    console.log(`Uploading metrics values...`)
+    await uploadReport(apiKey, {
       commit_sha: sha,
       commit_date: committedAt.toISOString(),
       project_name: configuration.project_name,
       metrics: aggregateOccurences(occurrences),
     })
-    console.log('Response:', data)
+    console.log('Computing contributions...')
+    const contributions = await findContributions(configuration, 'HEAD~1000', 'HEAD')
+    console.log('Uploading contributions...')
     console.log('Your dashboard is available at https://www.cherrypush.com/user/projects')
   })
 

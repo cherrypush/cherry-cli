@@ -20,7 +20,7 @@ export const files = async () => {
   return trackedFiles.concat(untrackedFiles).filter((file) => !rejectedFiles.includes(file))
 }
 
-export const guessRepoName = async () => {
+export const guessProjectName = async () => {
   const url = (await git('remote get-url origin'))[0]
   if (!url) return ''
 
@@ -39,12 +39,15 @@ export const checkout = async (sha) => await git(`checkout ${sha}`)
 export const branchName = async () => (await git(`branch --show-current  `))[0]
 
 // Returns commits between beginSha (excluded) and endSha(included), from most recent to oldest
+// --first-parent to only consider resulting merge commits (and not commits in merged branch)
 export const getCommits = async (beginSha, endSha) =>
-  (await git(`rev-list ${beginSha}..${endSha} --format=%an|%ae|%H --no-commit-header`)).map((line) => {
-    // TODO: is it safe to split git output on "|"?
-    const [authorName, authorEmail, sha] = line.split('|')
-    return { sha, authorName, authorEmail }
-  })
+  (await git(`rev-list ${beginSha}..${endSha} --format=%an|%ae|%H|%cI --no-commit-header --first-parent`)).map(
+    (line) => {
+      // TODO: is it safe to split git output on "|"?
+      const [authorName, authorEmail, sha, isoDate] = line.split('|')
+      return { sha, authorName, authorEmail, isoDate }
+    }
+  )
 
 // Catch to prevent "fatal: path '...' exists on disk, but not in 'sha'"
 export const contentAtSha = (path, sha) => git(`show ${sha}:${path}`).catch(() => [])
