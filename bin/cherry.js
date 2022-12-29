@@ -96,9 +96,9 @@ program
     } catch (error) {
       process.exit(1)
     }
-    console.log('Computing contributions...')
-    const contributions = await findContributions(configuration, 'HEAD~1000', 'HEAD')
-    console.log('Uploading contributions...')
+    // console.log('Computing contributions...')
+    // const contributions = await findContributions(configuration, 'HEAD~1000', 'HEAD')
+    // console.log('Uploading contributions...')
     console.log('Your dashboard is available at https://www.cherrypush.com/user/projects')
   })
 
