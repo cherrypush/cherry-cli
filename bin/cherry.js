@@ -8,7 +8,6 @@ import { aggregateOccurences, findOccurrences } from '../src/occurences.js'
 import { configurationExists, getConfiguration, createConfigurationFile } from '../src/configuration.js'
 import prompt from 'prompt'
 import groupBy from 'lodash/groupBy.js'
-import cliProgress from 'cli-progress'
 import { guessProjectName } from '../src/git.js'
 import mapValues from 'lodash/mapValues.js'
 import * as git from '../src/git.js'
@@ -16,7 +15,8 @@ import { substractDays, toISODate } from '../src/date.js'
 import { panic } from '../src/error.js'
 import codeOwners from '../src/codeowners.js'
 import { findContributions } from '../src/contributions.js'
-import { buildFiles } from '../src/files.js'
+import { getFiles } from '../src/files.js'
+import { newProgress } from '../src/progress.js'
 
 dotenv.config()
 
@@ -56,12 +56,8 @@ program
       if (!configuration.metrics.map((metric) => metric.name).includes(options.metric))
         panic(`Metric ${options.metric} does not exist`)
     }
-    const files = await buildFiles(options.owner)
-    const progress = new cliProgress.SingleBar(
-      { format: '{bar} {value}/{total} files inspected' },
-      cliProgress.Presets.shades_classic
-    )
-    const occurrences = await findOccurrences({ configuration, files, metric: options.metric, progress })
+    const files = await getFiles(options.owner)
+    const occurrences = await findOccurrences({ configuration, files, metric: options.metric, progress: newProgress() })
     // const contrib = await findContributions(configuration, 'HEAD~5', 'HEAD')
     // console.log(contrib)
     // process.exit()
@@ -70,13 +66,12 @@ program
       console.log(`${occurrences.length} occurrences saved to: ${process.cwd() + '/' + JSON_EXPORT_PATH}`)
     } else {
       if (options.owner || options.metric) {
-        occurrences.forEach((occurrence) => console.log(`${occurrence.file_path}:${occurrence.line_number}`))
+        occurrences.forEach((occurrence) => console.log(`👉 ${occurrence.file_path}:${occurrence.line_number}`))
       } else {
         const table = mapValues(groupBy(occurrences, 'metric_name'), (occurrences) => occurrences.length)
         console.table(table)
       }
     }
-    console.log('Run `cherry push` to push them to your dashboard.')
   })
 
 program
@@ -85,18 +80,22 @@ program
   .action(async (options) => {
     const configuration = await getConfiguration()
     const apiKey = options.apiKey || process.env.CHERRY_API_KEY
-    const files = await buildFiles()
+    const files = await getFiles()
     console.log(`Computing metrics values...`)
-    const occurrences = await findOccurrences({ configuration, files })
+    const occurrences = await findOccurrences({ configuration, files, progress: newProgress() })
     const sha = await git.sha()
     const committedAt = await git.commitDate(sha)
     console.log(`Uploading metrics values...`)
-    await uploadReport(apiKey, {
-      commit_sha: sha,
-      commit_date: committedAt.toISOString(),
-      project_name: configuration.project_name,
-      metrics: aggregateOccurences(occurrences),
-    })
+    try {
+      await uploadReport(apiKey, {
+        commit_sha: sha,
+        commit_date: committedAt.toISOString(),
+        project_name: configuration.project_name,
+        metrics: aggregateOccurences(occurrences),
+      })
+    } catch (error) {
+      return
+    }
     console.log('Computing contributions...')
     const contributions = await findContributions(configuration, 'HEAD~1000', 'HEAD')
     console.log('Uploading contributions...')
@@ -118,6 +117,8 @@ program
     if (since > until) panic('The since date must be before the until date')
     const initialBranch = await git.branchName()
     if (!initialBranch) panic('Not on a branch, checkout a branch before running the backfill.')
+    const hasUncommitedChanges = (await git.uncommittedFiles()).length > 0
+    if (hasUncommitedChanges) panic('Please commit your changes before running this command')
 
     try {
       const configuration = await getConfiguration()
@@ -130,14 +131,18 @@ program
 
         const committedAt = await git.commitDate(sha)
         await git.checkout(sha)
-        const files = await buildFiles(options.owner)
-        const occurrences = await findOccurrences({ configuration, files })
-        await uploadReport(apiKey, {
-          commit_sha: sha,
-          commit_date: committedAt.toISOString(),
-          project_name: configuration.project_name,
-          metrics: aggregateOccurences(occurrences),
-        })
+        const files = await getFiles(options.owner)
+        const occurrences = await findOccurrences({ configuration, files, progress: newProgress() })
+        try {
+          await uploadReport(apiKey, {
+            commit_sha: sha,
+            commit_date: committedAt.toISOString(),
+            project_name: configuration.project_name,
+            metrics: aggregateOccurences(occurrences),
+          })
+        } catch (error) {
+          break
+        }
         date = substractDays(committedAt, interval)
       }
     } finally {
@@ -151,12 +156,13 @@ const uploadReport = (apiKey, report) =>
   axios
     .post(API_BASE_URL + '/reports', report, { params: { api_key: apiKey } })
     .then(({ data }) => data)
-    .catch((error) =>
-      panic(
-        `Error while calling cherrypush.com API ${error.response.status}: ${
+    .catch((error) => {
+      console.error(
+        `❌ Error while calling cherrypush.com API ${error.response.status}: ${
           error.response.data.error || error.response.statusText
         }`
       )
-    )
+      throw error
+    })
 
 program.parse(process.argv)

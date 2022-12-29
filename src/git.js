@@ -38,6 +38,8 @@ export const checkout = async (sha) => await git(`checkout ${sha}`)
 
 export const branchName = async () => (await git(`branch --show-current  `))[0]
 
+export const uncommittedFiles = async () => await git('status --porcelain=v1')
+
 // Returns commits between beginSha (excluded) and endSha(included), from most recent to oldest
 // --first-parent to only consider resulting merge commits (and not commits in merged branch)
 export const getCommits = async (beginSha, endSha) =>

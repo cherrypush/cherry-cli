@@ -2,12 +2,12 @@ import mapValues from 'lodash/mapValues.js'
 import groupBy from 'lodash/groupBy.js'
 import * as git from './git.js'
 import { findOccurrences } from './occurences.js'
-import { buildFilesAtSha } from './files.js'
+import { getFilesAtSha } from './files.js'
 import uniq from 'lodash/uniq.js'
 import pLimit from 'p-limit'
 
 const getOccurencesCount = async (configuration, paths, sha) => {
-  const files = await buildFilesAtSha(paths, sha)
+  const files = await getFilesAtSha(paths, sha)
   const occurrences = await findOccurrences({ configuration, files })
   return mapValues(groupBy(occurrences, 'metric_name'), (occurrences) => occurrences.length)
 }
