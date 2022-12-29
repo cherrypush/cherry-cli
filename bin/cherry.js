@@ -94,7 +94,7 @@ program
         metrics: aggregateOccurences(occurrences),
       })
     } catch (error) {
-      return
+      process.exit(1)
     }
     console.log('Computing contributions...')
     const contributions = await findContributions(configuration, 'HEAD~1000', 'HEAD')
