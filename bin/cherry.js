@@ -120,34 +120,33 @@ program
     const hasUncommitedChanges = (await git.uncommittedFiles()).length > 0
     if (hasUncommitedChanges) panic('Please commit your changes before running this command')
 
-    try {
-      const configuration = await getConfiguration()
-      const apiKey = options.apiKey || process.env.CHERRY_API_KEY
-      let date = until
-      while (date >= since) {
-        console.log(`Backfilling day ${toISODate(date)}...`)
-        const sha = await git.commitShaAt(date)
-        if (!sha) break
+    const configuration = await getConfiguration()
+    const apiKey = options.apiKey || process.env.CHERRY_API_KEY
+    let date = until
+    while (date >= since) {
+      console.log(`Backfilling day ${toISODate(date)}...`)
+      const sha = await git.commitShaAt(date)
+      if (!sha) break
 
-        const committedAt = await git.commitDate(sha)
-        await git.checkout(sha)
-        const files = await getFiles(options.owner)
+      const committedAt = await git.commitDate(sha)
+      await git.checkout(sha)
+      try {
+        const files = await getFiles()
         const occurrences = await findOccurrences({ configuration, files, progress: newProgress() })
-        try {
-          await uploadReport(apiKey, {
-            commit_sha: sha,
-            commit_date: committedAt.toISOString(),
-            project_name: configuration.project_name,
-            metrics: aggregateOccurences(occurrences),
-          })
-        } catch (error) {
-          break
-        }
-        date = substractDays(committedAt, interval)
+        await uploadReport(apiKey, {
+          commit_sha: sha,
+          commit_date: committedAt.toISOString(),
+          project_name: configuration.project_name,
+          metrics: aggregateOccurences(occurrences),
+        })
+      } catch (error) {
+        await git.checkout(initialBranch)
+        process.exit(1)
       }
-    } finally {
-      await git.checkout(initialBranch)
+      date = substractDays(committedAt, interval)
     }
+    await git.checkout(initialBranch)
+
     console.log('Backfill done')
     console.log('Your dashboard is available at https://www.cherrypush.com/user/projects')
   })
