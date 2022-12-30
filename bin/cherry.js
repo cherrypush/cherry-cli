@@ -13,10 +13,10 @@ import mapValues from 'lodash/mapValues.js'
 import * as git from '../src/git.js'
 import { substractDays, toISODate } from '../src/date.js'
 import { panic } from '../src/error.js'
-import codeOwners from '../src/codeowners.js'
 import { findContributions } from '../src/contributions.js'
 import { getFiles } from '../src/files.js'
 import { newProgress } from '../src/progress.js'
+import Codeowners from '../src/codeowners.js'
 
 dotenv.config()
 
@@ -47,17 +47,26 @@ program
   .option('--metric <metric>', 'only consider given metric')
   .action(async (options) => {
     const configuration = await getConfiguration()
+    const codeOwners = new Codeowners()
+    let files
     if (options.owner) {
       const owners = codeOwners.listOwners()
       if (!owners.includes(options.owner))
         panic(`Owner "${options.owner}" does not exist, valid owners:\n${owners.sort().join('\n')}.`)
-    }
+      files = await getFiles(options.owner, codeOwners)
+    } else files = await getFiles()
+
     if (options.metric) {
       if (!configuration.metrics.map((metric) => metric.name).includes(options.metric))
         panic(`Metric ${options.metric} does not exist`)
     }
-    const files = await getFiles(options.owner)
-    const occurrences = await findOccurrences({ configuration, files, metric: options.metric, progress: newProgress() })
+    const occurrences = await findOccurrences({
+      configuration,
+      files,
+      metric: options.metric,
+      progress: newProgress(),
+      codeOwners,
+    })
     // const contrib = await findContributions(configuration, 'HEAD~5', 'HEAD')
     // console.log(contrib)
     // process.exit()
@@ -82,7 +91,12 @@ program
     const apiKey = options.apiKey || process.env.CHERRY_API_KEY
     const files = await getFiles()
     console.log(`Computing metrics values...`)
-    const occurrences = await findOccurrences({ configuration, files, progress: newProgress() })
+    const occurrences = await findOccurrences({
+      configuration,
+      files,
+      progress: newProgress(),
+      codeOwners: new Codeowners(),
+    })
     const sha = await git.sha()
     const committedAt = await git.commitDate(sha)
     console.log(`Uploading metrics values...`)
@@ -132,7 +146,12 @@ program
       await git.checkout(sha)
       try {
         const files = await getFiles()
-        const occurrences = await findOccurrences({ configuration, files, progress: newProgress() })
+        const occurrences = await findOccurrences({
+          configuration,
+          files,
+          progress: newProgress(),
+          codeOwners: new Codeowners(),
+        })
         await uploadReport(apiKey, {
           commit_sha: sha,
           commit_date: committedAt.toISOString(),

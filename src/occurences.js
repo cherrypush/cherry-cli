@@ -1,6 +1,5 @@
 import minimatch from 'minimatch'
 import pLimit from 'p-limit'
-import codeOwners from './codeowners.js'
 
 const minimatchCache = {}
 const matchInclude = (path, include) => {
@@ -10,7 +9,7 @@ const matchInclude = (path, include) => {
   return minimatchCache[key]
 }
 
-const findFileOccurences = async (file, metrics) => {
+const findFileOccurences = async (file, metrics, codeOwners) => {
   const relevantMetrics = metrics.filter((metric) => !metric.include || matchInclude(file.path, metric.include))
   if (!relevantMetrics.length) return []
 
@@ -26,7 +25,7 @@ const findFileOccurences = async (file, metrics) => {
   return occurences
 }
 
-export const findOccurrences = async ({ configuration, files, metric, progress }) => {
+export const findOccurrences = async ({ configuration, files, metric, progress, codeOwners }) => {
   // Limit number of concurrently opened files
   const limit = pLimit(10)
 
@@ -35,7 +34,7 @@ export const findOccurrences = async ({ configuration, files, metric, progress }
   const promises = files.map(async (file) => {
     return limit(() => {
       progress?.increment()
-      return findFileOccurences(file, metrics)
+      return findFileOccurences(file, metrics, codeOwners)
     })
   })
   const occurrences = (await Promise.all(promises)).flat()

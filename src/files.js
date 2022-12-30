@@ -1,6 +1,5 @@
 import { promises as fs } from 'fs'
 import intersection from 'lodash/intersection.js'
-import codeOwners from './codeowners.js'
 import * as git from './git.js'
 
 class File {
@@ -34,7 +33,7 @@ class GitFile {
 
 export const getFilesAtSha = (paths, sha) => paths.map((path) => new GitFile(path, sha))
 
-export const getFiles = async (owner) => {
+export const getFiles = async (owner, codeOwners) => {
   const allPaths = await git.files()
   let selectedPaths = allPaths
   if (owner) selectedPaths = intersection(codeOwners.getFiles(owner), selectedPaths)

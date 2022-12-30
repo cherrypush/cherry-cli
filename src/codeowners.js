@@ -11,12 +11,10 @@ const { trueCasePathSync } = trueCasePath
 class Codeowners {
   constructor() {
     this.ownersByFile = {}
-    this.initialized = false
+    this.init()
   }
 
   init() {
-    if (this.initialized) return
-
     const fileName = 'CODEOWNERS'
 
     const codeownersPath = findUpSync(
@@ -52,22 +50,20 @@ class Codeowners {
 
       const [codeownersPath, ...owners] = line.split(/\s+/)
 
-      for (const file of this.globFiles(codeownersPath)) {
+      for (const file of this.#globFiles(codeownersPath)) {
         const existingOwners = this.ownersByFile[file] || []
         this.ownersByFile[file] = [...new Set(existingOwners.concat(owners))]
       }
     }
-    this.initialized = true
   }
 
-  globFiles(codeownersPath) {
+  #globFiles(codeownersPath) {
     if (codeownersPath.includes('*')) return glob.sync(codeownersPath, { nodir: true })
     if (isDirectory(codeownersPath)) return glob.sync(path.join(codeownersPath, '**/*'), { nodir: true })
     return [codeownersPath]
   }
 
   getFiles(owner) {
-    this.init()
     return uniq(
       Object.entries(this.ownersByFile)
         .filter(([, owners]) => owners.includes(owner))
@@ -77,14 +73,12 @@ class Codeowners {
   }
 
   getOwners(file) {
-    this.init()
     return this.ownersByFile[file] || []
   }
 
   listOwners() {
-    this.init()
     return uniq(Object.values(this.ownersByFile).flat())
   }
 }
 
-export default new Codeowners()
+export default Codeowners
