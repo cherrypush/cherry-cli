@@ -50,7 +50,7 @@ export const findOccurrences = async ({ configuration, files, metric, progress, 
 //   },
 //   ...
 // }
-export const aggregateOccurences = (occurences) => {
+export const aggregateOccurrences = (occurences) => {
   const result = {}
   occurences.forEach((occurence) => {
     const metric = (result[occurence.metric_name] ||= { owners: {}, total: 0 })

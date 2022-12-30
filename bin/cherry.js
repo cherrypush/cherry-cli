@@ -4,7 +4,7 @@ import fs from 'fs'
 import dotenv from 'dotenv'
 import axios from 'axios'
 import { program } from 'commander'
-import { aggregateOccurences, findOccurrences } from '../src/occurences.js'
+import { aggregateOccurrences, findOccurrences } from '../src/occurences.js'
 import { configurationExists, getConfiguration, createConfigurationFile } from '../src/configuration.js'
 import prompt from 'prompt'
 import groupBy from 'lodash/groupBy.js'
@@ -105,7 +105,7 @@ program
         commit_sha: sha,
         commit_date: committedAt.toISOString(),
         project_name: configuration.project_name,
-        metrics: aggregateOccurences(occurrences),
+        metrics: aggregateOccurrences(occurrences),
       })
     } catch (error) {
       process.exit(1)
@@ -156,7 +156,7 @@ program
           commit_sha: sha,
           commit_date: committedAt.toISOString(),
           project_name: configuration.project_name,
-          metrics: aggregateOccurences(occurrences),
+          metrics: aggregateOccurrences(occurrences),
         })
       } catch (error) {
         await git.checkout(initialBranch)
