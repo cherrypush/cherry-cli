@@ -105,7 +105,7 @@ program
         commit_sha: sha,
         commit_date: committedAt.toISOString(),
         project_name: configuration.project_name,
-        metrics: aggregateOccurrences(occurrences),
+        metrics: aggregateOccurrences(configuration.metrics, occurrences),
       })
     } catch (error) {
       process.exit(1)
@@ -156,7 +156,7 @@ program
           commit_sha: sha,
           commit_date: committedAt.toISOString(),
           project_name: configuration.project_name,
-          metrics: aggregateOccurrences(occurrences),
+          metrics: aggregateOccurrences(configuration.metrics, occurrences),
         })
       } catch (error) {
         await git.checkout(initialBranch)
