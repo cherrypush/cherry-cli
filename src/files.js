@@ -33,10 +33,10 @@ class GitFile {
 
 export const getFilesAtSha = (paths, sha) => paths.map((path) => new GitFile(path, sha))
 
-export const getFiles = async (owner, codeOwners) => {
+export const getFiles = async (owners, codeOwners) => {
   const allPaths = await git.files()
   let selectedPaths = allPaths
-  if (owner) selectedPaths = intersection(codeOwners.getFiles(owner), selectedPaths)
+  if (owners) selectedPaths = intersection(codeOwners.getFiles(owners), selectedPaths)
 
   return selectedPaths.map((path) => new File(path))
 }

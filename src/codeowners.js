@@ -1,6 +1,7 @@
 import { findUpSync } from 'find-up'
 import fs from 'fs'
 import glob from 'glob'
+import intersection from 'lodash/intersection.js'
 import uniq from 'lodash/uniq.js'
 import path from 'path'
 import trueCasePath from 'true-case-path'
@@ -63,10 +64,10 @@ class Codeowners {
     return [codeownersPath]
   }
 
-  getFiles(owner) {
+  getFiles(owners) {
     return uniq(
       Object.entries(this.ownersByFile)
-        .filter(([, owners]) => owners.includes(owner))
+        .filter(([, fileOwners]) => intersection(owners, fileOwners).length > 0)
         .map(([file]) => file)
         .flat()
     )

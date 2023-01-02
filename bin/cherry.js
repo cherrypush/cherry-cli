@@ -17,6 +17,7 @@ import { findContributions } from '../src/contributions.js'
 import { getFiles } from '../src/files.js'
 import { newProgress } from '../src/progress.js'
 import Codeowners from '../src/codeowners.js'
+import difference from 'lodash/difference.js'
 
 dotenv.config()
 
@@ -50,10 +51,12 @@ program
     const codeOwners = new Codeowners()
     let files
     if (options.owner) {
-      const owners = codeOwners.listOwners()
-      if (!owners.includes(options.owner))
-        panic(`Owner "${options.owner}" does not exist, valid owners:\n${owners.sort().join('\n')}.`)
-      files = await getFiles(options.owner, codeOwners)
+      const allOwners = codeOwners.listOwners()
+      const owners = options.owner.split(',')
+      const unknownOwners = difference(owners, allOwners)
+      if (unknownOwners.length > 0)
+        panic(`Owners "${unknownOwners}" do not exist, valid owners:\n${allOwners.sort().join('\n')}.`)
+      files = await getFiles(owners, codeOwners)
     } else files = await getFiles()
 
     if (options.metric) {
