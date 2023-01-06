@@ -70,9 +70,6 @@ program
       progress: newProgress(),
       codeOwners,
     })
-    // const contrib = await findContributions(configuration, 'HEAD~5', 'HEAD')
-    // console.log(contrib)
-    // process.exit()
     if (options.json) {
       fs.writeFileSync(JSON_EXPORT_PATH, JSON.stringify(occurrences, null, 2))
       console.log(`${occurrences.length} occurrences saved to: ${process.cwd() + '/' + JSON_EXPORT_PATH}`)
@@ -93,29 +90,36 @@ program
     const configuration = await getConfiguration()
     const apiKey = options.apiKey || process.env.CHERRY_API_KEY
     const files = await getFiles()
+    const codeOwners = new Codeowners()
     console.log(`Computing metrics values...`)
     const occurrences = await findOccurrences({
       configuration,
       files,
       progress: newProgress(),
-      codeOwners: new Codeowners(),
+      codeOwners,
     })
     const sha = await git.sha()
     const committedAt = await git.commitDate(sha)
+    const metrics = aggregateOccurrences(configuration.metrics, occurrences)
+    const lastReportedSha = (await fetchLastReport(apiKey, configuration.project_name))?.commit_sha
+    console.log(`Computing contributions...`)
+    const contributions = lastReportedSha ? await findContributions(configuration, codeOwners, lastReportedSha) : []
     console.log(`Uploading metrics values...`)
     try {
-      await uploadReport(apiKey, {
-        commit_sha: sha,
-        commit_date: committedAt.toISOString(),
+      await upload(apiKey, {
         project_name: configuration.project_name,
-        metrics: aggregateOccurrences(configuration.metrics, occurrences),
+        report: { commit_sha: sha, commit_date: committedAt.toISOString(), metrics },
+        contributions: contributions.map((contribution) => ({
+          author_name: contribution.authorName,
+          author_email: contribution.authorEmail,
+          commit_sha: contribution.sha,
+          commit_date: contribution.date,
+          metrics: contribution.metrics,
+        })),
       })
     } catch (error) {
       process.exit(1)
     }
-    // console.log('Computing contributions...')
-    // const contributions = await findContributions(configuration, 'HEAD~1000', 'HEAD')
-    // console.log('Uploading contributions...')
     console.log('Your dashboard is available at https://www.cherrypush.com/user/projects')
   })
 
@@ -155,7 +159,7 @@ program
           progress: newProgress(),
           codeOwners: new Codeowners(),
         })
-        await uploadReport(apiKey, {
+        await upload(apiKey, {
           commit_sha: sha,
           commit_date: committedAt.toISOString(),
           project_name: configuration.project_name,
@@ -173,9 +177,22 @@ program
     console.log('Your dashboard is available at https://www.cherrypush.com/user/projects')
   })
 
-const uploadReport = (apiKey, report) =>
+const upload = (apiKey, payload) =>
   axios
-    .post(API_BASE_URL + '/reports', report, { params: { api_key: apiKey } })
+    .post(API_BASE_URL + '/push', payload, { params: { api_key: apiKey } })
+    .then(({ data }) => data)
+    .catch((error) => {
+      console.error(
+        `❌ Error while calling cherrypush.com API ${error.response.status}: ${
+          error.response.data.error || error.response.statusText
+        }`
+      )
+      throw error
+    })
+
+const fetchLastReport = (apiKey, projectName) =>
+  axios
+    .get(API_BASE_URL + '/reports/last', { params: { api_key: apiKey, project_name: projectName } })
     .then(({ data }) => data)
     .catch((error) => {
       console.error(

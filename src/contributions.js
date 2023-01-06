@@ -6,17 +6,18 @@ import { getFilesAtSha } from './files.js'
 import uniq from 'lodash/uniq.js'
 import pLimit from 'p-limit'
 
-const getOccurencesCount = async (configuration, paths, sha) => {
+const countOccurences = async (configuration, codeOwners, paths, sha) => {
   const files = await getFilesAtSha(paths, sha)
-  const occurrences = await findOccurrences({ configuration, files })
+  const occurrences = await findOccurrences({ configuration, files, codeOwners })
   return mapValues(groupBy(occurrences, 'metric_name'), (occurrences) => occurrences.length)
 }
 
-const getCommitContribution = async (configuration, currentCommit, previousCommit) => {
-  const paths = await git.changedFiles(currentCommit.sha)
+const getCommitContribution = async (configuration, codeOwners, commit) => {
+  const paths = await git.changedFiles(commit.sha)
+  const previousSha = await git.previousSha(commit.sha)
   const [current, previous] = await Promise.all([
-    getOccurencesCount(configuration, paths, currentCommit.sha),
-    getOccurencesCount(configuration, paths, previousCommit.sha),
+    countOccurences(configuration, codeOwners, paths, commit.sha),
+    previousSha ? countOccurences(configuration, codeOwners, paths, previousSha) : {},
   ])
   const metrics = uniq(Object.keys(current).concat(Object.keys(previous)))
   const deltaByMetric = {}
@@ -27,25 +28,20 @@ const getCommitContribution = async (configuration, currentCommit, previousCommi
   })
 
   return {
-    date: currentCommit.isoDate,
-    authorName: currentCommit.authorName,
-    authorEmail: currentCommit.authorEmail,
-    sha: currentCommit.sha,
+    date: commit.isoDate,
+    authorName: commit.authorName,
+    authorEmail: commit.authorEmail,
+    sha: commit.sha,
     metrics: deltaByMetric,
   }
 }
 
-export const findContributions = async (configuration, beginSha, endSha) => {
-  const commits = await git.getCommits(beginSha, endSha)
-  const promises = []
+export const findContributions = async (configuration, codeOwners, beginSha) => {
+  const commits = await git.getCommits(beginSha, 'HEAD')
+  console.log(beginSha, commits.length)
   // Avoid "Error: spawn EBADF" when invoking too many shell commands, limiting to 10 does not impact run time
   const limit = pLimit(10)
+  const contributions = commits.map((commit) => limit(() => getCommitContribution(configuration, codeOwners, commit)))
 
-  for (let i = 0; i < commits.length - 1; i++) {
-    const currentCommit = commits[i]
-    const previousCommit = commits[i + 1]
-    promises.push(limit(() => getCommitContribution(configuration, currentCommit, previousCommit)))
-  }
-
-  return await Promise.all(promises)
+  return await Promise.all(contributions)
 }
