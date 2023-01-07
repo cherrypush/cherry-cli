@@ -1,4 +1,3 @@
-import { JSON_EXPORT_PATH } from '../bin/cherry.js'
 import { CONFIG_FILE_NAME } from './configuration.js'
 import { toISODate } from './date.js'
 import sh from './sh.js'
@@ -15,7 +14,7 @@ export const files = async () => {
   const trackedFiles = await git('ls-files')
   const untrackedFiles = await git('ls-files --others --exclude-standard')
   const deletedFiles = await git('ls-files -d')
-  const rejectedFiles = [...deletedFiles, JSON_EXPORT_PATH, CONFIG_FILE_NAME]
+  const rejectedFiles = [...deletedFiles, CONFIG_FILE_NAME]
 
   return trackedFiles.concat(untrackedFiles).filter((file) => !rejectedFiles.includes(file))
 }
