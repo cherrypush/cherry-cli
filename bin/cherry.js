@@ -148,18 +148,14 @@ program
       console.log(`Backfilling day ${toISODate(date)}...`)
       const sha = await git.commitShaAt(date, initialBranch)
       if (!sha) break
-
       const committedAt = await git.commitDate(sha)
+      if (committedAt > until) break
+
       await git.checkout(sha)
       const codeOwners = new Codeowners()
       try {
         const files = await getFiles()
-        const occurrences = await findOccurrences({
-          configuration,
-          files,
-          progress: newProgress(),
-          codeOwners,
-        })
+        const occurrences = await findOccurrences({ configuration, files, progress: newProgress(), codeOwners })
         const lastReportedSha = (await fetchLastReport(apiKey, configuration.project_name))?.commit_sha
         const metrics = aggregateOccurrences(configuration.metrics, occurrences)
         const contributions = lastReportedSha ? await findContributions(configuration, codeOwners, lastReportedSha) : []
