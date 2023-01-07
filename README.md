@@ -22,7 +22,7 @@ CHERRY_API_KEY=16eo4cac-77a3-4005-a90b-eedcd3117b9f
 
 Outputs stats for current commit. Useful for debugging your config file.
 
-```json
+```sh
 $ cherry run
 ┌─────────┬────────┐
 │ (index) │ Values │
