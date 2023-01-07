@@ -31,6 +31,8 @@ export const guessProjectName = async () => {
   return matches[1] || ''
 }
 
+export const log = async () => git('log')
+
 export const sha = async () => (await git('rev-parse HEAD')).toString()
 
 export const commitDate = async (sha) => new Date((await git(`show -s --format=%ci ${sha}`))[0])
