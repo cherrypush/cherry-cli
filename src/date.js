@@ -3,3 +3,7 @@ export const substractDays = (date, count) => {
   date.setDate(date.getDate() - count)
   return date
 }
+export const addDays = (date, count) => {
+  date.setDate(date.getDate() + count)
+  return date
+}

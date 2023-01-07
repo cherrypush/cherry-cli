@@ -35,7 +35,8 @@ export const sha = async () => (await git('rev-parse HEAD')).toString()
 
 export const commitDate = async (sha) => new Date((await git(`show -s --format=%ci ${sha}`))[0])
 
-export const commitShaAt = async (date) => (await git(`rev-list -n 1 --before="${toISODate(date)}" HEAD`))[0]
+export const commitShaAt = async (date, initialBranch) =>
+  (await git(`rev-list -n 1 --before="${toISODate(date)}" ${initialBranch}`))[0]
 
 export const checkout = async (sha) => await git(`checkout ${sha}`)
 

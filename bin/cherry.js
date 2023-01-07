@@ -11,7 +11,7 @@ import groupBy from 'lodash/groupBy.js'
 import { guessProjectName } from '../src/git.js'
 import mapValues from 'lodash/mapValues.js'
 import * as git from '../src/git.js'
-import { substractDays, toISODate } from '../src/date.js'
+import { addDays, toISODate } from '../src/date.js'
 import { panic } from '../src/error.js'
 import { findContributions } from '../src/contributions.js'
 import { getFiles } from '../src/files.js'
@@ -131,7 +131,7 @@ program
   .option('--interval <interval>', 'The number of days between backfills (defaults to 1)')
   .action(async (options) => {
     const since = new Date(options.since)
-    const until = options.until ? new Date(options.until) : substractDays(new Date(), 1)
+    const until = options.until ? new Date(options.until) : new Date()
     const interval = options.interval ? parseInt(options.interval) : 1
     if (isNaN(since)) panic('Invalid since date')
     if (isNaN(until)) panic('Invalid until date')
@@ -143,33 +143,43 @@ program
 
     const configuration = await getConfiguration()
     const apiKey = options.apiKey || process.env.CHERRY_API_KEY
-    let date = until
-    while (date >= since) {
+    let date = since
+    while (date <= until) {
       console.log(`Backfilling day ${toISODate(date)}...`)
-      const sha = await git.commitShaAt(date)
+      const sha = await git.commitShaAt(date, initialBranch)
       if (!sha) break
 
       const committedAt = await git.commitDate(sha)
       await git.checkout(sha)
+      const codeOwners = new Codeowners()
       try {
         const files = await getFiles()
         const occurrences = await findOccurrences({
           configuration,
           files,
           progress: newProgress(),
-          codeOwners: new Codeowners(),
+          codeOwners,
         })
+        const lastReportedSha = (await fetchLastReport(apiKey, configuration.project_name))?.commit_sha
+        const metrics = aggregateOccurrences(configuration.metrics, occurrences)
+        const contributions = lastReportedSha ? await findContributions(configuration, codeOwners, lastReportedSha) : []
         await upload(apiKey, {
-          commit_sha: sha,
-          commit_date: committedAt.toISOString(),
           project_name: configuration.project_name,
-          metrics: aggregateOccurrences(configuration.metrics, occurrences),
+          report: { commit_sha: sha, commit_date: committedAt.toISOString(), metrics },
+          contributions: contributions.map((contribution) => ({
+            author_name: contribution.authorName,
+            author_email: contribution.authorEmail,
+            commit_sha: contribution.sha,
+            commit_date: contribution.date,
+            metrics: contribution.metrics,
+          })),
         })
       } catch (error) {
+        console.error(error)
         await git.checkout(initialBranch)
         process.exit(1)
       }
-      date = substractDays(committedAt, interval)
+      date = addDays(committedAt, interval)
     }
     await git.checkout(initialBranch)
 
