@@ -103,7 +103,6 @@ program
     const metrics = aggregateOccurrences(configuration.metrics, occurrences)
     const lastReportedSha = (await fetchLastReport(apiKey, configuration.project_name))?.commit_sha
     console.log(`Computing contributions...`)
-    ;(await git.log()).forEach((line) => console.log(line))
     const contributions = lastReportedSha ? await findContributions(configuration, codeOwners, lastReportedSha) : []
     console.log(`Uploading metrics values...`)
     try {
