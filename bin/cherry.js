@@ -10,7 +10,7 @@ import groupBy from 'lodash/groupBy.js'
 import { guessProjectName } from '../src/git.js'
 import mapValues from 'lodash/mapValues.js'
 import * as git from '../src/git.js'
-import { addDays, toISODate } from '../src/date.js'
+import { addDays, substractDays, toISODate, nextMonth } from '../src/date.js'
 import { panic } from '../src/error.js'
 import { findContributions } from '../src/contributions.js'
 import { getFiles } from '../src/files.js'
@@ -93,13 +93,13 @@ program
 program
   .command('backfill')
   .option('--api-key <api_key>', 'Your cherrypush.com api key')
-  .requiredOption('--since <since>', 'yyyy-mm-dd | The date at which the backfill will start')
+  .option('--since <since>', 'yyyy-mm-dd | The date at which the backfill will start (defaults to 1 year ago)')
   .option('--until <until>', 'yyyy-mm-dd | The date at which the backfill will stop (defaults to today)')
-  .option('--interval <interval>', 'The number of days between backfills (defaults to 1)')
+  .option('--interval <interval>', 'The number of days between backfills (defaults to 30 days)')
   .action(async (options) => {
-    const since = new Date(options.since)
+    const since = options.since ? new Date(options.since) : substractDays(new Date(), 365)
     const until = options.until ? new Date(options.until) : new Date()
-    const interval = options.interval ? parseInt(options.interval) : 1
+    const interval = options.interval ? parseInt(options.interval) : 30
     if (isNaN(since)) panic('Invalid since date')
     if (isNaN(until)) panic('Invalid until date')
     if (since > until) panic('The since date must be before the until date')

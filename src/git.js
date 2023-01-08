@@ -85,7 +85,8 @@ export const getCommits = async (beginSha, endSha) => {
 // Catch to prevent "fatal: path '...' exists on disk, but not in 'sha'"
 export const contentAtSha = (path, sha) => git(`show ${sha}:${path}`).catch(() => [])
 
-export const changedFiles = (sha) => git(`diff-tree --no-commit-id --name-only -r ${sha}`)
+// -m to display changes from parent commit for merge commits
+export const changedFiles = (sha) => git(`diff-tree --no-commit-id --name-only -r -m ${sha}`)
 
 export const previousSha = async (sha) => {
   try {
