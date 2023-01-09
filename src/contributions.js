@@ -36,11 +36,21 @@ const getCommitContribution = async (configuration, codeOwners, commit) => {
   }
 }
 
-export const findContributions = async (configuration, codeOwners, beginSha) => {
+export const findContributions = async (configuration, codeOwners, beginSha, progress) => {
   const commits = await git.getCommits(beginSha, 'HEAD')
+  if (!commits.length) return []
+  progress.start(commits.length, 0)
   // Avoid "Error: spawn EBADF" when invoking too many shell commands, limiting to 10 does not impact run time
   const limit = pLimit(10)
-  const contributions = commits.map((commit) => limit(() => getCommitContribution(configuration, codeOwners, commit)))
+  const promises = commits.map((commit) =>
+    limit(async () => {
+      const contribution = await getCommitContribution(configuration, codeOwners, commit)
+      progress.increment()
+      return contribution
+    })
+  )
+  const contributions = await Promise.all(promises)
+  progress.stop()
 
-  return await Promise.all(contributions)
+  return contributions
 }

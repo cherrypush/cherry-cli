@@ -1,4 +1,3 @@
-import { JSON_EXPORT_PATH } from '../bin/cherry.js'
 import { CONFIG_FILE_NAME } from './configuration.js'
 import { toISODate } from './date.js'
 import sh from './sh.js'
@@ -15,7 +14,7 @@ export const files = async () => {
   const trackedFiles = await git('ls-files')
   const untrackedFiles = await git('ls-files --others --exclude-standard')
   const deletedFiles = await git('ls-files -d')
-  const rejectedFiles = [...deletedFiles, JSON_EXPORT_PATH, CONFIG_FILE_NAME]
+  const rejectedFiles = [...deletedFiles, CONFIG_FILE_NAME]
 
   return trackedFiles.concat(untrackedFiles).filter((file) => !rejectedFiles.includes(file))
 }
@@ -86,7 +85,8 @@ export const getCommits = async (beginSha, endSha) => {
 // Catch to prevent "fatal: path '...' exists on disk, but not in 'sha'"
 export const contentAtSha = (path, sha) => git(`show ${sha}:${path}`).catch(() => [])
 
-export const changedFiles = (sha) => git(`diff-tree --no-commit-id --name-only -r ${sha}`)
+// -m to display changes from parent commit for merge commits
+export const changedFiles = (sha) => git(`diff-tree --no-commit-id --name-only -r -m ${sha}`)
 
 export const previousSha = async (sha) => {
   try {
