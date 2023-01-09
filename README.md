@@ -71,6 +71,35 @@ If the date range is too wide, you might want to set a custom interval (defaults
 $ cherry backfill --since=2023-01-01 --until=2023-12-01 --interval=30
 ```
 
+# Integrating with GitHub Actions
+
+You can easily automate Cherry to submit reports on every commit to master.
+
+You just need to add create a `.github/workflows/cherry.yml` file with the following:
+
+```
+name: Upload codebase metrics to cherrypush.com
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  cherry:
+    name: runner / cherry
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Install cherry
+        run: npm i -g cherrypush
+      - name: Push metrics
+        run: cherry push --api-key=${{ secrets.CHERRY_API_KEY }}
+```
+
 # Live demo 🔴
 
 The above commands are everything you could learn about the `cherry` CLI.
