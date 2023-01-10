@@ -102,8 +102,6 @@ jobs:
 
 # Live demo 🔴
 
-The above commands are everything you could learn about the `cherry` CLI.
+If you'd like to see a live demo: https://www.cherrypush.com/demo
 
-If you want to see a demo of what it looks like in practice, take a look at the Open Projects section available at https://www.cherrypush.com/projects.
-
-And if you see opportunities for improvement, don't hesitate to submit constructive feedback via twitter to https://twitter.com/@fwuensche or https://twitter.com/@r_chqt
+Have you found a bug? Report to us via https://twitter.com/@fwuensche or https://twitter.com/@r_chqt
