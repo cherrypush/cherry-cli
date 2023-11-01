@@ -19,18 +19,12 @@ describe('cherry', () => {
 })
 
 describe('cherry run', () => {
-  test('alerts about missing config file', (done) => {
+  test('runs all metrics from config file', (done) => {
     exec('node bin/cherry.js run', (_error, stdout) => {
-      expect(stdout).toContain('No .cherry.js file found, using default configuration')
-      done()
-    })
-  })
-
-  test('falls back to loc plugin', (done) => {
-    exec('node bin/cherry.js run', (_error, stdout) => {
-      expect(stdout).toContain('[loc] JSON')
-      expect(stdout).toContain('[loc] JavaScript')
-      expect(stdout).not.toContain('[loc] Ruby')
+      expect(stdout).toContain('JS circular dependencies')
+      expect(stdout).toContain('npm outdated dependencies (package.json)')
+      expect(stdout).toContain('npx unimported files')
+      expect(stdout).toContain('TODO')
       done()
     })
   })
