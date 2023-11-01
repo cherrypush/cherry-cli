@@ -1,5 +1,0 @@
-<%= form_tag(google_sign_in_path(after_sign_in_path: user_projects_path), method: 'post') do %>
-  <button class="w-full btn-primary" type="submit">
-    <%= defined?(text) ? text : 'Login with Google' %>
-  </button>
-<% end %>

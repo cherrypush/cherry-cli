@@ -5,21 +5,9 @@
 
 version: 2
 updates:
-  - package-ecosystem: 'bundler'
-    directory: '/'
+  - package-ecosystem: "npm"
+    directory: "/"
+    versioning-strategy: "increase"
     schedule:
-      interval: 'daily'
-      time: '09:00'
-    versioning-strategy: 'lockfile-only'
-  - package-ecosystem: 'npm'
-    directory: '/'
-    schedule:
-      interval: 'daily'
-      time: '09:00'
-    versioning-strategy: 'increase'
-  - package-ecosystem: 'npm'
-    directory: '/cli/'
-    schedule:
-      interval: 'daily'
-      time: '09:00'
-    versioning-strategy: 'increase'
+      interval: "daily"
+      time: "09:00"
