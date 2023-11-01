@@ -1,98 +1,213 @@
-<h1 align="center">
-  <a href="https://cherrypush.com">🍒 Cherry</a>
-</h1>
+# Initial setup ⚡️
 
-<p align="center">
-Cherry allows you to track your technical debt with minimal setup. You configure the codebase patterns you want to track
-once. Cherry will then run on every commit and report the stats to your dashboard. It's that simple.
-</p>
-
-<p align="center">
-  <a href="https://github.com/cherrypush/cherrypush.com/actions/workflows/ci_tests.yml"><img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/cherrypush/cherrypush.com/ci_tests.yml"/></a>
-  <a href="https://www.npmjs.com/package/cherrypush"><img alt="Visit the NPM page" src="https://img.shields.io/npm/v/cherrypush"/></a>
-  <a href="https://github.com/cherrypush/cherrypush.com/graphs/contributors"><img src="https://img.shields.io/github/commit-activity/m/cherrypush/cherrypush.com" alt="Commits per month"></a>
-  <a href="https://twitter.com/intent/follow?screen_name=fwuensche"><img alt="Follow us on Twitter" src="https://img.shields.io/twitter/follow/fwuensche?style=social"/></a>
-</p>
-
-<p align="center">
-  <a href="https://oss.skylight.io/app/applications/670fP418RH7v"><img src="https://badges.skylight.io/problem/670fP418RH7v.svg" alt="View performance data on Skylight" /></a>
-  <a href="https://oss.skylight.io/app/applications/670fP418RH7v"><img src="https://badges.skylight.io/typical/670fP418RH7v.svg" alt="View performance data on Skylight" /></a>
-  <a href="https://oss.skylight.io/app/applications/670fP418RH7v"><img src="https://badges.skylight.io/rpm/670fP418RH7v.svg" alt="View performance data on Skylight" /></a>
-</p>
-
-<h3 align="center">
-  <b><a href="https://cherrypush.com/docs">📄 read the docs</a></b>
-  •
-  <b><a href="https://github.com/cherrypush/cherrypush.com/discussions">👨‍🎓 ask a question</a></b>
-  •
-  <b><a href="https://github.com/cherrypush/cherrypush.com/issues">📣 report an issue</a></b>
-</h3>
-
-<br />
-
-## Getting started
+Install the CLI globally with:
 
 ```sh
-# clone the project
-git clone git@github.com:cherrypush/cherry.git
-cd cherry
-
-# install dependencies
-bundle install
-npm install
-
-# setup database
-docker compose up -d
-rails db:setup
-
-# setup local env vars
-cp .rbenv-vars.template .rbenv-vars
-
-# launch the server
-bin/dev
+npm install -g cherrypush
 ```
 
-> The env vars step above assumes you're using the rbenv-vars plugin. If you don't have it installed, check their docs
-> [here](https://github.com/rbenv/rbenv-vars) or use an alternative method to load your environment variables.
+Inside the root of your project, initialize your cherry configuration:
 
-## Running in production
-
-You can either use Heroku or the `fwuensche/cherry` image from Docker Hub.
-
-Note that, in both cases, you'll also need a running instance of Postgres and Redis.
-
-<!-- TODO: update this command to reflect all recent changes to our infra
+```sh
+cherry init
 ```
-docker run \
-  -e SECRET_KEY_BASE=<secret> \
-  -e DATABASE_URL=postgresql://<user>:<pass>@<host>:5432/<db_name> \
-  cherrypush/cherrypush.com
-``` -->
 
-## Contributing
+Add your API key into a .env file at the root of your project:
 
-In addition to the above-mentioned docs, a great way to get started is to watch some of the live sessions below. This
-should give you insights on how to navigate the codebase and start contributing.
+```sh
+CHERRY_API_KEY=find-your-api-key-here
+```
 
-Cherry CLI (JavaScript):
+# CLI commands 😌
 
-- Add support for array of globs: https://youtu.be/zPrVUFDcQ5Y
-- Sort results of cherry run: https://youtu.be/ZjJqDBLbM-E
+## cherry init
 
-Cherry App (Ruby on Rails):
+The init command will initialize your config file `.cherry.js` and create a sample GitHub workflow file that you can use
+to integrate Cherry to your CI/CD workflow via GitHub Actions.
 
-- Add a new API endpoint + controller tests: https://youtu.be/vh1bCTe16Bs
-- Fixing N+1 queries on metrics#index: https://youtu.be/isqa9r0SpsA
-- Fixing N+1 queries on dashboards#index: https://youtu.be/vcGpfbLuliA
+A very minimal config file can look something like this:
 
-Huge thanks to top contributors 🙏
+```js
+module.exports = {
+  project_name: 'PROJECT_NAME',
+  plugins: ['loc'],
+  metrics: [
+    {
+      name: 'TODO/FIXME',
+      pattern: /(TODO|FIXME):/i, // the i flag makes the regex case insensitive
+    },
+  ],
+}
+```
 
-<a href="https://github.com/fwuensche/cherry-cli/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=fwuensche/cherry-cli" />
-</a>
+For more info about CI/CD integration, refer to the Integrations section below.
 
-## Any further question or suggestion?
+## cherry run
 
-- report a bug via [GitHub Issues](https://github.com/cherrypush/cherrypush.com/issues)
-- suggest new features via [GitHub Discussions](https://github.com/cherrypush/cherrypush.com/discussions)
-- or shoot me a private message on [Twitter](https://twitter.com/messages/compose?recipient_id=38940653)
+The run command accepts a couple of different options:
+
+```sh
+cherry run [--metric=<metric>] [--owner=<owners>]
+```
+
+When used without options, it logs ALL metric stats for your project:
+
+```sh
+$ cherry run
+┌─────────┬────────┐
+│ (index) │ Values │
+├─────────┼────────┤
+│  todo   │   16   │
+│  fixme  │   12   │
+│ rubocop │    1   │
+│ eslint  │   13   │
+└─────────┴────────┘
+```
+
+To filter metrics, you can combine the different options such as:
+
+```sh
+cherry run --metric="Skipped tests"
+```
+
+```sh
+cherry run --owner=@fwuensche,@rchoquet
+```
+
+```sh
+cherry run --metric="Skipped tests" --owner=@fwuensche,@rchoquet
+```
+
+## cherry push
+
+Your most used command. It submits current project stats to cherrypush.com:
+
+```sh
+$ cherry push
+Uploading 42 occurrences...
+Response: { status: 'ok' }
+Your dashboard is available at https://www.cherrypush.com/user/projects
+```
+
+## cherry backfill
+
+Totally optional. This will submit your historic data to cherrypush.com:
+
+```sh
+cherry backfill [--since=<date>] [--until=<date>] [--interval=<days>]
+--since will default to a month ago
+--until will default to today
+--interval will default to 1 day
+```
+
+Use the options to customize the dates you want to generate reports for:
+
+```sh
+cherry backfill --since=2023-01-01 --until=2022-01-07
+```
+
+If the range is too wide, increase your interval to save time:
+
+```sh
+cherry backfill --since=2023-01-01 --until=2023-12-01 --interval=30
+```
+
+## cherry diff
+
+You can run this command directly in your terminal to compare the current status of a certain metric to the last
+reported status on cherrypush.com.
+
+```sh
+cherry diff --metric="JS lines of code"
+```
+
+This command is specifically useful when you want to enforce blocking certain patterns in your codebase.
+
+It will check the diff between the current commit and the previous one. If there is an increase in your metric, it will
+raise an error, making the CI build fail.
+
+```yml
+name: Block the introduction of new violations
+
+on:
+  pull_request:
+
+jobs:
+  cherry_diff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: npm i -g cherrypush
+
+      - name: Raise if new JS code added
+        run: ./cli/bin/cherry.js diff --metric='todo' --api-key=${{ secrets.CHERRY_API_KEY }} --error-if-increase
+```
+
+# Integrations 🧩
+
+## GitHub Actions
+
+You can automate Cherry to submit reports on every commit to master.
+
+For a basic use case, all you need is a workflow file as below:
+
+```yml
+# .github/workflows/cherry_push.yml
+
+name: Track codebase metrics
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  cherry_push:
+    runs-on: ubuntu-latest
+    env:
+      CHERRY_API_KEY: ${{ secrets.CHERRY_API_KEY }}
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2 // required to track contributions, i.e, the diff between commits
+
+      - name: Install cherry
+        run: npm i -g cherrypush
+
+      - name: Push metrics
+        run: cherry push --api-key=${{ secrets.CHERRY_API_KEY }}
+```
+
+## GitLab CI/CD
+
+Same as with GitHub Actions, but for GitLab. A minimalist example:
+
+```yml
+# .gitlab-ci.yml
+
+cherry_push:
+  stage: build
+  image: node:latest
+  variables:
+    CHERRY_API_KEY: $CHERRY_API_KEY
+
+  script:
+    - npm i -g cherrypush
+    - git checkout $CI_COMMIT_REF_NAME
+    - cherry push
+
+  only:
+    refs:
+      - main
+```
+
+# Live demo 🔴
+
+To see what Cherry looks like in a real project, you can refer to our own project here: https://www.cherrypush.com/demo
+
+Found a bug? Report directly to me via Twitter or email.
