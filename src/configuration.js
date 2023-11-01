@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url'
 import buildAndImport from './build-and-import.cjs'
 import { guessProjectName } from './git.js'
 
-export const CONFIG_FILE_LOCAL_PATHS = ['.cherry.js', '.cherry.ts']
+export const CONFIG_FILE_LOCAL_PATHS = ['.cherry.js', '.cherry.cjs', '.cherry.ts']
 export const WORKFLOW_FILE_LOCAL_PATH = '.github/workflows/cherry_push.yml'
 
 export const CONFIG_FILE_FULL_PATHS = CONFIG_FILE_LOCAL_PATHS.map((filePath) => `${process.cwd()}/${filePath}`)
