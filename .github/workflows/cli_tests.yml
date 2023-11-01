@@ -21,7 +21,7 @@ jobs:
           cache: npm
 
       - name: Install node dependencies
-        run: npm ci --prefix=cli
+        run: npm ci
 
       - name: Run tests
-        run: npm test --prefix=cli
+        run: npm test

@@ -1,4 +1,4 @@
-name: Prevent new occurrences of JS lines of code
+name: Prevent new violations
 
 on:
   pull_request:
@@ -10,16 +10,8 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Setup ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-
       - name: Install dependencies
-        run: |
-          npm install
-          npm i ./cli
+        run: npm install
 
       - name: Raise if new JS code added
-        run: |
-          ./cli/bin/cherry.js diff --metric='[TS Migration] JS loc' --api-key=${{ secrets.CHERRY_API_KEY }} --error-if-increase
+        run: ./bin/cherry.js diff --metric='[TS Migration] JS loc' --api-key=${{ secrets.CHERRY_API_KEY }} --error-if-increase

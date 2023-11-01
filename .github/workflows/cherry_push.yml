@@ -14,15 +14,8 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Setup ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-
       - name: Install dependencies
-        run: |
-          npm install
-          npm i ./cli
+        run: npm install
 
-      - name: Push metrics to Cherry
-        run: ./cli/bin/cherry.js push --api-key=${{ secrets.CHERRY_API_KEY }}
+      - name: Push metrics
+        run: ./bin/cherry.js push --api-key=${{ secrets.CHERRY_API_KEY }}
