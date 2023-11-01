@@ -208,6 +208,8 @@ cherry_push:
 
 # Live demo 🔴
 
-To see what Cherry looks like in a real project, you can refer to our own project here: https://www.cherrypush.com/demo
+To understand what Cherry looks like in the real world, you can play around with our own project here:
+[https://www.cherrypush.com/demo](https://www.cherrypush.com/demo)
 
-Found a bug? Report directly to me via Twitter or email.
+**Found a bug?** Report directly to me via [Twitter](https://twitter.com/fwuensche) or
+[GitHub Issues](https://github.com/fwuensche/cherry-cli/issues).
