@@ -46,7 +46,7 @@ For more info about CI/CD integration, refer to the Integrations section below.
 
 The run command accepts a couple of different options:
 
-```sh
+```
 cherry run [--metric=<metric>] [--owner=<owners>]
 ```
 
@@ -82,7 +82,7 @@ cherry run --metric="Skipped tests" --owner=@fwuensche,@rchoquet
 
 Your most used command. It submits current project stats to cherrypush.com:
 
-```sh
+```
 $ cherry push
 Uploading 42 occurrences...
 Response: { status: 'ok' }
@@ -93,7 +93,7 @@ Your dashboard is available at https://www.cherrypush.com/user/projects
 
 Totally optional. This will submit your historic data to cherrypush.com:
 
-```sh
+```
 cherry backfill [--since=<date>] [--until=<date>] [--interval=<days>]
 --since will default to a month ago
 --until will default to today
@@ -206,10 +206,10 @@ cherry_push:
       - main
 ```
 
-# Live demo 🔴
+# Feedback 🙏
 
-To understand what Cherry looks like in the real world, you can play around with our own project here:
-[https://www.cherrypush.com/demo](https://www.cherrypush.com/demo)
+Any further question or suggestion?
 
-**Found a bug?** Report directly to me via [Twitter](https://twitter.com/fwuensche) or
-[GitHub Issues](https://github.com/fwuensche/cherry-cli/issues).
+- report a bug via [GitHub Issues](https://github.com/cherrypush/cherrypush.com/issues)
+- suggest new features via [GitHub Discussions](https://github.com/cherrypush/cherrypush.com/discussions)
+- or shoot me a private message on [Twitter](https://twitter.com/messages/compose?recipient_id=38940653)
