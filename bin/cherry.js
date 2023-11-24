@@ -37,7 +37,7 @@ program.command('init').action(async () => {
   const configurationFile = getConfigurationFile()
   if (configurationFile) {
     console.error(`${configurationFile} already exists.`)
-    process.exit(0)
+    process.exit(1)
   }
 
   prompt.message = ''
@@ -183,12 +183,12 @@ program
       previousOccurrences = response.data.occurrences
       if (!Number.isInteger(lastMetricValue)) {
         console.log('No last value found for this metric, aborting.')
-        process.exit(0)
+        process.exit(1)
       }
       console.log(`Last metric value: ${lastMetricValue}`)
     } catch (e) {
       console.error(e)
-      process.exit(0)
+      process.exit(1)
     }
 
     const occurrences = await findOccurrences({
