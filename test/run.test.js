@@ -1,4 +1,3 @@
-// const { exec } = require('child_process')
 import { exec } from 'child_process'
 
 describe('cherry', () => {
@@ -25,6 +24,16 @@ describe('cherry run', () => {
       expect(stdout).toContain('npm outdated dependencies (package.json)')
       expect(stdout).toContain('npx unimported files')
       expect(stdout).toContain('TODO')
+      done()
+    })
+  }, 10000)
+})
+
+describe('cherry diff', () => {
+  test('should exit with an error if --api-key is missing', (done) => {
+    exec('node bin/cherry.js diff --metric test', (error, _stdout, stderr) => {
+      expect(error.code).toBe(1)
+      expect(stderr).toContain('API key is missing')
       done()
     })
   })
