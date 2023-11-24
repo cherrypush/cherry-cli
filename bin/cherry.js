@@ -174,7 +174,11 @@ program
     let previousOccurrences
     try {
       const params = { project_name: configuration.project_name, metric_name: metric, api_key: apiKey }
-      const response = await axios.get(API_BASE_URL + '/metrics', { params })
+      const response = await axios.get(API_BASE_URL + '/metrics', { params }).catch((error) => {
+        console.error(error.response.data.error)
+        process.exit(1)
+      })
+
       lastMetricValue = response.data.value
       previousOccurrences = response.data.occurrences
       if (!Number.isInteger(lastMetricValue)) {
