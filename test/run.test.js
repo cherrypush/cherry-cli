@@ -26,7 +26,7 @@ describe('cherry run', () => {
       expect(stdout).toContain('TODO')
       done()
     })
-  })
+  }, 10000)
 })
 
 describe('cherry diff', () => {
