@@ -37,7 +37,7 @@ program.command('init').action(async () => {
   const configurationFile = getConfigurationFile()
   if (configurationFile) {
     console.error(`${configurationFile} already exists.`)
-    process.exit(0)
+    process.exit(1)
   }
 
   prompt.message = ''
@@ -174,17 +174,21 @@ program
     let previousOccurrences
     try {
       const params = { project_name: configuration.project_name, metric_name: metric, api_key: apiKey }
-      const response = await axios.get(API_BASE_URL + '/metrics', { params })
+      const response = await axios.get(API_BASE_URL + '/metrics', { params }).catch((error) => {
+        console.error(error.response.data.error)
+        process.exit(1)
+      })
+
       lastMetricValue = response.data.value
       previousOccurrences = response.data.occurrences
       if (!Number.isInteger(lastMetricValue)) {
         console.log('No last value found for this metric, aborting.')
-        process.exit(0)
+        process.exit(1)
       }
       console.log(`Last metric value: ${lastMetricValue}`)
     } catch (e) {
       console.error(e)
-      process.exit(0)
+      process.exit(1)
     }
 
     const occurrences = await findOccurrences({
