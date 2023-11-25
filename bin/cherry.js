@@ -26,7 +26,7 @@ import { buildRepoURL } from '../src/github.js'
 import { setVerboseMode } from '../src/log.js'
 import { findOccurrences } from '../src/occurences.js'
 
-dotenv.config()
+if (process.env.NODE_ENV !== 'test') dotenv.config()
 
 const spinnies = new Spinnies()
 
@@ -162,55 +162,61 @@ program
 
 program
   .command('diff')
-  .requiredOption('--metric <metric>')
+  .requiredOption('--metric <metric>', 'Add a metric', (value, previous) => (previous ? [...previous, value] : [value]))
   .option('--api-key <api_key>', 'Your cherrypush.com API key (available on https://www.cherrypush.com/user/settings)')
   .option('--error-if-increase', 'Return an error status code (1) if the metric increased since its last report')
   .action(async (options) => {
     const configuration = await getConfiguration()
     const apiKey = options.apiKey || process.env.CHERRY_API_KEY
-    const metric = options.metric
+    const metrics = options.metric
 
     let lastMetricValue
     let previousOccurrences
-    try {
-      const params = { project_name: configuration.project_name, metric_name: metric, api_key: apiKey }
-      const response = await axios.get(API_BASE_URL + '/metrics', { params }).catch((error) => {
-        console.error(error.response.data.error)
-        process.exit(1)
-      })
-
-      lastMetricValue = response.data.value
-      previousOccurrences = response.data.occurrences
-      if (!Number.isInteger(lastMetricValue)) {
-        console.log('No last value found for this metric, aborting.')
-        process.exit(1)
-      }
-      console.log(`Last metric value: ${lastMetricValue}`)
-    } catch (e) {
-      console.error(e)
-      process.exit(1)
-    }
 
     const occurrences = await findOccurrences({
       configuration,
       files: await getFiles(),
       codeOwners: new Codeowners(),
-      metric,
     })
 
-    const currentMetricValue = countByMetric(occurrences)[metric] || 0
-    console.log(`Current metric value: ${currentMetricValue}`)
+    for (const metric of metrics) {
+      try {
+        console.log('-----------------------------------')
+        console.log(`Fetching last value for metric ${metric}...`)
 
-    const diff = currentMetricValue - lastMetricValue
-    console.log(`Difference: ${diff}`)
+        const params = { project_name: configuration.project_name, metric_name: metric, api_key: apiKey }
+        const response = await axios.get(API_BASE_URL + '/metrics', { params }).catch((error) => {
+          console.error(`Error: ${error.response.status} ${error.response.statusText}`)
+          console.error(error.response.data.error)
+          process.exit(1)
+        })
 
-    if (diff > 0) {
-      console.log('Added occurrences:')
-      const newOccurrencesTexts = occurrences.filter((o) => o.metricName === metric).map((o) => o.text)
-      console.log(newOccurrencesTexts.filter((x) => !previousOccurrences.includes(x)))
+        lastMetricValue = response.data.value
+        previousOccurrences = response.data.occurrences
+        if (!Number.isInteger(lastMetricValue)) {
+          console.log('No last value found for this metric, aborting.')
+          process.exit(1)
+        }
+        console.log(`Last value: ${lastMetricValue}`)
+      } catch (e) {
+        console.error(e)
+        process.exit(1)
+      }
+
+      const currentMetricValue = countByMetric(occurrences)[metric] || 0
+      console.log(`Current value: ${currentMetricValue}`)
+
+      const diff = currentMetricValue - lastMetricValue
+      console.log(`Difference: ${diff}`)
+
+      if (diff > 0) {
+        console.log('Added occurrences:')
+        const newOccurrencesTexts = occurrences.filter((o) => o.metricName === metric).map((o) => o.text)
+        console.log(newOccurrencesTexts.filter((x) => !previousOccurrences.includes(x)))
+      }
+
+      if (diff > 0 && options.errorIfIncrease) process.exit(1)
     }
-
-    if (diff > 0 && options.errorIfIncrease) process.exit(1)
   })
 
 program
