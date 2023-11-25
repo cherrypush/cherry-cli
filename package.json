@@ -8,9 +8,9 @@
     "cherry": "./bin/cherry.js"
   },
   "scripts": {
-    "bump": "npm version patch && npm publish && git add package.json package-lock.json && git commit -m 'bump version' && git push",
+    "bump": "npm version patch && npm publish",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "watch_test": "NODE_OPTIONS=--experimental-vm-modules jest --watchAll"
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watchAll"
   },
   "repository": {
     "type": "git",
