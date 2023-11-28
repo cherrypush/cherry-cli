@@ -170,8 +170,6 @@ program
     const apiKey = options.apiKey || process.env.CHERRY_API_KEY
     const metrics = options.metric
 
-    console.log(Object.keys(process.env))
-
     let lastMetricValue
     let previousOccurrences
 
