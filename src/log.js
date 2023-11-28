@@ -1,5 +1,5 @@
-let verbose = false;
+let verbose = false
 
-export const setVerboseMode = () => (verbose = true);
+export const setVerboseMode = () => (verbose = true)
 
-export const debug = (...args) => verbose && console.debug("[DEBUG]", ...args);
+export const debug = (...args) => verbose && console.debug('[DEBUG]', ...args)
