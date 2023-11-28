@@ -29,15 +29,15 @@ A very minimal config file can look something like this:
 
 ```js
 module.exports = {
-  project_name: 'PROJECT_NAME',
-  plugins: ['loc'],
+  project_name: "PROJECT_NAME",
+  plugins: ["loc"],
   metrics: [
     {
-      name: 'TODO/FIXME',
+      name: "TODO/FIXME",
       pattern: /(TODO|FIXME):/i, // the i flag makes the regex case insensitive
     },
   ],
-}
+};
 ```
 
 For more info about CI/CD integration, refer to the Integrations section below.
@@ -210,5 +210,5 @@ cherry_push:
 
 Any further question or suggestion?
 
-- report a bug or suggest new features via [GitHub Issues](https://github.com/cherrypush/cherry-cli/issues) 
+- report a bug or suggest new features via [GitHub Issues](https://github.com/cherrypush/cherry-cli/issues)
 - or shoot me a message on [twitter.com/fwuensche](https://twitter.com/fwuensche)
