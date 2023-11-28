@@ -7,7 +7,7 @@ describe('cherry diff', () => {
       expect(stderr).toContain('API key is missing')
       done()
     })
-  }, 10000)
+  })
 
   test('should exit with an error if --metric is missing', (done) => {
     exec('node bin/cherry.js diff --api-key test', (error, _stdout, stderr) => {
