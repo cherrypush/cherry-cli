@@ -1,21 +1,19 @@
-import { panic } from "../error.js";
-import sh from "../sh.js";
+import { panic } from '../error.js'
+import sh from '../sh.js'
 
 const run = async () => {
-  let files;
+  let files
 
   try {
     const { stdout } = await sh(
-      "./node_modules/eslint/bin/eslint.js . --format=json --ext .js,.jsx,.ts,.tsx --no-inline-config --ignore-path .gitignore",
+      './node_modules/eslint/bin/eslint.js . --format=json --ext .js,.jsx,.ts,.tsx --no-inline-config --ignore-path .gitignore',
       {
         throwOnError: false,
-      },
-    );
-    files = JSON.parse(stdout);
+      }
+    )
+    files = JSON.parse(stdout)
   } catch (error) {
-    panic(
-      "An error happened while executing eslint\n- Make sure eslint is properly installed",
-    );
+    panic('An error happened while executing eslint\n- Make sure eslint is properly installed')
   }
 
   return files
@@ -25,8 +23,8 @@ const run = async () => {
         text: `${file.filePath}:${message.line}`,
         filePath: file.filePath,
         metricName: `[eslint] ${message.ruleId}`,
-      })),
-    );
-};
+      }))
+    )
+}
 
-export default { run };
+export default { run }
