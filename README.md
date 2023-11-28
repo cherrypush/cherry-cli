@@ -15,8 +15,10 @@ cherry init
 Add your API key into a .env file at the root of your project:
 
 ```sh
-CHERRY_API_KEY=find-your-api-key-here
+CHERRY_API_KEY=YOUR_API_KEY
 ```
+
+You can find your API key at https://www.cherrypush.com/user/settings
 
 # CLI commands 😌
 
