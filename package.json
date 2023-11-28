@@ -8,6 +8,7 @@
     "cherry": "./bin/cherry.js"
   },
   "scripts": {
+    "prepare": "husky install",
     "bump": "npm version patch && npm publish",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watchAll",
