@@ -211,4 +211,4 @@ cherry_push:
 Any further question or suggestion?
 
 - report a bug or suggest new features via [GitHub Issues](https://github.com/cherrypush/cherrypush.com/issues)
-- or shoot me a private message on [Twitter](https://twitter.com/messages/compose?recipient_id=38940653)
+- or shoot me a message on [twitter.com/fwuensche](https://twitter.com/fwuensche)
