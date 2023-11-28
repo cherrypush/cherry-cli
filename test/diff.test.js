@@ -2,7 +2,7 @@ import { exec } from 'child_process'
 
 describe('cherry diff', () => {
   test('should exit with an error if --api-key is missing', (done) => {
-    console.log({ env: process.env.NODE_ENV })
+    console.log({ env: process.env.NODE_ENV, apiKey: process.env.CHERRY_API_KEY.slice(0, 5) })
 
     exec('node bin/cherry.js diff --metric test', (error, _stdout, stderr) => {
       expect(error.code).toBe(1)
