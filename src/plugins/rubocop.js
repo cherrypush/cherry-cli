@@ -1,15 +1,17 @@
-import { panic } from '../error.js'
-import sh from '../sh.js'
+import { panic } from "../error.js";
+import sh from "../sh.js";
 
 const run = async () => {
-  const { stdout } = await sh('bundle exec rubocop --format=json', { throwOnError: false })
-  let report
+  const { stdout } = await sh("bundle exec rubocop --format=json", {
+    throwOnError: false,
+  });
+  let report;
   try {
-    report = JSON.parse(stdout)
+    report = JSON.parse(stdout);
   } catch (error) {
     panic(
-      'An error happened while executing rubocop\n- Make sure the `bundle exec rubocop` command works\n- Make sure to `bundle install` if you are using bundler'
-    )
+      "An error happened while executing rubocop\n- Make sure the `bundle exec rubocop` command works\n- Make sure to `bundle install` if you are using bundler",
+    );
   }
 
   return report.files
@@ -19,8 +21,8 @@ const run = async () => {
         text: `${file.path}:${offense.location.line}`,
         filePath: file.path,
         metricName: `[rubocop] ${offense.cop_name}`,
-      }))
-    )
-}
+      })),
+    );
+};
 
-export default { run }
+export default { run };
