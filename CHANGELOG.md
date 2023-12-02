@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/cherrypush/cherry-cli/compare/v1.2.2...v1.3.0) (2023-12-02)
+
+
+### Features
+
+* allow cherry diff to take a json file as input ([451dcc7](https://github.com/cherrypush/cherry-cli/commit/451dcc70b368a4b4fc26f8c7b9d6577d74d81d19))
+
 ## 1.2.2 (2023-11-28)
 
 ### Features
