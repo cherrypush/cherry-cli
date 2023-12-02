@@ -14,4 +14,4 @@ jobs:
         run: npm install
 
       - name: Raise if new JS code added
-        run: ./bin/cherry.js diff --metric='TODO' --api-key=${{ secrets.CHERRY_API_KEY }} --error-if-increase
+        run: ./bin/cherry.js diff --metric='TODO' --api-key=${{ secrets.CHERRY_API_KEY }} --error-if-increase --quiet
