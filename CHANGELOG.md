@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/cherrypush/cherry-cli/compare/v1.3.0...v1.4.0) (2023-12-02)
+
+
+### Features
+
+* allow cherry commands to be run in quiet mode ([#27](https://github.com/cherrypush/cherry-cli/issues/27)) ([7ec5cd0](https://github.com/cherrypush/cherry-cli/commit/7ec5cd0e4ff225db80f9058f85a599f56a01f684))
+
 ## [1.3.0](https://github.com/cherrypush/cherry-cli/compare/v1.2.2...v1.3.0) (2023-12-02)
 
 
