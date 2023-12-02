@@ -63,17 +63,20 @@ program
   .option('--metric <metric>', 'only consider given metric')
   .option('-o, --output <output>', 'export stats into a local file')
   .option('-f, --format <format>', 'export format (json, sarif, sonar). default: json')
+  .option('--quiet', 'reduce output to a minimum')
   .action(async (options) => {
     const configuration = await getConfiguration()
     const codeOwners = new Codeowners()
     const owners = options.owners ? options.owners.split(',') : null
     const files = options.owner ? await getFiles(options.owner.split(','), codeOwners) : await getFiles()
+    const quiet = options.quiet
 
     const occurrences = await findOccurrences({
       configuration,
       files,
       metric: options.metric,
       codeOwners,
+      quiet,
     })
     if (options.owner || options.metric) {
       let displayedOccurrences = occurrences
@@ -111,6 +114,7 @@ program
 program
   .command('push')
   .option('--api-key <api_key>', 'Your cherrypush.com api key')
+  .option('--quiet', 'reduce output to a minimum')
   .action(async (options) => {
     const configuration = await getConfiguration()
     const initialBranch = await git.branchName()
@@ -127,6 +131,7 @@ program
         configuration,
         files: await getFiles(),
         codeOwners: new Codeowners(),
+        quiet: options.quiet,
       })
 
       await upload(apiKey, configuration.project_name, await git.commitDate(sha), occurrences)
@@ -138,6 +143,7 @@ program
         configuration,
         files: await getFiles(),
         codeOwners: new Codeowners(),
+        quiet: options.quiet,
       })
 
       const contributions = computeContributions(occurrences, previousOccurrences)
@@ -173,6 +179,7 @@ program
   .option('--input-file <input_file>', 'A JSON file containing the metrics to compare with')
   .option('--api-key <api_key>', 'Your cherrypush.com API key (available on https://www.cherrypush.com/user/settings)')
   .option('--error-if-increase', 'Return an error status code (1) if the metric increased since its last report')
+  .option('--quiet', 'reduce output to a minimum')
   .action(async (options) => {
     const configuration = await getConfiguration()
     const apiKey = options.apiKey || process.env.CHERRY_API_KEY
@@ -186,6 +193,7 @@ program
       configuration,
       files: await getFiles(),
       codeOwners: new Codeowners(),
+      quiet: options.quiet,
     })
 
     for (const metric of metrics) {
@@ -250,6 +258,7 @@ program
   .option('--since <since>', 'yyyy-mm-dd | The date at which the backfill will start (defaults to 90 days ago)')
   .option('--until <until>', 'yyyy-mm-dd | The date at which the backfill will stop (defaults to today)')
   .option('--interval <interval>', 'The number of days between backfills (defaults to 30 days)')
+  .option('--quiet', 'reduce output to a minimum')
   .action(async (options) => {
     const since = options.since ? new Date(options.since) : substractDays(new Date(), 90)
     const until = options.until ? new Date(options.until) : new Date()
@@ -281,6 +290,7 @@ program
           configuration,
           files,
           codeOwners,
+          quiet: options.quiet,
         })
         await upload(apiKey, configuration.project_name, committedAt, occurrences)
 

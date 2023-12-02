@@ -81,56 +81,57 @@ const findFileOccurences = async (file, metrics) => {
   })
 }
 
-const matchPatterns = (files, metrics) => {
+const matchPatterns = (files, metrics, quiet) => {
   if (!files.length || !metrics.length) return []
 
-  spinnies.add('patterns', { text: 'Matching line patterns...', indent: 2 })
+  if (!quiet) spinnies.add('patterns', { text: 'Matching patterns...', indent: 2 })
   // Limit number of concurrently opened files to avoid "Error: spawn EBADF"
   const limit = pLimit(10)
   const promise = Promise.all(files.map((file) => limit(() => findFileOccurences(file, metrics))))
-  promise.then(() => spinnies.succeed('patterns', { text: 'Matching line patterns' }))
+  if (!quiet) promise.then(() => spinnies.succeed('patterns', { text: 'Matching patterns' }))
 
   return promise
 }
 
-const runEvals = (metrics, codeOwners) => {
+const runEvals = (metrics, codeOwners, quiet) => {
   if (!metrics.length) return []
 
-  spinnies.add('evals', { text: 'Running eval()...', indent: 2 })
+  if (!quiet) spinnies.add('evals', { text: 'Running eval()...', indent: 2 })
   const promise = Promise.all(
     metrics.map(async (metric) => {
-      spinnies.add(`metric_${metric.name}`, {
-        text: `${metric.name}...`,
-        indent: 4,
-      })
+      if (!quiet)
+        spinnies.add(`metric_${metric.name}`, {
+          text: `${metric.name}...`,
+          indent: 4,
+        })
       const result = (await metric.eval({ codeOwners })).map((occurrence) => ({
         ...occurrence,
         metricName: metric.name,
       }))
-      spinnies.succeed(`metric_${metric.name}`, { text: metric.name })
+      if (!quiet) spinnies.succeed(`metric_${metric.name}`, { text: metric.name })
       return result
     })
   )
-  promise.then(() => spinnies.succeed('evals', { text: 'Running eval()' }))
+  if (!quiet) promise.then(() => spinnies.succeed('evals', { text: 'Running eval()' }))
 
   return promise
 }
 
-const runPlugins = async (plugins) => {
+const runPlugins = async (plugins, quiet) => {
   if (!Object.keys(plugins).length) return []
 
-  spinnies.add('plugins', { text: 'Running plugins...', indent: 2 })
+  if (!quiet) spinnies.add('plugins', { text: 'Running plugins...', indent: 2 })
   const promise = Promise.all(
     Object.entries(plugins).map(async ([name, options]) => {
       const plugin = PLUGINS[name]
       if (!plugin) panic(`Unsupported '${name}' plugin\nExpected one of: ${Object.keys(PLUGINS).join(', ')}`)
-      spinnies.add(`plugin_${name}`, { text: `${name}...`, indent: 4 })
+      if (!quiet) spinnies.add(`plugin_${name}`, { text: `${name}...`, indent: 4 })
       const result = await plugin.run(options)
-      spinnies.succeed(`plugin_${name}`, { text: name })
+      if (!quiet) spinnies.succeed(`plugin_${name}`, { text: name })
       return result
     })
   )
-  promise.then(() => spinnies.succeed('plugins', { text: 'Running plugin' }))
+  if (!quiet) promise.then(() => spinnies.succeed('plugins', { text: 'Running plugin' }))
 
   return promise
 }
@@ -147,7 +148,7 @@ const withEmptyMetrics = (occurrences, metrics = []) => {
   return allMetricNames.map((metricName) => occurrencesByMetric[metricName] || [emptyMetric(metricName)]).flat()
 }
 
-export const findOccurrences = async ({ configuration, files, metric, codeOwners }) => {
+export const findOccurrences = async ({ configuration, files, metric, codeOwners, quiet }) => {
   let metrics = configuration.metrics
 
   if (metric) metrics = metrics.filter(({ name }) => name === metric)
@@ -157,9 +158,9 @@ export const findOccurrences = async ({ configuration, files, metric, codeOwners
   if (Array.isArray(plugins)) plugins = plugins.reduce((acc, value) => ({ ...acc, [value]: {} }), {})
 
   const promise = Promise.all([
-    matchPatterns(files, fileMetrics),
-    runEvals(evalMetrics, codeOwners),
-    runPlugins(plugins),
+    matchPatterns(files, fileMetrics, quiet),
+    runEvals(evalMetrics, codeOwners, quiet),
+    runPlugins(plugins, quiet),
   ])
 
   const occurrences = _.flattenDeep(await promise).map(

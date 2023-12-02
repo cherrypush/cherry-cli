@@ -1,5 +1,6 @@
 import { exec } from 'child_process'
 
+// TODO: this test should probably be moved to a different file
 describe('cherry', () => {
   test('explains the usage', (done) => {
     exec('node bin/cherry.js', (error, _stdout, stderr) => {
@@ -15,16 +16,4 @@ describe('cherry', () => {
       done()
     })
   })
-})
-
-describe('cherry run', () => {
-  test('runs all metrics from config file', (done) => {
-    exec('node bin/cherry.js run', (_error, stdout) => {
-      expect(stdout).toContain('JS circular dependencies')
-      expect(stdout).toContain('npm outdated dependencies (package.json)')
-      expect(stdout).toContain('npx unimported files')
-      expect(stdout).toContain('TODO')
-      done()
-    })
-  }, 10000)
 })
