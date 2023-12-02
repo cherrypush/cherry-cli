@@ -54,3 +54,4 @@ node_modules
 /vendor/cache
 /vendor/bundle
 latest.dump
+results.json
