@@ -51,6 +51,7 @@ export default function (program) {
         try {
           console.log('-----------------------------------')
 
+          // TODO: test
           if (inputFile) {
             const content = fs.readFileSync(inputFile, 'utf8')
             const metrics = JSON.parse(content)
