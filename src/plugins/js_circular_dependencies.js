@@ -1,6 +1,6 @@
 import glob from 'glob'
 import madge from 'madge'
-import { emptyMetric } from '../occurences.js'
+import { emptyMetric } from '../occurrences.js'
 
 const DEFAULT_FILES = '**/*.{js,jsx,ts,tsx}'
 
