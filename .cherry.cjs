@@ -8,7 +8,7 @@ module.exports = {
     loc: {},
     eslint: {},
     jsCircularDependencies: { include: 'src/**' },
-    jsUnimported: {},
+    // jsUnimported: {}, // TODO: investigate why this takes so long with a slow internet connection
   },
   metrics: [
     {
