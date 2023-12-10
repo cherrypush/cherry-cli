@@ -29,6 +29,9 @@ export default function (program) {
       const initialBranch = await git.branchName()
       if (!initialBranch) panic('Not on a branch, checkout a branch before running the backfill.')
 
+      const hasUncommitedChanges = (await git.uncommittedFiles()).length > 0
+      if (hasUncommitedChanges) panic('Please commit your changes before running this command')
+
       const currentOccurrences = await findOccurrences({
         configuration,
         files: await getFiles(),
@@ -50,7 +53,7 @@ export default function (program) {
       for (const metric of metrics) {
         try {
           console.log('-----------------------------------')
-          console.log(`Running checks for metric: ${metric}`)
+          console.log(metric)
 
           if (inputFile) {
             const content = fs.readFileSync(inputFile, 'utf8')
