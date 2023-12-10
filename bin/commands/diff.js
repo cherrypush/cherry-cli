@@ -26,10 +26,8 @@ export default function (program) {
       let previousOccurrences
       let metricOccurrences
 
-      if (!inputFile) {
-        const initialBranch = await git.branchName()
-        if (!initialBranch) panic('Not on a branch, checkout a branch before running the backfill.')
-      }
+      const initialBranch = await git.branchName()
+      if (!inputFile && !initialBranch) panic('Not on a branch, checkout a branch before running the backfill.')
 
       const hasUncommitedChanges = (await git.uncommittedFiles()).length > 0
       if (hasUncommitedChanges) panic('Please commit your changes before running this command')
