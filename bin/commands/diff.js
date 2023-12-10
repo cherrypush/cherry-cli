@@ -63,6 +63,7 @@ export default function (program) {
             const content = fs.readFileSync(inputFile, 'utf8')
             const metrics = JSON.parse(content)
             metricOccurrences = metrics.find((m) => m.name === metric)?.occurrences || []
+            previousOccurrences = metricOccurrences
             lastMetricValue = _.sumBy(metricOccurrences, (occurrence) =>
               _.isNumber(occurrence.value) ? occurrence.value : 1
             )
