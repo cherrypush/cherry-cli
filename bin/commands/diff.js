@@ -74,6 +74,8 @@ export default function (program) {
         const currentMetricValue = countByMetric(currentOccurrences)[metric] || 0
         console.log(`Current value: ${currentMetricValue}`)
 
+        console.log(currentMetricValue, lastMetricValue)
+
         const diff = currentMetricValue - lastMetricValue
         console.log(`Difference: ${diff}`)
 
