@@ -36,28 +36,29 @@ export default function (program) {
         quiet: options.quiet,
       })
 
-      // TODO: we should not calculate previous occurrences if we're going to use an input file
-      const mergeBaseSha = await git.mergeBaseSha()
-      await git.checkout(mergeBaseSha)
-      previousOccurrences = await findOccurrences({
-        configuration,
-        files: await getFiles(),
-        codeOwners: new Codeowners(),
-        quiet: options.quiet,
-      })
+      if (!inputFile) {
+        const mergeBaseSha = await git.mergeBaseSha()
+        await git.checkout(mergeBaseSha)
+        previousOccurrences = await findOccurrences({
+          configuration,
+          files: await getFiles(),
+          codeOwners: new Codeowners(),
+          quiet: options.quiet,
+        })
+      }
 
       for (const metric of metrics) {
         try {
           console.log('-----------------------------------')
 
-          // if (inputFile) {
-          //   const content = fs.readFileSync(inputFile, 'utf8')
-          //   const metrics = JSON.parse(content)
-          //   metricOccurrences = metrics.find((m) => m.name === metric)?.currentOccurrences || []
-          //   lastMetricValue = _.sumBy(metricOccurrences, (occurrence) =>
-          //     _.isNumber(occurrence.value) ? occurrence.value : 1
-          //   )
-          // }
+          if (inputFile) {
+            const content = fs.readFileSync(inputFile, 'utf8')
+            const metrics = JSON.parse(content)
+            metricOccurrences = metrics.find((m) => m.name === metric)?.currentOccurrences || []
+            lastMetricValue = _.sumBy(metricOccurrences, (occurrence) =>
+              _.isNumber(occurrence.value) ? occurrence.value : 1
+            )
+          }
 
           lastMetricValue = countByMetric(previousOccurrences)[metric] || 0
 
