@@ -62,6 +62,7 @@ export default function (program) {
             lastMetricValue = _.sumBy(metricOccurrences, (occurrence) =>
               _.isNumber(occurrence.value) ? occurrence.value : 1
             )
+            previousOccurrences = metricOccurrences
           }
 
           lastMetricValue = countByMetric(previousOccurrences)[metric] || 0
