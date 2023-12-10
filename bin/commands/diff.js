@@ -50,6 +50,7 @@ export default function (program) {
           codeOwners: new Codeowners(),
           quiet: options.quiet,
         })
+        await git.checkout(initialBranch) // Bring user back to initial branch
       }
 
       for (const metric of metrics) {
@@ -96,8 +97,5 @@ export default function (program) {
 
         if (diff > 0 && options.errorIfIncrease) process.exit(1)
       }
-
-      // Bring user back to initial branch
-      await git.checkout(initialBranch)
     })
 }
