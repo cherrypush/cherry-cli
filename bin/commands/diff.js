@@ -29,7 +29,7 @@ export default function (program) {
       let lastMetricValue
       let previousOccurrences
 
-      const occurrences = await findOccurrences({
+      const currentOccurrences = await findOccurrences({
         configuration,
         files: await getFiles(),
         codeOwners: new Codeowners(),
@@ -43,7 +43,7 @@ export default function (program) {
           if (inputFile) {
             const content = fs.readFileSync(inputFile, 'utf8')
             const metrics = JSON.parse(content)
-            const metricOccurrences = metrics.find((m) => m.name === metric)?.occurrences || []
+            const metricOccurrences = metrics.find((m) => m.name === metric)?.currentOccurrences || []
             lastMetricValue = _.sumBy(metricOccurrences, (occurrence) =>
               _.isNumber(occurrence.value) ? occurrence.value : 1
             )
@@ -63,7 +63,7 @@ export default function (program) {
             })
 
             lastMetricValue = response.data.value
-            previousOccurrences = response.data.occurrences
+            previousOccurrences = response.data.currentOccurrences
           }
 
           if (!Number.isInteger(lastMetricValue)) {
@@ -76,7 +76,7 @@ export default function (program) {
           process.exit(1)
         }
 
-        const currentMetricValue = countByMetric(occurrences)[metric] || 0
+        const currentMetricValue = countByMetric(currentOccurrences)[metric] || 0
         console.log(`Current value: ${currentMetricValue}`)
 
         const diff = currentMetricValue - lastMetricValue
@@ -84,7 +84,7 @@ export default function (program) {
 
         if (diff > 0) {
           console.log('Added occurrences:')
-          const newOccurrencesTexts = occurrences.filter((o) => o.metricName === metric).map((o) => o.text)
+          const newOccurrencesTexts = currentOccurrences.filter((o) => o.metricName === metric).map((o) => o.text)
           console.log(newOccurrencesTexts.filter((x) => !previousOccurrences.includes(x)))
         }
 
