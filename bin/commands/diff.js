@@ -27,10 +27,10 @@ export default function (program) {
       let metricOccurrences
 
       const initialBranch = await git.branchName()
-      if (!inputFile && !initialBranch) panic('Not on a branch, checkout a branch before running the backfill.')
+      if (!inputFile && !initialBranch) panic('Not on a branch, checkout a branch before running cherry diff.')
 
       const hasUncommitedChanges = (await git.uncommittedFiles()).length > 0
-      if (hasUncommitedChanges) panic('Please commit your changes before running this command')
+      if (!inputFile && hasUncommitedChanges) panic('Please commit your changes before running cherry diff.')
 
       const currentOccurrences = await findOccurrences({
         configuration,
