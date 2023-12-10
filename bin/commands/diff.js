@@ -51,7 +51,6 @@ export default function (program) {
         try {
           console.log('-----------------------------------')
 
-          // TODO: test
           if (inputFile) {
             const content = fs.readFileSync(inputFile, 'utf8')
             const metrics = JSON.parse(content)
@@ -75,8 +74,6 @@ export default function (program) {
 
         const currentMetricValue = countByMetric(currentOccurrences)[metric] || 0
         console.log(`Current value: ${currentMetricValue}`)
-
-        console.log(currentMetricValue, lastMetricValue)
 
         const diff = currentMetricValue - lastMetricValue
         console.log(`Difference: ${diff}`)
