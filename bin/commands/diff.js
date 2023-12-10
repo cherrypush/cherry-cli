@@ -6,6 +6,7 @@ import { getFiles } from '../../src/files.js'
 import { findOccurrences } from '../../src/occurrences.js'
 import { countByMetric } from '../helpers.js'
 import * as git from '../../src/git.js'
+import { panic } from '../../src/error.js'
 
 export default function (program) {
   program
@@ -24,6 +25,9 @@ export default function (program) {
       let lastMetricValue
       let previousOccurrences
       let metricOccurrences
+
+      const initialBranch = await git.branchName()
+      if (!initialBranch) panic('Not on a branch, checkout a branch before running the backfill.')
 
       const currentOccurrences = await findOccurrences({
         configuration,
@@ -77,6 +81,8 @@ export default function (program) {
           const previousOccurrencesTexts = previousOccurrences.map((occurrence) => occurrence.text)
           console.log(currentOccurrencesTexts.filter((x) => !previousOccurrencesTexts.includes(x)))
         }
+
+        await git.checkout(initialBranch)
 
         if (diff > 0 && options.errorIfIncrease) process.exit(1)
       }
