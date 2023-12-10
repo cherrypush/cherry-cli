@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import { panic } from '../error.js'
-import { emptyMetric } from '../occurences.js'
+import { emptyMetric } from '../occurrences.js'
 import sh from '../sh.js'
 
 const BASE_COMMAND = 'npm outdated --json'
