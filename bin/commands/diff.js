@@ -59,7 +59,7 @@ export default function (program) {
           //   )
           // }
 
-          let lastMetricValue = countByMetric(previousOccurrences)[metric] || 0
+          lastMetricValue = countByMetric(previousOccurrences)[metric] || 0
 
           if (!Number.isInteger(lastMetricValue)) {
             console.log('No last value found for this metric, aborting.')
