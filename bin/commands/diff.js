@@ -67,6 +67,8 @@ export default function (program) {
             lastMetricValue = _.sumBy(metricOccurrences, (occurrence) =>
               _.isNumber(occurrence.value) ? occurrence.value : 1
             )
+
+            console.log(previousOccurrences)
           }
 
           lastMetricValue = countByMetric(previousOccurrences)[metric] || 0
