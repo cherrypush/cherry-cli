@@ -32,6 +32,9 @@ export const guessProjectName = async () => {
 
 export const sha = async () => (await git('rev-parse HEAD')).toString()
 
+// TODO: this should automatically get the current branch and the base branch, then use then to get the base sha
+export const mergeBaseSha = async () => (await git('merge-base main cherry-diff-in-isolation')).toString()
+
 export const authorName = async (sha) => (await git(`show ${sha} --format=%an --no-patch`))[0]
 
 export const authorEmail = async (sha) => (await git(`show ${sha} --format=%ae --no-patch`))[0]

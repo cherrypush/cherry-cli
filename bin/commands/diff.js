@@ -4,8 +4,8 @@ import Codeowners from '../../src/codeowners.js'
 import { getConfiguration } from '../../src/configuration.js'
 import { getFiles } from '../../src/files.js'
 import { findOccurrences } from '../../src/occurrences.js'
-import axios from 'axios'
-import { API_BASE_URL, countByMetric } from '../helpers.js'
+import { countByMetric } from '../helpers.js'
+import * as git from '../../src/git.js'
 
 export default function (program) {
   program
@@ -14,22 +14,28 @@ export default function (program) {
       previous ? [...previous, value] : [value]
     )
     .option('--input-file <input_file>', 'A JSON file containing the metrics to compare with')
-    .option(
-      '--api-key <api_key>',
-      'Your cherrypush.com API key (available on https://www.cherrypush.com/user/settings)'
-    )
     .option('--error-if-increase', 'Return an error status code (1) if the metric increased since its last report')
     .option('--quiet', 'reduce output to a minimum')
     .action(async (options) => {
       const configuration = await getConfiguration()
-      const apiKey = options.apiKey || process.env.CHERRY_API_KEY
       const metrics = options.metric
       const inputFile = options.inputFile
 
       let lastMetricValue
       let previousOccurrences
+      let metricOccurrences
 
       const currentOccurrences = await findOccurrences({
+        configuration,
+        files: await getFiles(),
+        codeOwners: new Codeowners(),
+        quiet: options.quiet,
+      })
+
+      // TODO: we should not calculate previous occurrences if we're going to use an input file
+      const mergeBaseSha = await git.mergeBaseSha()
+      await git.checkout(mergeBaseSha)
+      previousOccurrences = await findOccurrences({
         configuration,
         files: await getFiles(),
         codeOwners: new Codeowners(),
@@ -43,27 +49,10 @@ export default function (program) {
           if (inputFile) {
             const content = fs.readFileSync(inputFile, 'utf8')
             const metrics = JSON.parse(content)
-            const metricOccurrences = metrics.find((m) => m.name === metric)?.currentOccurrences || []
+            metricOccurrences = metrics.find((m) => m.name === metric)?.currentOccurrences || []
             lastMetricValue = _.sumBy(metricOccurrences, (occurrence) =>
               _.isNumber(occurrence.value) ? occurrence.value : 1
             )
-            previousOccurrences = metricOccurrences.map((occurrence) => occurrence.text)
-          } else {
-            console.log(`Fetching last value for metric ${metric}...`)
-            const params = {
-              project_name: configuration.project_name,
-              metric_name: metric,
-              api_key: apiKey,
-            }
-
-            const response = await axios.get(API_BASE_URL + '/metrics', { params }).catch((error) => {
-              console.error(`Error: ${error.response.status} ${error.response.statusText}`)
-              console.error(error.response.data.error)
-              process.exit(1)
-            })
-
-            lastMetricValue = response.data.value
-            previousOccurrences = response.data.currentOccurrences
           }
 
           if (!Number.isInteger(lastMetricValue)) {
@@ -84,8 +73,9 @@ export default function (program) {
 
         if (diff > 0) {
           console.log('Added occurrences:')
-          const newOccurrencesTexts = currentOccurrences.filter((o) => o.metricName === metric).map((o) => o.text)
-          console.log(newOccurrencesTexts.filter((x) => !previousOccurrences.includes(x)))
+          const currentOccurrencesTexts = currentOccurrences.filter((o) => o.metricName === metric).map((o) => o.text)
+          const previousOccurrencesTexts = previousOccurrences.map((occurrence) => occurrence.text)
+          console.log(currentOccurrencesTexts.filter((x) => !previousOccurrencesTexts.includes(x)))
         }
 
         if (diff > 0 && options.errorIfIncrease) process.exit(1)
