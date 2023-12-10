@@ -50,14 +50,16 @@ export default function (program) {
         try {
           console.log('-----------------------------------')
 
-          if (inputFile) {
-            const content = fs.readFileSync(inputFile, 'utf8')
-            const metrics = JSON.parse(content)
-            metricOccurrences = metrics.find((m) => m.name === metric)?.currentOccurrences || []
-            lastMetricValue = _.sumBy(metricOccurrences, (occurrence) =>
-              _.isNumber(occurrence.value) ? occurrence.value : 1
-            )
-          }
+          // if (inputFile) {
+          //   const content = fs.readFileSync(inputFile, 'utf8')
+          //   const metrics = JSON.parse(content)
+          //   metricOccurrences = metrics.find((m) => m.name === metric)?.currentOccurrences || []
+          //   lastMetricValue = _.sumBy(metricOccurrences, (occurrence) =>
+          //     _.isNumber(occurrence.value) ? occurrence.value : 1
+          //   )
+          // }
+
+          let lastMetricValue = countByMetric(previousOccurrences)[metric] || 0
 
           if (!Number.isInteger(lastMetricValue)) {
             console.log('No last value found for this metric, aborting.')
