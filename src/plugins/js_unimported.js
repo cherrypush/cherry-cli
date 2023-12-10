@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { emptyMetric } from '../occurences.js'
+import { emptyMetric } from '../occurrences.js'
 import sh from '../sh.js'
 
 const getMetricName = (dir) => {
