@@ -39,6 +39,8 @@ export default function (program) {
         quiet: options.quiet,
       })
 
+      // TODO: revert the logic here to make it more readable, i.e, if inputFile then handle, else default flow
+      // If no input file is provided, then calculate values from the merge base
       if (!inputFile) {
         const mergeBaseSha = await git.mergeBaseSha()
         await git.checkout(mergeBaseSha)
@@ -58,11 +60,10 @@ export default function (program) {
           if (inputFile) {
             const content = fs.readFileSync(inputFile, 'utf8')
             const metrics = JSON.parse(content)
-            metricOccurrences = metrics.find((m) => m.name === metric)?.currentOccurrences || []
+            metricOccurrences = metrics.find((m) => m.name === metric)?.occurrences || []
             lastMetricValue = _.sumBy(metricOccurrences, (occurrence) =>
               _.isNumber(occurrence.value) ? occurrence.value : 1
             )
-            previousOccurrences = metricOccurrences
           }
 
           lastMetricValue = countByMetric(previousOccurrences)[metric] || 0
@@ -83,16 +84,19 @@ export default function (program) {
         const diff = currentMetricValue - lastMetricValue
         console.log(`Difference: ${diff}`)
 
+        // List added occurrences
         if (diff > 0) {
           console.log('Added occurrences:')
-          const currentOccurrencesTexts = currentOccurrences.filter((o) => o.metricName === metric).map((o) => o.text)
+          const currentMetricOccurrences = currentOccurrences.filter((o) => o.metricName === metric)
+          const currentMetricOccurrencesTexts = currentMetricOccurrences.map((o) => o.text)
           const previousOccurrencesTexts = previousOccurrences.map((occurrence) => occurrence.text)
-          console.log(currentOccurrencesTexts.filter((x) => !previousOccurrencesTexts.includes(x)))
+          console.log(currentMetricOccurrencesTexts.filter((x) => !previousOccurrencesTexts.includes(x)))
         }
-
-        await git.checkout(initialBranch)
 
         if (diff > 0 && options.errorIfIncrease) process.exit(1)
       }
+
+      // Bring user back to initial branch
+      await git.checkout(initialBranch)
     })
 }
