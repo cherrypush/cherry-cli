@@ -50,6 +50,7 @@ export default function (program) {
       for (const metric of metrics) {
         try {
           console.log('-----------------------------------')
+          console.log(`Running checks for metric: ${metric}`)
 
           if (inputFile) {
             const content = fs.readFileSync(inputFile, 'utf8')
