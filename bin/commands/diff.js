@@ -40,7 +40,7 @@ export default function (program) {
         quiet: options.quiet,
       })
 
-      // If a file has been provided, then we can skip the merge base logic
+      // TODO: If a file has been provided, then we can skip the merge base logic
       if (!inputFile) {
         await git.checkout(await git.mergeBaseSha())
         previousOccurrences = await findOccurrences({

@@ -32,4 +32,20 @@ describe('cherry diff', () => {
       done()
     })
   })
+
+  test('requires to commit changes before running cherry diff', (done) => {
+    exec('node bin/cherry.js diff --metric TODO', (error, _stdout, stderr) => {
+      expect(error.code).toBe(1)
+      expect(stderr).toContain('Please commit your changes before running cherry diff.')
+      done()
+    })
+  })
+
+  test('does not require to commit changes when --input-file is provided', (done) => {
+    exec('node bin/cherry.js diff --metric TODO --input-file test --api-key test', (error, _stdout, stderr) => {
+      expect(error.code).toBe(1)
+      expect(stderr).not.toContain('Please commit your changes before running cherry diff.')
+      done()
+    })
+  })
 })
