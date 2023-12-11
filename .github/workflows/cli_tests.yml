@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4 # https://github.com/actions/checkout
         with:
           fetch-depth: 0 # fetches all commits from all branches
           ref: ${{ github.event.pull_request.head.sha }} # checks out the branch that triggered the workflow
