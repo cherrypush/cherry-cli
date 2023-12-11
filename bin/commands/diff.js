@@ -32,6 +32,7 @@ export default function (program) {
       const hasUncommitedChanges = (await git.uncommittedFiles()).length > 0
       if (!inputFile && hasUncommitedChanges) panic('Please commit your changes before running cherry diff.')
 
+      // Start by calculating the occurrences for the current branch
       const currentOccurrences = await findOccurrences({
         configuration,
         files: await getFiles(),
@@ -39,11 +40,9 @@ export default function (program) {
         quiet: options.quiet,
       })
 
-      // TODO: revert the logic here to make it more readable, i.e, if inputFile then handle, else default flow
-      // If no input file is provided, then calculate values from the merge base
+      // If a file has been provided, then we can skip the merge base logic
       if (!inputFile) {
-        const mergeBaseSha = await git.mergeBaseSha()
-        await git.checkout(mergeBaseSha)
+        await git.checkout(await git.mergeBaseSha())
         previousOccurrences = await findOccurrences({
           configuration,
           files: await getFiles(),
@@ -53,6 +52,7 @@ export default function (program) {
         await git.checkout(initialBranch) // Bring user back to initial branch
       }
 
+      // For each metric, compare the current occurrences with the previous ones
       for (const metric of metrics) {
         try {
           console.log('-----------------------------------')
@@ -86,7 +86,7 @@ export default function (program) {
         const diff = currentMetricValue - lastMetricValue
         console.log(`Difference: ${diff}`)
 
-        // List added occurrences
+        // Log added occurrences if any
         if (diff > 0) {
           console.log('Added occurrences:')
           const currentMetricOccurrences = currentOccurrences.filter((o) => o.metricName === metric)
@@ -95,6 +95,7 @@ export default function (program) {
           console.log(currentMetricOccurrencesTexts.filter((x) => !previousOccurrencesTexts.includes(x)))
         }
 
+        // Return an error code if the metric increased
         if (diff > 0 && options.errorIfIncrease) process.exit(1)
       }
     })
