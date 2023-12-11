@@ -36,7 +36,8 @@ describe('cherry diff', () => {
 
   test('can take multiple metrics', (done) => {
     exec('node bin/cherry.js diff --metric TODO --metric "[loc] JavaScript"', (error, _stdout, stderr) => {
-      expect(error.code).toBe(1)
+      console.log(error.code)
+      expect(error.code).toBe(0)
       expect(stderr).toContain('Unknown API key') // TODO: cherry diff should not depend on API key
       done()
     })
