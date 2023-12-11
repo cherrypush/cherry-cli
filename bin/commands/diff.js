@@ -17,10 +17,14 @@ export default function (program) {
     .option('--input-file <input_file>', 'A JSON file containing the metrics to compare with')
     .option('--error-if-increase', 'Return an error status code (1) if the metric increased since its last report')
     .option('--quiet', 'reduce output to a minimum')
+    .option('--api-key', 'THIS OPTION IS DEPRECATED, DO NOT USE IT')
     .action(async (options) => {
       const configuration = await getConfiguration()
       const metrics = options.metric
       const inputFile = options.inputFile
+
+      // TODO: Remove this when the --api-key option is removed
+      if (options.apiKey) console.log('WARNING: --api-key is deprecated and will raise an error in the future.')
 
       let lastMetricValue
       let previousOccurrences
