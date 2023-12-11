@@ -10,8 +10,8 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
-          ref: ${{ github.head_ref }}
+          fetch-depth: 0 # fetches all commits from all branches
+          ref: ${{ github.head_ref }} # checks out the branch that triggered the workflow
 
       - name: Install dependencies
         run: npm install
