@@ -1,4 +1,13 @@
+import fs from 'fs'
 import { exec } from 'child_process'
+
+const TEMPORARY_FILE_PATH = 'test_temporary_file'
+
+beforeEach(() => {
+  if (fs.existsSync(TEMPORARY_FILE_PATH)) {
+    fs.unlinkSync(TEMPORARY_FILE_PATH)
+  }
+})
 
 describe('cherry diff', () => {
   test('should exit with an error if --api-key is missing', (done) => {
@@ -34,6 +43,8 @@ describe('cherry diff', () => {
   })
 
   test('requires to commit changes before running cherry diff', (done) => {
+    fs.writeFileSync(TEMPORARY_FILE_PATH, 'unexpected content')
+
     exec('node bin/cherry.js diff --metric TODO', (error, _stdout, stderr) => {
       expect(error.code).toBe(1)
       expect(stderr).toContain('Please commit your changes before running cherry diff.')
