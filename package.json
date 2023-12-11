@@ -29,6 +29,9 @@
     "url": "https://github.com/fwuensche/cherry-cli/issues"
   },
   "homepage": "https://github.com/fwuensche/cherry-cli#readme",
+  "jest": {
+    "testTimeout": 10000
+  },
   "dependencies": {
     "axios": "^1.2.3",
     "commander": "^10.0.0",
