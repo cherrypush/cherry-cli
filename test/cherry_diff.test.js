@@ -10,7 +10,7 @@ beforeEach(() => {
 })
 
 describe('cherry diff', () => {
-  test('should ignore the fact that an --api-key is missing', (done) => {
+  test('should not raise if an --api-key is passed (for retro compatibility)', (done) => {
     exec('node bin/cherry.js diff --metric TODO', (error, stdout) => {
       expect(error).toBe(null)
       expect(stdout).toContain('Metric: TODO')
