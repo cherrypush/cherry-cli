@@ -10,9 +10,10 @@ beforeEach(() => {
 })
 
 describe('cherry diff', () => {
-  test('should not raise if an --api-key is passed (for retro compatibility)', (done) => {
+  test('averts that --api-key is deprecated', (done) => {
     exec('node bin/cherry.js diff --metric TODO --api-key test', (error, stdout) => {
       expect(error).toBe(null)
+      expect(stdout).toContain('WARNING: --api-key is deprecated and will raise an error in the future.')
       expect(stdout).toContain('Metric: TODO')
       done()
     })
@@ -27,7 +28,7 @@ describe('cherry diff', () => {
   })
 
   test('can take multiple metrics', (done) => {
-    exec('node bin/cherry.js diff --metric TODO --metric "[loc] JavaScript"', (error, stdout, stderr) => {
+    exec('node bin/cherry.js diff --metric TODO --metric "[loc] JavaScript"', (error, stdout) => {
       expect(error).toBe(null)
       expect(stdout).toContain('Metric: TODO')
       expect(stdout).toContain('Metric: [loc] JavaScript')
