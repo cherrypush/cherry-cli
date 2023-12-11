@@ -35,8 +35,10 @@ describe('cherry diff', () => {
   })
 
   test('can take multiple metrics', (done) => {
-    exec('node bin/cherry.js diff --metric TODO --metric "[loc] JavaScript"', (error, _stdout, stderr) => {
+    exec('node bin/cherry.js diff --metric TODO --metric "[loc] JavaScript"', (error, stdout, stderr) => {
       expect(error).toBe(null)
+      expect(stdout).toContain('Metric: TODO')
+      expect(stdout).toContain('Metric: [loc] JavaScript')
       done()
     })
   })
