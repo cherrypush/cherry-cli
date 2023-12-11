@@ -36,8 +36,8 @@ export const currentBranchName = async () => (await git('rev-parse --abbrev-ref 
 
 // TODO: this should automatically get the current branch and the base branch, then use then to get the base sha
 export const mergeBaseSha = async () => {
-  const currentBranchName = await currentBranchName()
-  return await git(`merge-base main ${currentBranchName}`).toString()
+  const branch = await currentBranchName()
+  return await git(`merge-base main ${branch}`).toString()
 }
 
 export const authorName = async (sha) => (await git(`show ${sha} --format=%an --no-patch`))[0]
