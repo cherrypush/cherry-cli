@@ -32,12 +32,25 @@ export const guessProjectName = async () => {
 
 export const sha = async () => (await git('rev-parse HEAD')).toString()
 
-export const currentBranchName = async () => (await git('rev-parse --abbrev-ref HEAD')).toString().trim()
+export const getDefaultBranchName = async () => {
+  try {
+    await git('show-ref --verify --quiet refs/heads/main')
+    return 'main'
+  } catch (error) {
+    try {
+      await git('show-ref --verify --quiet refs/heads/master')
+      return 'master'
+    } catch (error) {
+      throw new Error('Neither a main nor a master branch could be found.')
+    }
+  }
+}
 
 // TODO: this should automatically get the current branch and the base branch, then use then to get the base sha
 export const mergeBaseSha = async () => {
-  const branch = await branchName()
-  return (await git(`merge-base main ${branch}`)).toString()
+  const currentBranch = await branchName()
+  const mainBranch = await getDefaultBranchName()
+  return (await git(`merge-base ${mainBranch} ${currentBranch}`)).toString()
 }
 
 export const authorName = async (sha) => (await git(`show ${sha} --format=%an --no-patch`))[0]
