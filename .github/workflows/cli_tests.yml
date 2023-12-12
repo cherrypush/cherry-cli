@@ -26,8 +26,6 @@ jobs:
           # https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
           ref: ${{ github.head_ref }}
 
-      - run: git rev-parse --abbrev-ref origin/HEAD
-
       - name: Set up node
         uses: actions/setup-node@v3
         with:
