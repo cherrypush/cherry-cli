@@ -33,27 +33,12 @@ export const guessProjectName = async () => {
 export const sha = async () => (await git('rev-parse HEAD')).toString()
 
 export const getDefaultBranchName = async () => {
-  if (process.env.GITHUB_BASE_REF) {
-    return process.env.GITHUB_BASE_REF
-  }
+  // If we are on a GitHub Action, we can use the GITHUB_BASE_REF env variable
+  if (process.env.GITHUB_BASE_REF) return process.env.GITHUB_BASE_REF
 
-  try {
-    await git('show-ref --verify --quiet refs/heads/main')
-    return 'main'
-  } catch (error) {
-    try {
-      await git('show-ref --verify --quiet refs/heads/master')
-      return 'master'
-    } catch (error) {
-      throw new Error(`Neither a main nor a master branch could be found. Found these: ${await git('show-ref')}`)
-    }
-  }
-}
-
-export const mergeBaseSha = async () => {
-  const currentBranch = await branchName()
-  const mainBranch = await getDefaultBranchName()
-  return (await git(`merge-base ${mainBranch} ${currentBranch}`)).toString()
+  // Otherwise, we need to find the default branch name
+  const defaultBranch = await git('rev-parse --abbrev-ref origin/HEAD')
+  return defaultBranch.replace('origin/', '').trim()
 }
 
 export const authorName = async (sha) => (await git(`show ${sha} --format=%an --no-patch`))[0]
