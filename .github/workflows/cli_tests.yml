@@ -12,13 +12,13 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - run: echo "Running tests on branch $GITHUB_REF"
+      - run: echo "Running tests on branch ${{ github.ref_name }}"
 
       - name: Checkout code
         uses: actions/checkout@v4 # https://github.com/actions/checkout
         with:
           fetch-depth: 0 # fetches all commits from all branches
-          ref: ${{ github.ref_name }} # https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
+          ref: ${{ github.head_ref || github.ref_name }} # https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
 
       - name: Set up node
         uses: actions/setup-node@v3
