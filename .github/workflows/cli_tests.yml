@@ -12,13 +12,19 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - run: echo "Running tests on branch ${{ github.ref_name }}"
+      - name: Context
+        run: |
+          echo "head_ref ${{ github.head_ref }}"
+          echo "ref_name ${{ github.ref_name }}"
+          echo "base_ref ${{ github.base_ref }}"
 
       - name: Checkout code
         uses: actions/checkout@v4 # https://github.com/actions/checkout
         with:
           fetch-depth: 0 # fetches all commits from all branches
-          ref: ${{ github.head_ref || github.ref_name }} # https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
+          # https://stackoverflow.com/questions/58033366/how-to-get-the-current-branch-within-github-actions/71158878#71158878
+          # https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Set up node
         uses: actions/setup-node@v3

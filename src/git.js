@@ -41,8 +41,7 @@ const getDefaultBranchName = async () => {
       await git('show-ref --verify --quiet refs/heads/master')
       return 'master'
     } catch (error) {
-      console.log(await git('show-ref --heads'))
-      throw new Error('Neither a main nor a master branch could be found.')
+      throw new Error(`Neither a main nor a master branch could be found. Found these: ${await git('show-ref')}`)
     }
   }
 }
