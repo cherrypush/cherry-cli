@@ -9,9 +9,12 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # fetches all commits from all branches
+          ref: ${{ github.head_ref }} # checks out the branch that triggered the workflow
 
       - name: Install dependencies
         run: npm install
 
-      - name: Raise if new JS code added
-        run: ./bin/cherry.js diff --metric='TODO' --api-key=${{ secrets.CHERRY_API_KEY }} --error-if-increase --quiet
+      - name: Raise if new JavaScript code is added
+        run: ./bin/cherry.js diff --metric='[loc] JavaScript' --api-key=${{ secrets.CHERRY_API_KEY }} --error-if-increase --quiet
