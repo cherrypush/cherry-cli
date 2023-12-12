@@ -17,6 +17,7 @@ jobs:
           echo "head_ref ${{ github.head_ref }}"
           echo "ref_name ${{ github.ref_name }}"
           echo "base_ref ${{ github.base_ref }}"
+          git rev-parse --abbrev-ref origin/HEAD
 
       - name: Checkout code
         uses: actions/checkout@v4 # https://github.com/actions/checkout
@@ -24,7 +25,7 @@ jobs:
           fetch-depth: 0 # fetches all commits from all branches
           # https://stackoverflow.com/questions/58033366/how-to-get-the-current-branch-within-github-actions/71158878#71158878
           # https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
-          ref: ${{ github.head_ref || github.ref_name }}
+          ref: ${{ github.head_ref }}
 
       - name: Set up node
         uses: actions/setup-node@v3

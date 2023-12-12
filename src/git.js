@@ -33,6 +33,10 @@ export const guessProjectName = async () => {
 export const sha = async () => (await git('rev-parse HEAD')).toString()
 
 const getDefaultBranchName = async () => {
+  if (process.env.GITHUB_BASE_REF) {
+    return process.env.GITHUB_BASE_REF
+  }
+
   try {
     await git('show-ref --verify --quiet refs/heads/main')
     return 'main'
