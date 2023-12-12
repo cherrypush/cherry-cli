@@ -37,7 +37,7 @@ export const getDefaultBranchName = async () => {
   if (process.env.GITHUB_BASE_REF) return process.env.GITHUB_BASE_REF
 
   // Otherwise, we need to find the default branch name
-  const defaultBranch = await git('rev-parse --abbrev-ref origin/HEAD')
+  const defaultBranch = (await git('rev-parse --abbrev-ref origin/HEAD')).toString()
   return defaultBranch.replace('origin/', '').trim()
 }
 
