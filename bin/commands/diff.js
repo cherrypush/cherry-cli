@@ -46,7 +46,7 @@ export default function (program) {
 
       // TODO: If a file has been provided, then we can skip the merge base logic
       if (!inputFile) {
-        await git.checkout(await git.mergeBaseSha())
+        await git.checkout(await git.getDefaultBranchName())
         previousOccurrences = await findOccurrences({
           configuration,
           files: await getFiles(),
