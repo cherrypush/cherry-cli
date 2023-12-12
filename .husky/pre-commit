@@ -2,4 +2,8 @@
 . "$(dirname "$0")/_/husky.sh"
 
 npx lint-staged
-npm test
+
+# TODO: it'd be nice to run tests here, but it does not work because cherry diff requires the git diff to be clean.
+# Ideally, we should be able to run tests independently of the uncommitted changes, probably by using a dummy repo.
+# Once we have that, we can unskip the line below.
+# npm test

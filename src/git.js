@@ -32,6 +32,15 @@ export const guessProjectName = async () => {
 
 export const sha = async () => (await git('rev-parse HEAD')).toString()
 
+export const getDefaultBranchName = async () => {
+  // If we are on a GitHub Action, we can use the GITHUB_BASE_REF env variable
+  if (process.env.GITHUB_BASE_REF) return process.env.GITHUB_BASE_REF
+
+  // Otherwise, we need to find the default branch name
+  const defaultBranch = (await git('rev-parse --abbrev-ref origin/HEAD')).toString()
+  return defaultBranch.replace('origin/', '').trim()
+}
+
 export const authorName = async (sha) => (await git(`show ${sha} --format=%an --no-patch`))[0]
 
 export const authorEmail = async (sha) => (await git(`show ${sha} --format=%ae --no-patch`))[0]
