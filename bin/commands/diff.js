@@ -15,9 +15,9 @@ export default function (program) {
       previous ? [...previous, value] : [value]
     )
     .option('--input-file <input_file>', 'A JSON file containing the metrics to compare with')
+    .option('--api-key <api_key>', 'THIS OPTION IS DEPRECATED, DO NOT USE IT')
     .option('--error-if-increase', 'Return an error status code (1) if the metric increased since its last report')
     .option('--quiet', 'reduce output to a minimum')
-    .option('--api-key', 'THIS OPTION IS DEPRECATED, DO NOT USE IT')
     .action(async (options) => {
       const configuration = await getConfiguration()
       const metrics = options.metric
