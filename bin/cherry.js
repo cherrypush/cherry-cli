@@ -20,7 +20,5 @@ pushCommand(program)
 
 program
   .option('-v, --verbose', 'Enable verbose mode')
-  .hook('preAction', (thisCommand) => {
-    if (thisCommand.opts().verbose) setVerboseMode(true)
-  })
+  .hook('preAction', (command) => command.opts().verbose && setVerboseMode(true))
   .parse(process.argv)

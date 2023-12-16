@@ -4,8 +4,9 @@ import Codeowners from '../../src/codeowners.js'
 import { getConfiguration } from '../../src/configuration.js'
 import { getFiles } from '../../src/files.js'
 import { findOccurrences } from '../../src/occurrences.js'
-import axios from 'axios'
-import { API_BASE_URL, countByMetric } from '../helpers.js'
+import { countByMetric } from '../helpers.js'
+import * as git from '../../src/git.js'
+import { panic } from '../../src/error.js'
 
 export default function (program) {
   program
@@ -14,56 +15,63 @@ export default function (program) {
       previous ? [...previous, value] : [value]
     )
     .option('--input-file <input_file>', 'A JSON file containing the metrics to compare with')
-    .option(
-      '--api-key <api_key>',
-      'Your cherrypush.com API key (available on https://www.cherrypush.com/user/settings)'
-    )
+    .option('--api-key <api_key>', 'THIS OPTION IS DEPRECATED, DO NOT USE IT')
     .option('--error-if-increase', 'Return an error status code (1) if the metric increased since its last report')
     .option('--quiet', 'reduce output to a minimum')
     .action(async (options) => {
       const configuration = await getConfiguration()
-      const apiKey = options.apiKey || process.env.CHERRY_API_KEY
       const metrics = options.metric
       const inputFile = options.inputFile
 
+      // TODO: Remove this when the --api-key option is removed
+      if (options.apiKey) console.log('WARNING: --api-key is deprecated and will raise an error in the future.')
+
       let lastMetricValue
       let previousOccurrences
+      let metricOccurrences
 
-      const occurrences = await findOccurrences({
+      const initialBranch = await git.branchName()
+      if (!inputFile && !initialBranch) panic('Not on a branch, checkout a branch before running cherry diff.')
+
+      const hasUncommitedChanges = (await git.uncommittedFiles()).length > 0
+      if (!inputFile && hasUncommitedChanges) panic('Please commit your changes before running cherry diff.')
+
+      // Start by calculating the occurrences for the current branch
+      const currentOccurrences = await findOccurrences({
         configuration,
         files: await getFiles(),
         codeOwners: new Codeowners(),
         quiet: options.quiet,
       })
 
+      // TODO: If a file has been provided, then we can skip the merge base logic
+      if (!inputFile) {
+        await git.checkout(await git.getDefaultBranchName())
+        previousOccurrences = await findOccurrences({
+          configuration,
+          files: await getFiles(),
+          codeOwners: new Codeowners(),
+          quiet: options.quiet,
+        })
+        await git.checkout(initialBranch) // Bring user back to initial branch
+      }
+
+      // For each metric, compare the current occurrences with the previous ones
       for (const metric of metrics) {
         try {
           console.log('-----------------------------------')
+          console.log(`Metric: ${metric}`)
 
           if (inputFile) {
             const content = fs.readFileSync(inputFile, 'utf8')
             const metrics = JSON.parse(content)
-            const metricOccurrences = metrics.find((m) => m.name === metric)?.occurrences || []
+            metricOccurrences = metrics.find((m) => m.name === metric)?.occurrences || []
+            previousOccurrences = metricOccurrences
             lastMetricValue = _.sumBy(metricOccurrences, (occurrence) =>
               _.isNumber(occurrence.value) ? occurrence.value : 1
             )
-            previousOccurrences = metricOccurrences.map((occurrence) => occurrence.text)
           } else {
-            console.log(`Fetching last value for metric ${metric}...`)
-            const params = {
-              project_name: configuration.project_name,
-              metric_name: metric,
-              api_key: apiKey,
-            }
-
-            const response = await axios.get(API_BASE_URL + '/metrics', { params }).catch((error) => {
-              console.error(`Error: ${error.response.status} ${error.response.statusText}`)
-              console.error(error.response.data.error)
-              process.exit(1)
-            })
-
-            lastMetricValue = response.data.value
-            previousOccurrences = response.data.occurrences
+            lastMetricValue = countByMetric(previousOccurrences)[metric] || 0
           }
 
           if (!Number.isInteger(lastMetricValue)) {
@@ -76,18 +84,22 @@ export default function (program) {
           process.exit(1)
         }
 
-        const currentMetricValue = countByMetric(occurrences)[metric] || 0
+        const currentMetricValue = countByMetric(currentOccurrences)[metric] || 0
         console.log(`Current value: ${currentMetricValue}`)
 
         const diff = currentMetricValue - lastMetricValue
         console.log(`Difference: ${diff}`)
 
+        // Log added occurrences if any
         if (diff > 0) {
           console.log('Added occurrences:')
-          const newOccurrencesTexts = occurrences.filter((o) => o.metricName === metric).map((o) => o.text)
-          console.log(newOccurrencesTexts.filter((x) => !previousOccurrences.includes(x)))
+          const currentMetricOccurrences = currentOccurrences.filter((o) => o.metricName === metric)
+          const currentMetricOccurrencesTexts = currentMetricOccurrences.map((o) => o.text)
+          const previousOccurrencesTexts = previousOccurrences.map((occurrence) => occurrence.text)
+          console.log(currentMetricOccurrencesTexts.filter((x) => !previousOccurrencesTexts.includes(x)))
         }
 
+        // Return an error code if the metric increased
         if (diff > 0 && options.errorIfIncrease) process.exit(1)
       }
     })
