@@ -1,0 +1,47 @@
+name: CI Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4 # https://github.com/actions/checkout
+        with:
+          # Depth 0 will fetch all commits from all branches
+          # This is required for cherry diff to checkout the master branch when running on pull requests
+          fetch-depth: 0
+          # Checks out the branch that triggered the workflow
+          # - head_ref is set when the event that triggered the workflow is a pull request
+          # - ref_name is set when the event that triggered the workflow is a push on master
+          # Refer to: https://stackoverflow.com/a/71158878/1096110
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Set up node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install node dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run format
+        run: |
+          FILES=$(git diff --name-only --diff-filter=d origin/main... | grep "\.js$")
+          if [ -n "$FILES" ]; then
+            npx prettier --check $FILES
+          fi
+
+      - name: Run tests
+        run: npm test
