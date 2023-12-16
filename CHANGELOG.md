@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/cherrypush/cherry-cli/compare/v1.4.0...v1.5.0) (2023-12-16)
+
+
+### Features
+
+* make cherry diff agnostic from cherrypush.com  ([#31](https://github.com/cherrypush/cherry-cli/issues/31)) ([63bb651](https://github.com/cherrypush/cherry-cli/commit/63bb65126dc3b65dd822f930a13a03fcf25355d7))
+
 ## [1.4.0](https://github.com/cherrypush/cherry-cli/compare/v1.3.0...v1.4.0) (2023-12-02)
 
 
