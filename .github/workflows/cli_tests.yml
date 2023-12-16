@@ -13,9 +13,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 # https://github.com/actions/checkout
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # fetches all commits from all branches
+          ref: ${{ github.head_ref }} # checks out the branch that triggered the workflow
 
       - name: Set up node
         uses: actions/setup-node@v3
