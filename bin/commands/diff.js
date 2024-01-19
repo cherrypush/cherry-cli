@@ -46,7 +46,9 @@ export default function (program) {
 
       // TODO: If a file has been provided, then we can skip the merge base logic
       if (!inputFile) {
-        await git.checkout(await git.getDefaultBranchName())
+        const defaultBranchName = await git.getDefaultBranchName()
+        const baseBranchCommit = await git.getMergeBase(initialBranch, defaultBranchName)
+        await git.checkout(baseBranchCommit)
         previousOccurrences = await findOccurrences({
           configuration,
           files: await getFiles(),
