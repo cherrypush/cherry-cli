@@ -25,11 +25,11 @@ export default function (program) {
       const initialBranch = await git.branchName()
       if (!initialBranch) panic('Not on a branch, checkout a branch before running the backfill.')
       const hasUncommitedChanges = (await git.uncommittedFiles()).length > 0
-      if (hasUncommitedChanges) panic('Please commit your changes before running this command')
+      if (hasUncommitedChanges) panic('Please commit your changes before running cherry backfill.')
 
       const configuration = await getConfiguration()
       const apiKey = options.apiKey || process.env.CHERRY_API_KEY
-      if (!apiKey) panic('Please provide an API key with --api-key or CHERRY_API_KEY environment variable')
+      if (!apiKey) panic('Please provide an API key with --api-key or CHERRY_API_KEY environment variable.')
 
       let date = until
       let sha = await git.sha()
