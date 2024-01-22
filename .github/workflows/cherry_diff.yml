@@ -16,5 +16,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Debug
+        run: |
+          git branch
+
       - name: Raise if new JavaScript code is added
         run: ./bin/cherry.js diff --metric='[loc] JavaScript' --error-if-increase --quiet
