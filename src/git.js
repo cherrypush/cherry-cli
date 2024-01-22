@@ -41,6 +41,11 @@ export const getDefaultBranchName = async () => {
   return defaultBranch.replace('origin/', '').trim()
 }
 
+export const getMergeBase = async (currentBranchName, defaultBranchName) => { 
+  const mergeBase = (await git(`merge-base ${currentBranchName} ${defaultBranchName}`)).toString()
+  return mergeBase.trim()
+}
+
 export const authorName = async (sha) => (await git(`show ${sha} --format=%an --no-patch`))[0]
 
 export const authorEmail = async (sha) => (await git(`show ${sha} --format=%ae --no-patch`))[0]
