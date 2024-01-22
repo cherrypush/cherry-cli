@@ -19,7 +19,7 @@ jobs:
       - name: Debug
         run: |
           git branch
-          echo {{ github.head_ref }}
+          echo ${{ github.head_ref }}
           git show-ref
           git rev-parse --abbrev-ref HEAD
           git merge-base main {{ github.head_ref }}
