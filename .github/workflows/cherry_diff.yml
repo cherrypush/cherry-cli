@@ -23,7 +23,7 @@ jobs:
           git show-ref
           git rev-parse --abbrev-ref HEAD
           git merge-base origin/main ${{ github.head_ref }}
-          git fetch origin/main
+          git checkout main
 
       - name: Raise if new JavaScript code is added
         run: ./bin/cherry.js diff --metric='[loc] JavaScript' --error-if-increase --quiet
