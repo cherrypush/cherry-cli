@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/cherrypush/cherry-cli/compare/v1.5.0...v1.5.1) (2024-01-22)
+
+
+### Bug Fixes
+
+* checkout merge base for cherry diff ([#37](https://github.com/cherrypush/cherry-cli/issues/37)) ([db1106b](https://github.com/cherrypush/cherry-cli/commit/db1106bcff3792946ea0e7abc75e67506cd8bee7))
+
 ## [1.5.0](https://github.com/cherrypush/cherry-cli/compare/v1.4.0...v1.5.0) (2023-12-16)
 
 
