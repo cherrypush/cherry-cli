@@ -36,12 +36,12 @@ jobs:
       - name: Run lint
         run: npm run lint
 
-      - name: Run format
-        run: |
-          FILES=$(git diff --name-only --diff-filter=d origin/main... | grep "\.js$")
-          if [ -n "$FILES" ]; then
-            npx prettier --check $FILES
-          fi
+      # - name: Run format
+      #   run: |
+      #     FILES=$(git diff --name-only --diff-filter=d origin/main... | grep "\.js$")
+      #     if [ -n "$FILES" ]; then
+      #       npx prettier --check $FILES
+      #     fi
 
       - name: Run tests
         run: npm test

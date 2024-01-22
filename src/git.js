@@ -41,7 +41,7 @@ export const getDefaultBranchName = async () => {
   return defaultBranch.replace('origin/', '').trim()
 }
 
-export const getMergeBase = async (currentBranchName, defaultBranchName) => { 
+export const getMergeBase = async (currentBranchName, defaultBranchName) => {
   const mergeBase = (await git(`merge-base ${currentBranchName} ${defaultBranchName}`)).toString()
   return mergeBase.trim()
 }
