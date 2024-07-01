@@ -11,8 +11,10 @@ import loc from './plugins/loc.js'
 import npmOutdated from './plugins/npm_outdated.js'
 import rubocop from './plugins/rubocop.js'
 import yarnOutdated from './plugins/yarn_outdated.js'
+import { warn } from './helpers/console.js'
 
 const spinnies = new Spinnies()
+let timers = {}
 
 const PLUGINS = {
   rubocop,
@@ -97,17 +99,26 @@ const runEvals = (metrics, codeOwners, quiet) => {
   if (!metrics.length) return []
 
   if (!quiet) spinnies.add('evals', { text: 'Running eval()...', indent: 2 })
+
   const promise = Promise.all(
     metrics.map(async (metric) => {
-      if (!quiet)
+      if (!quiet) {
         spinnies.add(`metric_${metric.name}`, {
           text: `${metric.name}...`,
           indent: 4,
         })
+      }
+
+      timers = { ...timers, [metric.name]: Date.now() }
+
       const result = (await metric.eval({ codeOwners })).map((occurrence) => ({
         ...occurrence,
         metricName: metric.name,
       }))
+
+      timers = { ...timers, [metric.name]: Date.now() - timers[metric.name] }
+      if (timers[metric.name] > 1000) warn(`The metric '${metric.name}' took ${timers[metric.name]}ms`)
+
       if (!quiet) spinnies.succeed(`metric_${metric.name}`, { text: metric.name })
       return result
     })
