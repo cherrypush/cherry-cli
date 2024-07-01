@@ -1,5 +1,5 @@
-const JS_FILES = 'app/**/*.{js,jsx}'
-const TS_FILES = 'app/**/*.{ts,tsx}'
+const JS_FILES = '**/*.{js,jsx}'
+const TS_FILES = '**/*.{ts,tsx}'
 
 module.exports = {
   project_name: 'fwuensche/cherry-cli',
@@ -14,6 +14,16 @@ module.exports = {
     {
       name: 'TODO',
       pattern: /TODO/,
+    },
+    {
+      name: '[TS Migration] TS lines of code',
+      include: TS_FILES,
+      groupByFile: true,
+    },
+    {
+      name: '[TS Migration] JS lines of code',
+      include: JS_FILES,
+      groupByFile: true,
     },
   ],
 }
