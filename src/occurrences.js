@@ -11,10 +11,9 @@ import loc from './plugins/loc.js'
 import npmOutdated from './plugins/npm_outdated.js'
 import rubocop from './plugins/rubocop.js'
 import yarnOutdated from './plugins/yarn_outdated.js'
-import { warn } from './helpers/console.js'
+import { executeWithTiming, warnsAboutLongRunningTasks } from './helpers/timer.js'
 
 const spinnies = new Spinnies()
-let timers = {}
 
 const PLUGINS = {
   rubocop,
@@ -87,9 +86,14 @@ const matchPatterns = (files, metrics, quiet) => {
   if (!files.length || !metrics.length) return []
 
   if (!quiet) spinnies.add('patterns', { text: 'Matching patterns...', indent: 2 })
+
   // Limit number of concurrently opened files to avoid "Error: spawn EBADF"
   const limit = pLimit(10)
-  const promise = Promise.all(files.map((file) => limit(() => findFileOccurences(file, metrics))))
+  const promise = executeWithTiming(
+    () => Promise.all(files.map((file) => limit(() => findFileOccurences(file, metrics)))),
+    'All pattern metrics together'
+  )
+
   if (!quiet) promise.then(() => spinnies.succeed('patterns', { text: 'Matching patterns' }))
 
   return promise
@@ -109,15 +113,11 @@ const runEvals = (metrics, codeOwners, quiet) => {
         })
       }
 
-      timers = { ...timers, [metric.name]: Date.now() }
-
-      const result = (await metric.eval({ codeOwners })).map((occurrence) => ({
-        ...occurrence,
-        metricName: metric.name,
-      }))
-
-      timers = { ...timers, [metric.name]: Date.now() - timers[metric.name] }
-      if (timers[metric.name] > 1000) warn(`The metric '${metric.name}' took ${timers[metric.name]}ms`)
+      const occurrences = await executeWithTiming(
+        async () => await metric.eval({ codeOwners }),
+        `Metric '${metric.name}'`
+      )
+      const result = occurrences.map((occurrence) => ({ ...occurrence, metricName: metric.name }))
 
       if (!quiet) spinnies.succeed(`metric_${metric.name}`, { text: metric.name })
       return result
@@ -137,7 +137,7 @@ const runPlugins = async (plugins, quiet) => {
       const plugin = PLUGINS[name]
       if (!plugin) panic(`Unsupported '${name}' plugin\nExpected one of: ${Object.keys(PLUGINS).join(', ')}`)
       if (!quiet) spinnies.add(`plugin_${name}`, { text: `${name}...`, indent: 4 })
-      const result = await plugin.run(options)
+      const result = executeWithTiming(async () => await plugin.run(options), `Plugin '${name}'`)
       if (!quiet) spinnies.succeed(`plugin_${name}`, { text: name })
       return result
     })
@@ -168,21 +168,21 @@ export const findOccurrences = async ({ configuration, files, metric, codeOwners
   // From ['loc'] to { 'loc': {} } to handle deprecated array configuration for plugins
   if (Array.isArray(plugins)) plugins = plugins.reduce((acc, value) => ({ ...acc, [value]: {} }), {})
 
-  const promise = Promise.all([
+  const result = await Promise.all([
     matchPatterns(files, fileMetrics, quiet),
     runEvals(evalMetrics, codeOwners, quiet),
     runPlugins(plugins, quiet),
   ])
 
-  const occurrences = _.flattenDeep(await promise).map(
-    ({ text, value, metricName, filePath, lineNumber, url, owners }) => ({
-      text,
-      value,
-      metricName,
-      url: url !== undefined ? url : filePath && buildPermalink(configuration.project_name, filePath, lineNumber),
-      owners: owners !== undefined ? owners : filePath && codeOwners.getOwners(filePath),
-    })
-  )
+  warnsAboutLongRunningTasks(5000)
+
+  const occurrences = _.flattenDeep(result).map(({ text, value, metricName, filePath, lineNumber, url, owners }) => ({
+    text,
+    value,
+    metricName,
+    url: url !== undefined ? url : filePath && buildPermalink(configuration.project_name, filePath, lineNumber),
+    owners: owners !== undefined ? owners : filePath && codeOwners.getOwners(filePath),
+  }))
 
   return withEmptyMetrics(occurrences, metrics)
 }
