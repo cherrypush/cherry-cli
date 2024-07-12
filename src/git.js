@@ -53,7 +53,10 @@ export const commitDate = async (sha) => new Date((await git(`show -s --format=%
 export const commitShaAt = async (date, branch) =>
   (await git(`rev-list --reverse --after=${toISODate(date)} ${branch}`))[0]
 
-export const checkout = async (sha) => await git(`checkout ${sha}`)
+export const checkout = async (sha) => {
+  console.log(`Checking out ${sha}`)
+  await git(`checkout ${sha}`)
+}
 
 export const branchName = async () => (await git(`branch --show-current`))[0]
 
