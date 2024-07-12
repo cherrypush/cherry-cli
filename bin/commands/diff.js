@@ -46,6 +46,7 @@ export default function (program) {
 
       // TODO: If a file has been provided, then we can skip the merge base logic
       if (!inputFile) {
+        // Checkout the base branch to calculate its occurrences
         const defaultBranchName = await git.getDefaultBranchName()
         const baseBranchCommit = await git.getMergeBase(initialBranch, defaultBranchName)
         await git.checkout(baseBranchCommit)
@@ -55,7 +56,8 @@ export default function (program) {
           codeOwners: new Codeowners(),
           quiet: options.quiet,
         })
-        await git.checkout(initialBranch) // Bring user back to initial branch
+        // Bring user back to initial branch
+        await git.checkout(initialBranch)
       }
 
       // For each metric, compare the current occurrences with the previous ones
