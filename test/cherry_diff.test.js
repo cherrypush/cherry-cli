@@ -1,5 +1,5 @@
-import fs from 'fs'
 import { exec } from 'child_process'
+import fs from 'fs'
 
 const TEMPORARY_FILE_PATH = 'test_temporary_file'
 
@@ -9,6 +9,7 @@ beforeEach(() => {
   }
 })
 
+// TODO: Cherry diff tests fail when launched before commiting changes. We should probably create a fixture repo to test this properly.
 describe('cherry diff', () => {
   test('averts that --api-key is deprecated', (done) => {
     exec('node bin/cherry.js diff --quiet --metric TODO --api-key test', (error, stdout) => {
