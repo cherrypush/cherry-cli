@@ -1,11 +1,12 @@
-import fs from 'fs'
-import _ from 'lodash'
+import * as git from '../../src/git.js'
+
 import Codeowners from '../../src/codeowners.js'
+import _ from 'lodash'
+import { countByMetric } from '../helpers.js'
+import { findOccurrences } from '../../src/occurrences.js'
+import fs from 'fs'
 import { getConfiguration } from '../../src/configuration.js'
 import { getFiles } from '../../src/files.js'
-import { findOccurrences } from '../../src/occurrences.js'
-import { countByMetric } from '../helpers.js'
-import * as git from '../../src/git.js'
 import { panic } from '../../src/error.js'
 
 export default function (program) {
