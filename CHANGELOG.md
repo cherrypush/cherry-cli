@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://github.com/cherrypush/cherry-cli/compare/v1.7.0...v1.8.0) (2024-08-30)
+
+
+### Features
+
+* automatically publish npm package when release please pr is merged ([7bdfaf2](https://github.com/cherrypush/cherry-cli/commit/7bdfaf26bd5c1f1e65e28f394b29952845ad48cc))
+
 ## [1.7.0](https://github.com/cherrypush/cherry-cli/compare/v1.6.0...v1.7.0) (2024-08-30)
 
 
