@@ -35,3 +35,16 @@ $ bin/cherry.js run
 
 For more complex commands, you can use the `--help` flag to get more information about the available options or read the
 README.md file for more detailed instructions.
+
+## Releasing a new version
+
+This package uses release-please to automate the release process. Once your pull request is merged, the release-please
+bot will automatically create a new pull request with updates to the CHANGELOG and package.json files. You can then
+merge this pull request to create a new release. Do not forget to publish the new release to npm by running the
+following command:
+
+```bash
+$ git checkout main
+$ git pull origin main
+$ npm publish
+```
