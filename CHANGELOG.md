@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/cherrypush/cherry-cli/compare/v1.6.0...v1.7.0) (2024-08-30)
+
+
+### Features
+
+* allow to provide multiple metrics to cherry run ([#56](https://github.com/cherrypush/cherry-cli/issues/56)) ([8350602](https://github.com/cherrypush/cherry-cli/commit/8350602a4ed5deef2025dfdd402c890bf6916e0f))
+
 ## [1.6.0](https://github.com/cherrypush/cherry-cli/compare/v1.5.0...v1.6.0) (2024-07-01)
 
 
