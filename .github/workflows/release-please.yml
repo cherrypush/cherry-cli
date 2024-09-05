@@ -25,10 +25,10 @@ jobs:
       # # The if statements ensure that a publication only occurs when a new release is created.
       - uses: actions/checkout@v4
         # if: ${{ steps.release.outputs.release_created }}
-      # - uses: actions/setup-node@v4
-      #   if: ${{ steps.release.outputs.release_created }}
-      # - run: npm ci
-      #   if: ${{ steps.release.outputs.release_created }}
+      - uses: actions/setup-node@v4
+        # if: ${{ steps.release.outputs.release_created }}
+      - run: npm ci
+        if: ${{ steps.release.outputs.release_created }}
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
