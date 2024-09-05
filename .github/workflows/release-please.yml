@@ -2,6 +2,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -13,20 +16,20 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: google-github-actions/release-please-action@v3
-        with:
-          release-type: node
-          package-name: cherrypush
+      # - uses: google-github-actions/release-please-action@v3
+      #   with:
+      #     release-type: node
+      #     package-name: cherrypush
 
-      # The logic below handles the npm publication.
-      # The if statements ensure that a publication only occurs when a new release is created.
-      - uses: actions/checkout@v4
-        if: ${{ steps.release.outputs.release_created }}
-      - uses: actions/setup-node@v4
-        if: ${{ steps.release.outputs.release_created }}
-      - run: npm ci
-        if: ${{ steps.release.outputs.release_created }}
+      # # The logic below handles the npm publication.
+      # # The if statements ensure that a publication only occurs when a new release is created.
+      # - uses: actions/checkout@v4
+      #   if: ${{ steps.release.outputs.release_created }}
+      # - uses: actions/setup-node@v4
+      #   if: ${{ steps.release.outputs.release_created }}
+      # - run: npm ci
+      #   if: ${{ steps.release.outputs.release_created }}
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-        if: ${{ steps.release.outputs.release_created }}
+        # if: ${{ steps.release.outputs.release_created }}
