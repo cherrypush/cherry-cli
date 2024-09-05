@@ -160,10 +160,10 @@ const withEmptyMetrics = (occurrences, metrics = []) => {
   return allMetricNames.map((metricName) => occurrencesByMetric[metricName] || [emptyMetric(metricName)]).flat()
 }
 
-export const findOccurrences = async ({ configuration, files, metrics: chosenMetrics, codeOwners, quiet }) => {
+export const findOccurrences = async ({ configuration, files, metricNames, codeOwners, quiet }) => {
   let metrics = configuration.metrics
 
-  if (chosenMetrics) metrics = metrics.filter(({ name }) => chosenMetrics.includes(name))
+  if (metricNames) metrics = metrics.filter(({ name }) => metricNames.includes(name))
 
   const [evalMetrics, fileMetrics] = _.partition(metrics, (metric) => metric.eval)
   let plugins = configuration.plugins || {}

@@ -16,13 +16,13 @@ import { getConfiguration } from '../../src/configuration.js'
 import { getFiles } from '../../src/files.js'
 import { panic } from '../../src/error.js'
 
-const allowMultipleValues = (value, previous) => (previous ? [...previous, value] : [value])
+export const allowMultipleValues = (value, previous) => (previous ? [...previous, value] : [value])
 
 export default function (program) {
   program
     .command('run')
-    .option('--owner <owner>', 'only consider given code owners')
-    .option('--metric <metric>', 'only consider given metrics', allowMultipleValues)
+    .option('--owner <owner>', 'will only consider provided code owners')
+    .option('--metric <metric>', 'will only consider provided metrics', allowMultipleValues)
     .option('-o, --output <output>', 'export stats into a local file')
     .option('-f, --format <format>', 'export format (json, sarif, sonar). default: json')
     .option('--quiet', 'reduce output to a minimum')
@@ -36,7 +36,7 @@ export default function (program) {
       const occurrences = await findOccurrences({
         configuration,
         files,
-        metrics: options.metric,
+        metricNames: options.metric,
         codeOwners,
         quiet,
       })
