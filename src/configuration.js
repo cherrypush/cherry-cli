@@ -1,7 +1,7 @@
-import fs from 'fs'
+import buildAndImport from './build-and-import.cjs'
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
-import buildAndImport from './build-and-import.cjs'
+import fs from 'fs'
 import { guessProjectName } from './git.js'
 
 export const CONFIG_FILE_LOCAL_PATHS = ['.cherry.js', '.cherry.cjs', '.cherry.ts']
