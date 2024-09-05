@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.0](https://github.com/cherrypush/cherry-cli/compare/v1.8.0...v1.9.0) (2024-09-05)
+
+
+### Features
+
+* update madge (used for jsCircularDependencies plugin) ([#60](https://github.com/cherrypush/cherry-cli/issues/60)) ([7bf126a](https://github.com/cherrypush/cherry-cli/commit/7bf126ab5e734f393ae466d84ab3b0161592c9a0))
+
 ## [1.8.0](https://github.com/cherrypush/cherry-cli/compare/v1.7.0...v1.8.0) (2024-08-30)
 
 
