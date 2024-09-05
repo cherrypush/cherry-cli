@@ -129,7 +129,7 @@ const runEvals = (metrics, codeOwners, quiet) => {
   return promise
 }
 
-const runPlugins = async (plugins, quiet) => {
+const runPlugins = async (plugins = {}, quiet) => {
   if (!Object.keys(plugins).length) return []
 
   if (!quiet) spinnies.add('plugins', { text: 'Running plugins...', indent: 2 })
@@ -160,20 +160,19 @@ const withEmptyMetrics = (occurrences, metrics = []) => {
   return allMetricNames.map((metricName) => occurrencesByMetric[metricName] || [emptyMetric(metricName)]).flat()
 }
 
-export const findOccurrences = async ({ configuration, files, metrics: chosenMetrics, codeOwners, quiet }) => {
+export const findOccurrences = async ({ configuration, files, metricNames, codeOwners, quiet }) => {
   let metrics = configuration.metrics
 
-  if (chosenMetrics) metrics = metrics.filter(({ name }) => chosenMetrics.includes(name))
+  // Prevent running all metrics if a subset is provided
+  if (metricNames) metrics = metrics.filter(({ name }) => metricNames.includes(name))
 
+  // Separate metrics into eval and file metrics
   const [evalMetrics, fileMetrics] = _.partition(metrics, (metric) => metric.eval)
-  let plugins = configuration.plugins || {}
-  // From ['loc'] to { 'loc': {} } to handle deprecated array configuration for plugins
-  if (Array.isArray(plugins)) plugins = plugins.reduce((acc, value) => ({ ...acc, [value]: {} }), {})
 
   const result = await Promise.all([
     matchPatterns(files, fileMetrics, quiet),
     runEvals(evalMetrics, codeOwners, quiet),
-    runPlugins(plugins, quiet),
+    runPlugins(configuration.plugins, quiet),
   ])
 
   warnsAboutLongRunningTasks(5000)
