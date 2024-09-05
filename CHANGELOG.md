@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.1](https://github.com/cherrypush/cherry-cli/compare/v1.9.0...v1.9.1) (2024-09-05)
+
+
+### Bug Fixes
+
+* automation to release package ([#62](https://github.com/cherrypush/cherry-cli/issues/62)) ([a6ba9d7](https://github.com/cherrypush/cherry-cli/commit/a6ba9d731eb59f37eab284232b12f3c7bfddf1f6))
+
 ## [1.9.0](https://github.com/cherrypush/cherry-cli/compare/v1.8.0...v1.9.0) (2024-09-05)
 
 
