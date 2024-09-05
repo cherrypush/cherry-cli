@@ -38,13 +38,24 @@ README.md file for more detailed instructions.
 
 ## Releasing a new version
 
-This package uses release-please to automate the release process. Once your pull request is merged, the release-please
-bot will automatically create a new pull request with updates to the CHANGELOG and package.json files. You can then
-merge this pull request to create a new release. Do not forget to publish the new release to npm by running the
-following command:
+We're using (release-please)[https://github.com/googleapis/release-please] to automate the release process, so we need
+to follow a few guidelines when creating pull requests. In short, release Please assumes you are using Conventional
+Commit messages and most important prefixes you should have in mind are:
 
-```bash
-$ git checkout main
-$ git pull origin main
-$ npm publish
-```
+- fix: which represents bug fixes, and correlates to a SemVer patch.
+- feat: which represents a new feature, and correlates to a SemVer minor. -feat!:, or fix!:, refactor!:, etc., which
+  represent a breaking change (indicated by the !) and will result in a SemVer major.
+
+Also note that:
+
+- release-please will only create a new release if the pull request contains a "releasable unit".
+  - a releasable unit is a commit with one of the following prefixes: "feat", "fix", and "deps".
+  - a "chore" or "build" commit, for instance, is not considered a releasable unit.
+
+If you name your pull requests accordingly, release-please will automatically create a new release PR. Once merged, an
+automatic workflow will create a new release and publish the package to npm.
+
+If you're interested in the setup, you can check the following files:
+
+- release-please-config.json
+- .github/workflows/release-please.yml
