@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.2](https://github.com/cherrypush/cherry-cli/compare/v1.9.1...v1.9.2) (2024-09-05)
+
+
+### Bug Fixes
+
+* add registry url to setup node step ([2157ef0](https://github.com/cherrypush/cherry-cli/commit/2157ef0d9b85ac6b4661132899616fc356efd379))
+* automate package publishing ([#64](https://github.com/cherrypush/cherry-cli/issues/64)) ([6e4a420](https://github.com/cherrypush/cherry-cli/commit/6e4a4203277f6532cff6961357ed6ed698a57c2e))
+
 ## [1.9.1](https://github.com/cherrypush/cherry-cli/compare/v1.9.0...v1.9.1) (2024-09-05)
 
 
