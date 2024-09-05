@@ -2,50 +2,50 @@
 
 ## [1.9.1](https://github.com/cherrypush/cherry-cli/compare/v1.9.0...v1.9.1) (2024-09-05)
 
+
 ### Bug Fixes
 
-- automation to release package ([#62](https://github.com/cherrypush/cherry-cli/issues/62))
-  ([a6ba9d7](https://github.com/cherrypush/cherry-cli/commit/a6ba9d731eb59f37eab284232b12f3c7bfddf1f6))
+* automation to release package ([#62](https://github.com/cherrypush/cherry-cli/issues/62)) ([a6ba9d7](https://github.com/cherrypush/cherry-cli/commit/a6ba9d731eb59f37eab284232b12f3c7bfddf1f6))
 
 ## [1.9.0](https://github.com/cherrypush/cherry-cli/compare/v1.8.0...v1.9.0) (2024-09-05)
 
+
 ### Features
 
-- update madge (used for jsCircularDependencies plugin) ([#60](https://github.com/cherrypush/cherry-cli/issues/60))
-  ([7bf126a](https://github.com/cherrypush/cherry-cli/commit/7bf126ab5e734f393ae466d84ab3b0161592c9a0))
+* update madge (used for jsCircularDependencies plugin) ([#60](https://github.com/cherrypush/cherry-cli/issues/60)) ([7bf126a](https://github.com/cherrypush/cherry-cli/commit/7bf126ab5e734f393ae466d84ab3b0161592c9a0))
 
 ## [1.8.0](https://github.com/cherrypush/cherry-cli/compare/v1.7.0...v1.8.0) (2024-08-30)
 
+
 ### Features
 
-- automatically publish npm package when release please pr is merged
-  ([7bdfaf2](https://github.com/cherrypush/cherry-cli/commit/7bdfaf26bd5c1f1e65e28f394b29952845ad48cc))
+* automatically publish npm package when release please pr is merged ([7bdfaf2](https://github.com/cherrypush/cherry-cli/commit/7bdfaf26bd5c1f1e65e28f394b29952845ad48cc))
 
 ## [1.7.0](https://github.com/cherrypush/cherry-cli/compare/v1.6.0...v1.7.0) (2024-08-30)
 
+
 ### Features
 
-- allow to provide multiple metrics to cherry run ([#56](https://github.com/cherrypush/cherry-cli/issues/56))
-  ([8350602](https://github.com/cherrypush/cherry-cli/commit/8350602a4ed5deef2025dfdd402c890bf6916e0f))
+* allow to provide multiple metrics to cherry run ([#56](https://github.com/cherrypush/cherry-cli/issues/56)) ([8350602](https://github.com/cherrypush/cherry-cli/commit/8350602a4ed5deef2025dfdd402c890bf6916e0f))
 
 ## [1.6.0](https://github.com/cherrypush/cherry-cli/compare/v1.5.0...v1.6.0) (2024-07-01)
 
+
 ### Features
 
-- **performance-alerts:** WIP ([#51](https://github.com/cherrypush/cherry-cli/issues/51))
-  ([6c9ae5f](https://github.com/cherrypush/cherry-cli/commit/6c9ae5f6d7c2e63513064db2796837d59673c0e2))
+* **performance-alerts:** WIP ([#51](https://github.com/cherrypush/cherry-cli/issues/51)) ([6c9ae5f](https://github.com/cherrypush/cherry-cli/commit/6c9ae5f6d7c2e63513064db2796837d59673c0e2))
+
 
 ### Bug Fixes
 
-- checkout merge base for cherry diff ([#37](https://github.com/cherrypush/cherry-cli/issues/37))
-  ([db1106b](https://github.com/cherrypush/cherry-cli/commit/db1106bcff3792946ea0e7abc75e67506cd8bee7))
+* checkout merge base for cherry diff ([#37](https://github.com/cherrypush/cherry-cli/issues/37)) ([db1106b](https://github.com/cherrypush/cherry-cli/commit/db1106bcff3792946ea0e7abc75e67506cd8bee7))
 
 ## [1.5.0](https://github.com/cherrypush/cherry-cli/compare/v1.4.0...v1.5.0) (2023-12-16)
 
+
 ### Features
 
-- make cherry diff agnostic from cherrypush.com ([#31](https://github.com/cherrypush/cherry-cli/issues/31))
-  ([63bb651](https://github.com/cherrypush/cherry-cli/commit/63bb65126dc3b65dd822f930a13a03fcf25355d7))
+* make cherry diff agnostic from cherrypush.com  ([#31](https://github.com/cherrypush/cherry-cli/issues/31)) ([63bb651](https://github.com/cherrypush/cherry-cli/commit/63bb65126dc3b65dd822f930a13a03fcf25355d7))
 
 ## [1.4.0](https://github.com/cherrypush/cherry-cli/compare/v1.3.0...v1.4.0) (2023-12-02)
 
