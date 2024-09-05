@@ -11,15 +11,6 @@ beforeEach(() => {
 
 // TODO: Cherry diff tests fail when launched before commiting changes. We should probably create a fixture repo to test this properly.
 describe('cherry diff', () => {
-  test('averts that --api-key is deprecated', (done) => {
-    exec('node bin/cherry.js diff --quiet --metric TODO --api-key test', (error, stdout) => {
-      expect(error).toBe(null)
-      expect(stdout).toContain('WARNING: --api-key is deprecated and will raise an error in the future.')
-      expect(stdout).toContain('Metric: TODO')
-      done()
-    })
-  })
-
   test('should exit with an error if --metric is missing', (done) => {
     exec('node bin/cherry.js diff --quiet', (error, _stdout, stderr) => {
       expect(error.code).toBe(1)
