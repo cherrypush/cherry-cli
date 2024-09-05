@@ -1,8 +1,7 @@
+name: release-please
+
 on:
   push:
-    branches:
-      - main
-  pull_request:
     branches:
       - main
 
@@ -10,28 +9,32 @@ permissions:
   contents: write
   pull-requests: write
 
-name: release-please
-
 jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      # - uses: google-github-actions/release-please-action@v4
-      #   id: release
-      #   with:
-      #     release-type: node
+      - uses: google-github-actions/release-please-action@v4
+        id: release
+        with:
+          release-type: node
 
-      # # The logic below handles the npm publication.
-      # # The if statements ensure that a publication only occurs when a new release is created.
+      # The logic below handles the npm publication.
+      # The if statements ensure that a publication only occurs when a new release is created.
       - uses: actions/checkout@v4
-        # if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.release_created }}
+
+      # The registry-url must be set for authentication to work on the npm publish step
+      # Ref: https://github.com/actions/setup-node/issues/342#issuecomment-950119520
       - uses: actions/setup-node@v4
-        # if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.release_created }}
         with:
           registry-url: 'https://registry.npmjs.org'
+
       - run: npm ci
-        # if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.release_created }}
+
+      # Make sure that the NPM_TOKEN has been set as a "Repository secret"
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-        # if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.release_created }}
