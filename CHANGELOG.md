@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.0](https://github.com/cherrypush/cherry-cli/compare/v1.9.2...v1.10.0) (2024-09-05)
+
+
+### Features
+
+* filter out metrics for cherry diff ([#68](https://github.com/cherrypush/cherry-cli/issues/68)) ([12189df](https://github.com/cherrypush/cherry-cli/commit/12189dfd715ac1260d30c6733884cc66659ebf2a))
+
 ## [1.9.2](https://github.com/cherrypush/cherry-cli/compare/v1.9.1...v1.9.2) (2024-09-05)
 
 
