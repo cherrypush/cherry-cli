@@ -50,6 +50,7 @@ export default function (program) {
         previousOccurrences = await findOccurrences({
           configuration,
           files: await getFiles(),
+          metricNames,
           codeOwners: new Codeowners(),
           quiet: options.quiet,
         })
