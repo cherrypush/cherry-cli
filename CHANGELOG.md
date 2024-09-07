@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.2](https://github.com/cherrypush/cherry-cli/compare/v1.12.1...v1.12.2) (2024-09-07)
+
+
+### Bug Fixes
+
+* update readme and fix owners option from cherry run ([92c4e9c](https://github.com/cherrypush/cherry-cli/commit/92c4e9caac91c842b1308eb9b5ccc6470002a7fe))
+
 ## [1.12.1](https://github.com/cherrypush/cherry-cli/compare/v1.12.0...v1.12.1) (2024-09-07)
 
 
