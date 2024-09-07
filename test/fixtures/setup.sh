@@ -6,6 +6,13 @@ if [ ! -d "test/fixtures/project-one/.git" ]; then
   cd test/fixtures/project-one
   git init --initial-branch=main
 
+  # Setup git user if in the CI environment
+  if [ -n "$CI" ]; then
+    echo "Setting up git user for CI environment"
+    git config --local user.email "ci@example.com"
+    git config --local user.name "CI Bot"
+  fi
+
   # Create a dummy commit
   echo "test" > README.md
   git add README.md
