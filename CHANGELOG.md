@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.0](https://github.com/cherrypush/cherry-cli/compare/v1.11.0...v1.12.0) (2024-09-07)
+
+
+### Features
+
+* handle https remotes when trying to guess project name ([#73](https://github.com/cherrypush/cherry-cli/issues/73)) ([a254986](https://github.com/cherrypush/cherry-cli/commit/a2549866f083d23828dd158cd4f9ac37bcf04858))
+
 ## [1.11.0](https://github.com/cherrypush/cherry-cli/compare/v1.10.0...v1.11.0) (2024-09-06)
 
 
