@@ -25,12 +25,12 @@ export default function (program) {
 
     const remoteUrl = await git.getRemoteUrl()
     let projectName = git.guessProjectName(remoteUrl)
-    if (!projectName) {
-      projectName = await prompt.get({
-        properties: {
-          repo: { message: 'Enter your project name', required: true },
-        },
-      }).repo
+
+    if (projectName === null) {
+      const { repo } = await prompt.get({
+        properties: { repo: { message: 'Enter your project name', required: true } },
+      })
+      projectName = repo
     }
     createConfigurationFile(projectName)
 

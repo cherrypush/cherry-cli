@@ -11,7 +11,6 @@ const TEMPORARY_FILE_PATH = 'test_temporary_file'
 
 const CHERRY_BIN_PATH = 'node ./../../../bin/cherry.js'
 
-// We have a fixture project in `test/fixtures/project-one` that we use to create test scenarios
 const originalCwd = process.cwd()
 const fixturesPath = path.join(originalCwd, 'test/fixtures/project-one')
 

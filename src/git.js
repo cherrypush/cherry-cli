@@ -31,7 +31,7 @@ export const getRemoteUrl = async () => {
  * If the remote URL is not found, returns an empty string.
  */
 export const guessProjectName = (remoteUrl) => {
-  if (!remoteUrl) return ''
+  if (!remoteUrl) return null
 
   // Handle https remotes, such as in https://github.com/cherrypush/cherry-cli.git
   if (remoteUrl.includes('https://')) return remoteUrl.split('/').slice(-2).join('/').replace('.git', '')
@@ -39,7 +39,7 @@ export const guessProjectName = (remoteUrl) => {
   // Handle ssh remotes, such as in git@github.com:cherrypush/cherry-cli.git
   if (remoteUrl.includes('git@')) return remoteUrl.split(':').slice(-1)[0].replace('.git', '')
 
-  return ''
+  return null
 }
 
 export const sha = async () => (await git('rev-parse HEAD')).toString()

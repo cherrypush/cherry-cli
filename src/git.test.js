@@ -11,9 +11,9 @@ describe('guessProjectName', () => {
   afterAll(() => process.chdir(originalCwd)) // Change back to the original working directory
 
   it('returns an empty string if no pattern is recognized', async () => {
-    expect(guessProjectName(null)).toBe('')
-    expect(guessProjectName('')).toBe('')
-    expect(guessProjectName('../fake-remote')).toBe('')
+    expect(guessProjectName(null)).toBe(null)
+    expect(guessProjectName('')).toBe(null)
+    expect(guessProjectName('../fake-remote')).toBe(null)
   })
 
   it('works for https remotes', () => {
