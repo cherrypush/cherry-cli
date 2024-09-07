@@ -1,16 +1,15 @@
-name: Track codebase stats
+name: cherry push
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   cherry_push:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - name: Checkout project
+        uses: actions/checkout@v4
         with:
           fetch-depth: 2
 
@@ -18,4 +17,4 @@ jobs:
         run: npm install
 
       - name: Push metrics
-        run: ./bin/cherry.js push --api-key=${{ secrets.CHERRY_API_KEY }}
+        run: ./bin/cherry.js push --quiet --api-key=${{ secrets.CHERRY_API_KEY }}

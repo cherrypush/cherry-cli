@@ -139,13 +139,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install dependencies
         run: npm i -g cherrypush
 
       - name: Raise if new JS code added
-        run: ./cli/bin/cherry.js diff --metric='todo' --api-key=${{ secrets.CHERRY_API_KEY }} --error-if-increase
+        run: ./cli/bin/cherry.js diff --metric='todo' --error-if-increase --quiet
 ```
 
 # Integrations 🧩
@@ -159,22 +159,18 @@ For a basic use case, all you need is a workflow file as below:
 ```yml
 # .github/workflows/cherry_push.yml
 
-name: Track codebase metrics
+name: cherry push
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   cherry_push:
     runs-on: ubuntu-latest
-    env:
-      CHERRY_API_KEY: ${{ secrets.CHERRY_API_KEY }}
-
     steps:
       - name: Checkout project
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 2 // required to track contributions, i.e, the diff between commits
 
@@ -182,7 +178,7 @@ jobs:
         run: npm i -g cherrypush
 
       - name: Push metrics
-        run: cherry push --api-key=${{ secrets.CHERRY_API_KEY }}
+        run: cherry push --quiet --api-key=${{ secrets.CHERRY_API_KEY }}
 ```
 
 ## GitLab CI/CD
@@ -201,7 +197,7 @@ cherry_push:
   script:
     - npm i -g cherrypush
     - git checkout $CI_COMMIT_REF_NAME
-    - cherry push
+    - cherry push --quiet
 
   only:
     refs:
