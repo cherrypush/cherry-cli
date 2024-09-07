@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.12.1](https://github.com/cherrypush/cherry-cli/compare/v1.12.0...v1.12.1) (2024-09-07)
+
+
+### Bug Fixes
+
+* update axios from 1.6.2 to 1.7.7 ([c274586](https://github.com/cherrypush/cherry-cli/commit/c27458696d1d33331d854da23161a7c65303e8f7))
+* update braces to 3.0.3 ([f61567a](https://github.com/cherrypush/cherry-cli/commit/f61567ab625cd84d4b3d877cae63dfa727f0e85c))
+
 ## [1.12.0](https://github.com/cherrypush/cherry-cli/compare/v1.11.0...v1.12.0) (2024-09-07)
 
 
