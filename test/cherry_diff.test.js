@@ -1,5 +1,10 @@
+import { beforeEach, describe, expect, it } from 'vitest'
+
 import { exec } from 'child_process'
 import fs from 'fs'
+import { promisify } from 'util'
+
+const execAsync = promisify(exec)
 
 const TEMPORARY_FILE_PATH = 'test_temporary_file'
 
@@ -11,38 +16,38 @@ beforeEach(() => {
 
 // TODO: Cherry diff tests fail when launched before commiting changes. We should probably create a fixture repo to test this properly.
 describe('cherry diff', () => {
-  test('should exit with an error if --metric is missing', (done) => {
-    exec('node bin/cherry.js diff --quiet', (error, _stdout, stderr) => {
+  it('should exit with an error if --metric is missing', async () => {
+    try {
+      await execAsync('node bin/cherry.js diff --quiet')
+    } catch (error) {
       expect(error.code).toBe(1)
-      expect(stderr).toContain(`required option '--metric <metric>' not specified`)
-      done()
-    })
+      expect(error.stderr).toContain(`required option '--metric <metric>' not specified`)
+    }
   })
 
-  test('can take multiple metrics', (done) => {
-    exec('node bin/cherry.js diff --quiet --metric TODO --metric "[loc] JavaScript"', (error, stdout) => {
-      expect(error).toBe(null)
-      expect(stdout).toContain('Metric: TODO')
-      expect(stdout).toContain('Metric: [loc] JavaScript')
-      done()
-    })
+  it('can take multiple metrics', async () => {
+    const { stdout } = await execAsync('node bin/cherry.js diff --quiet --metric TODO --metric "[loc] JavaScript"')
+    expect(stdout).toContain('Metric: TODO')
+    expect(stdout).toContain('Metric: [loc] JavaScript')
   })
 
-  test('requires to commit changes before running cherry diff', (done) => {
+  it('requires to commit changes before running cherry diff', async () => {
     fs.writeFileSync(TEMPORARY_FILE_PATH, 'unexpected content')
 
-    exec('node bin/cherry.js diff --quiet --metric TODO', (error, _stdout, stderr) => {
+    try {
+      await execAsync('node bin/cherry.js diff --quiet --metric TODO')
+    } catch (error) {
       expect(error.code).toBe(1)
-      expect(stderr).toContain('Please commit your changes before running cherry diff.')
-      done()
-    })
+      expect(error.stderr).toContain('Please commit your changes before running cherry diff.')
+    }
   })
 
-  test('does not require to commit changes when --input-file is provided', (done) => {
-    exec('node bin/cherry.js diff --quiet --metric TODO --input-file test --api-key test', (error, _stdout, stderr) => {
+  it('does not require to commit changes when --input-file is provided', async () => {
+    try {
+      await execAsync(`node bin/cherry.js diff --quiet --metric TODO --input-file ${TEMPORARY_FILE_PATH}`)
+    } catch (error) {
       expect(error.code).toBe(1)
-      expect(stderr).not.toContain('Please commit your changes before running cherry diff.')
-      done()
-    })
+      expect(error.stderr).not.toContain('Please commit your changes before running cherry diff.')
+    }
   })
 })

@@ -1,10 +1,15 @@
-import { exec } from 'child_process'
+import { describe, expect, it } from 'vitest'
 
-// TODO: this test should probably be moved to a different file
+import { exec } from 'child_process'
+import { promisify } from 'util'
+
+const execAsync = promisify(exec)
+
 describe('cherry', () => {
-  test('explains the usage', (done) => {
-    exec('node bin/cherry.js', (error, _stdout, stderr) => {
-      expect(error).not.toBeNull()
+  it('explains the usage', async () => {
+    try {
+      const { stderr } = await execAsync('node bin/cherry.js')
+
       expect(stderr).toContain('Usage: cherry [options] [command]')
       expect(stderr).toContain('init')
       expect(stderr).toContain('run')
@@ -13,7 +18,8 @@ describe('cherry', () => {
       expect(stderr).toContain('backfill')
       expect(stderr).toContain('diff')
       expect(stderr).toContain('help')
-      done()
-    })
+    } catch (error) {
+      expect(error).not.toBeNull()
+    }
   })
 })

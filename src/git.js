@@ -2,7 +2,7 @@ import { CONFIG_FILE_LOCAL_PATHS } from './configuration.js'
 import sh from './sh.js'
 import { toISODate } from './date.js'
 
-const git = async (cmd) => {
+export const git = async (cmd) => {
   const { stdout } = await sh(`git ${cmd}`)
   return stdout.toString().split('\n').filter(Boolean)
 }
@@ -16,24 +16,25 @@ export const files = async () => {
   return trackedFiles.concat(untrackedFiles).filter((file) => !rejectedFiles.includes(file))
 }
 
+/**
+ * Guesses the project name based on the remote URL of the git repository.
+ * If the remote URL is not found, returns an empty string.
+ */
 export const guessProjectName = async () => {
   const remotes = await git('remote')
   if (!remotes.length) return ''
 
   const url = (await git(`remote get-url ${remotes[0]}`))[0]
+  console.log('url', url)
   if (!url) return ''
 
-  // If the remote url uses https, such as in https://github.com/cherrypush/cherry-cli.git
+  // Handle https remotes, such as in https://github.com/cherrypush/cherry-cli.git
   if (url.includes('https://')) return url.split('/').slice(-2).join('/').replace('.git', '')
 
-  // If the remote url uses ssh, such as in git@github.com:cherrypush/cherry-cli.git
+  // Handle ssh remotes, such as in git@github.com:cherrypush/cherry-cli.git
   if (url.includes('git@')) return url.split(':').slice(-1)[0].replace('.git', '')
 
-  throw new Error(
-    `Unsupported remote url: ${url}
-    It'd be much appreciated if you could report it here:
-    https://github.com/cherrypush/cherry-cli/issues`
-  )
+  return ''
 }
 
 export const sha = async () => (await git('rev-parse HEAD')).toString()
