@@ -46,13 +46,20 @@ For more info about CI/CD integration, refer to the Integrations section below.
 
 ## cherry run
 
-The run command accepts a couple of different options:
-
 ```
-cherry run [--metric=<metric>] [--owner=<owners>]
+$ cherry run --help
+Usage: cherry run [options]
+
+Options:
+  --owner <owner>        only consider given owner code
+  --metric <metric>      only consider given metric
+  -o, --output <output>  export stats into a local file
+  -f, --format <format>  export format (json, sarif, sonar). default: json
+  --quiet                reduce output to a minimum
+  -h, --help             display help for command
 ```
 
-When used without options, it logs ALL metric stats for your project:
+When used without options, it logs all metrics for the current project:
 
 ```sh
 $ cherry run
@@ -66,23 +73,27 @@ $ cherry run
 └─────────┴────────┘
 ```
 
-To filter metrics, you can combine the different options such as:
+To filter by multiple metrics, you can combine the different options such as:
 
 ```sh
-cherry run --metric="Skipped tests"
+cherry run --metric "todo" --metric "eslint"
 ```
 
-```sh
-cherry run --owner=@fwuensche,@rchoquet
-```
+Or filter by owner:
 
 ```sh
-cherry run --metric="Skipped tests" --owner=@fwuensche,@rchoquet
+cherry run --owner @fwuensche
+```
+
+Or mix both:
+
+```sh
+cherry run --metric "Skipped tests" --owner @fwuensche
 ```
 
 ## cherry push
 
-Your most used command. It submits current project stats to cherrypush.com:
+Your most used command. It submits your project stats to the online dashboard at cherrypush.com:
 
 ```
 $ cherry push
@@ -93,13 +104,21 @@ Your dashboard is available at https://www.cherrypush.com/user/projects
 
 ## cherry backfill
 
-Totally optional. This will submit your historic data to cherrypush.com:
+Totally optional, but quite handy when you're just starting with Cherry.
+
+This allows you to retroactively submit your project stats to the online dashboard at cherrypush.com.
 
 ```
-cherry backfill [--since=<date>] [--until=<date>] [--interval=<days>]
---since will default to a month ago
---until will default to today
---interval will default to 1 day
+$ cherry backfill --help
+Usage: cherry backfill [options]
+
+Options:
+  --api-key <api_key>    Your cherrypush.com api key
+  --since <since>        yyyy-mm-dd | The date at which the backfill will start (defaults to 90 days ago)
+  --until <until>        yyyy-mm-dd | The date at which the backfill will stop (defaults to today)
+  --interval <interval>  The number of days between backfills (defaults to 30 days)
+  --quiet                reduce output to a minimum
+  -h, --help             display help for command
 ```
 
 Use the options to customize the dates you want to generate reports for:
@@ -116,20 +135,21 @@ cherry backfill --since=2023-01-01 --until=2023-12-01 --interval=30
 
 ## cherry diff
 
-You can run this command directly in your terminal to compare the current status of a certain metric to the last
-reported status on cherrypush.com.
+You can run this command directly in your terminal to compare the current status of your branch if compared to the main
+branch. Note that you must be working from a branch, and have all your changes committed.
 
 ```sh
 cherry diff --metric="JS lines of code"
 ```
 
-This command is specifically useful when you want to enforce blocking certain patterns in your codebase.
+This command is specifically useful when you want to prevent specific patterns in your codebase.
 
-It will check the diff between the current commit and the previous one. If there is an increase in your metric, it will
-raise an error, making the CI build fail.
+When integrated to your CI, it will check the diff between the current commit and the base branch.
+
+If there is an increase in the metric, it will raise an error, making the CI build fail.
 
 ```yml
-name: Block the introduction of new violations
+name: cherry diff
 
 on:
   pull_request:
@@ -138,14 +158,14 @@ jobs:
   cherry_diff:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Checkout project
         uses: actions/checkout@v4
 
       - name: Install dependencies
         run: npm i -g cherrypush
 
-      - name: Raise if new JS code added
-        run: ./cli/bin/cherry.js diff --metric='todo' --error-if-increase --quiet
+      - name: Raise if new violations are introduced
+        run: ./cli/bin/cherry.js diff --metric='eslint' --error-if-increase --quiet
 ```
 
 # Integrations 🧩

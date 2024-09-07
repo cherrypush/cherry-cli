@@ -1,16 +1,18 @@
-import { computeContributions } from '../../src/contributions.js'
-import { upload, uploadContributions } from '../helpers.js'
-import Codeowners from '../../src/codeowners.js'
-import { getConfiguration } from '../../src/configuration.js'
-import { panic } from '../../src/error.js'
-import { getFiles } from '../../src/files.js'
 import * as git from '../../src/git.js'
+
+import { upload, uploadContributions } from '../helpers.js'
+
+import Codeowners from '../../src/codeowners.js'
+import { computeContributions } from '../../src/contributions.js'
 import { findOccurrences } from '../../src/occurrences.js'
+import { getConfiguration } from '../../src/configuration.js'
+import { getFiles } from '../../src/files.js'
+import { panic } from '../../src/error.js'
 
 export default function (program) {
   program
     .command('push')
-    .option('--api-key <api_key>', 'Your cherrypush.com api key')
+    .option('--api-key <api_key>', 'your cherrypush.com API key')
     .option('--quiet', 'reduce output to a minimum')
     .action(async (options) => {
       const configuration = await getConfiguration()
