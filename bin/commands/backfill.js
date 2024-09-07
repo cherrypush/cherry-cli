@@ -1,19 +1,21 @@
-import { API_BASE_URL, upload } from '../helpers.js'
-import Codeowners from '../../src/codeowners.js'
-import { getConfiguration } from '../../src/configuration.js'
-import { substractDays, toISODate } from '../../src/date.js'
-import { panic } from '../../src/error.js'
-import { getFiles } from '../../src/files.js'
 import * as git from '../../src/git.js'
+
+import { API_BASE_URL, upload } from '../helpers.js'
+import { substractDays, toISODate } from '../../src/date.js'
+
+import Codeowners from '../../src/codeowners.js'
 import { findOccurrences } from '../../src/occurrences.js'
+import { getConfiguration } from '../../src/configuration.js'
+import { getFiles } from '../../src/files.js'
+import { panic } from '../../src/error.js'
 
 export default function (program) {
   program
     .command('backfill')
-    .option('--api-key <api_key>', 'Your cherrypush.com api key')
-    .option('--since <since>', 'yyyy-mm-dd | The date at which the backfill will start (defaults to 90 days ago)')
-    .option('--until <until>', 'yyyy-mm-dd | The date at which the backfill will stop (defaults to today)')
-    .option('--interval <interval>', 'The number of days between backfills (defaults to 30 days)')
+    .option('--api-key <api_key>', 'your cherrypush.com API key')
+    .option('--since <since>', 'the date at which the backfill will start as yyyy-mm-dd (defaults to 90 days ago)')
+    .option('--until <until>', 'the date at which the backfill will stop as yyyy-mm-dd (defaults to today)')
+    .option('--interval <interval>', 'the number of days between backfills (defaults to 30)')
     .option('--quiet', 'reduce output to a minimum')
     .action(async (options) => {
       const since = options.since ? new Date(options.since) : substractDays(new Date(), 90)

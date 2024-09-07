@@ -21,17 +21,18 @@ export const allowMultipleValues = (value, previous) => (previous ? [...previous
 export default function (program) {
   program
     .command('run')
-    .option('--owner <owner>', 'will only consider provided code owners')
+    .option('--owner <owner>', 'will only consider the provided code owners', allowMultipleValues)
     .option('--metric <metric>', 'will only consider provided metrics', allowMultipleValues)
     .option('-o, --output <output>', 'export stats into a local file')
-    .option('-f, --format <format>', 'export format (json, sarif, sonar). default: json')
+    .option('-f, --format <format>', 'export format - json, sarif, or sonar (defaults to json)')
     .option('--quiet', 'reduce output to a minimum')
     .action(async (options) => {
       const configuration = await getConfiguration()
       const codeOwners = new Codeowners()
-      const owners = options.owners ? options.owners.split(',') : null
-      const files = options.owner ? await getFiles(options.owner.split(','), codeOwners) : await getFiles()
+      const owners = options.owner
       const quiet = options.quiet
+
+      const files = owners ? await getFiles(owners, codeOwners) : await getFiles()
 
       const occurrences = await findOccurrences({
         configuration,
@@ -40,7 +41,7 @@ export default function (program) {
         codeOwners,
         quiet,
       })
-      if (options.owner || options.metric) {
+      if (owners || options.metric) {
         let displayedOccurrences = occurrences
         if (owners) displayedOccurrences = displayedOccurrences.filter((o) => _.intersection(o.owners, owners).length)
         if (options.metric)
