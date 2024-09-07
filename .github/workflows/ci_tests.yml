@@ -39,5 +39,11 @@ jobs:
       - name: Run lint
         run: npm run lint
 
+      # Setup git user is required to create the repository from fixtures
+      - name: Setup git user
+        run: |
+          git config --local user.email "ci@example.com"
+          git config --local user.name "CI Bot"
+
       - name: Run tests
         run: npm test

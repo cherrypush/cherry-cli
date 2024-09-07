@@ -43,7 +43,7 @@ describe('cherry diff', () => {
       await execAsync(`${CHERRY_BIN_PATH} diff --quiet --metric TODO`)
     } catch (error) {
       expect(error.code).toBe(1)
-      expect(error.stderr).toContain('Please commit your changes before running cherry diff.')
+      expect(error.stderr).toContain('Please commit your changes before running cherry diff')
     }
   })
 
@@ -52,7 +52,7 @@ describe('cherry diff', () => {
       await execAsync(`${CHERRY_BIN_PATH} diff --quiet --metric TODO --input-file ${TEMPORARY_FILE_PATH}`)
     } catch (error) {
       expect(error.code).toBe(1)
-      expect(error.stderr).not.toContain('Please commit your changes before running cherry diff.')
+      expect(error.stderr).not.toContain('Please commit your changes before running cherry diff')
     }
   })
 })
