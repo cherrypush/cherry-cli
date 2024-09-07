@@ -1,4 +1,4 @@
-name: Track codebase stats
+name: cherry push
 
 on:
   push:
@@ -7,13 +7,13 @@ on:
 
 jobs:
   cherry_push:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - name: Checkout project
+        uses: actions/checkout@v4
 
       - name: Install dependencies
         run: npm i -g cherrypush
 
       - name: Push metrics to Cherry
-        run: cherry push --api-key=${{ secrets.CHERRY_API_KEY }}
+        run: cherry push --quiet --api-key=${{ secrets.CHERRY_API_KEY }}
