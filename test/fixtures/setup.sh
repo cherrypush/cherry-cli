@@ -36,8 +36,3 @@ if [ ! -d "test/fixtures/project-one/.git" ]; then
   # Get back to the root directory
   cd ../../..
 fi
-
-
-
-
-
