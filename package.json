@@ -10,7 +10,8 @@
   "scripts": {
     "prepare": "husky install",
     "bump": "npm version patch && npm publish",
-    "test": "vitest run",
+    "test": "sh test/fixtures/setup.sh && vitest run",
+    "test:cleanup": "sh test/fixtures/cleanup.sh",
     "lint": "eslint . --ext .js",
     "format": "prettier --write ."
   },
