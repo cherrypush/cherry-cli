@@ -12,5 +12,5 @@ updates:
       interval: 'daily'
       time: '09:00'
     commit-message:
-      prefix: 'deps: '
-      prefix-development: 'deps(dev): '
+      prefix: 'fix: '
+      prefix-development: 'fix(dev): '
