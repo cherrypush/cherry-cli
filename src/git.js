@@ -17,22 +17,27 @@ export const files = async () => {
 }
 
 /**
+ * Retrieves the URL of the first Git remote for the current path.
+ */
+export const getRemoteUrl = async () => {
+  const remotes = await git('remote')
+  if (!remotes.length) return null
+
+  return (await git(`remote get-url ${remotes[0]}`))[0]
+}
+
+/**
  * Guesses the project name based on the remote URL of the git repository.
  * If the remote URL is not found, returns an empty string.
  */
-export const guessProjectName = async () => {
-  const remotes = await git('remote')
-  if (!remotes.length) return ''
-
-  const url = (await git(`remote get-url ${remotes[0]}`))[0]
-  console.log('url', url)
-  if (!url) return ''
+export const guessProjectName = (remoteUrl) => {
+  if (!remoteUrl) return ''
 
   // Handle https remotes, such as in https://github.com/cherrypush/cherry-cli.git
-  if (url.includes('https://')) return url.split('/').slice(-2).join('/').replace('.git', '')
+  if (remoteUrl.includes('https://')) return remoteUrl.split('/').slice(-2).join('/').replace('.git', '')
 
   // Handle ssh remotes, such as in git@github.com:cherrypush/cherry-cli.git
-  if (url.includes('git@')) return url.split(':').slice(-1)[0].replace('.git', '')
+  if (remoteUrl.includes('git@')) return remoteUrl.split(':').slice(-1)[0].replace('.git', '')
 
   return ''
 }

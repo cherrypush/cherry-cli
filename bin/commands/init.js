@@ -23,7 +23,8 @@ export default function (program) {
     prompt.message = ''
     prompt.start()
 
-    let projectName = await git.guessProjectName()
+    const remoteUrl = await git.getRemoteUrl()
+    let projectName = git.guessProjectName(remoteUrl)
     if (!projectName) {
       projectName = await prompt.get({
         properties: {

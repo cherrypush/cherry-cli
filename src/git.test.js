@@ -1,31 +1,26 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { guessProjectName } from './git.js'
 import path from 'path'
 
-// Partially mock the module
-vi.mock('./git.js', async (importOriginal) => {
-  const originalModule = await importOriginal() // Import the actual module
-  return {
-    ...originalModule, // Keep the original exports
-    git: vi.fn(), // Mock only the `git` function
-  }
-})
-
-// We have a fixture project in `test/fixtures/project_one` that we use to create test scenarios
 const originalCwd = process.cwd()
-const fixturesPath = path.join(originalCwd, 'test/fixtures/project_one')
+const fakeProjectPath = path.join(originalCwd, 'test/fixtures/project-one')
 
 describe('guessProjectName', () => {
-  beforeAll(() => process.chdir(fixturesPath)) // Change to `test/fixtures/project_one`
+  beforeAll(() => process.chdir(fakeProjectPath)) // Change to `test/fixtures/project-one`
   afterAll(() => process.chdir(originalCwd)) // Change back to the original working directory
 
-  it('should return an empty string if no remotes are found', async () => {
-    // TODO: It'd be better to improve guessProjectName to take url as a param, so we can test it without mocking git
-    const { git } = await import('./git.js') // Import the mocked `git` function
-    git.mockResolvedValueOnce([]) // Mock `git('remote')` to return an empty array
-    const result = await guessProjectName()
+  it('returns an empty string if no pattern is recognized', async () => {
+    expect(guessProjectName(null)).toBe('')
+    expect(guessProjectName('')).toBe('')
+    expect(guessProjectName('../fake-remote')).toBe('')
+  })
 
-    expect(result).toBe('cherrypush/project_one')
+  it('works for https remotes', () => {
+    expect(guessProjectName('https://github.com/cherrypush/cherry-cli.git')).toBe('cherrypush/cherry-cli')
+  })
+
+  it('works for ssh remotes', () => {
+    expect(guessProjectName('git@github.com:cherrypush/cherry-cli.git')).toBe('cherrypush/cherry-cli')
   })
 })
