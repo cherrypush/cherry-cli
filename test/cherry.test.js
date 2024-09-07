@@ -8,18 +8,16 @@ const execAsync = promisify(exec)
 describe('cherry', () => {
   it('explains the usage', async () => {
     try {
-      const { stderr } = await execAsync('node bin/cherry.js')
-
-      expect(stderr).toContain('Usage: cherry [options] [command]')
-      expect(stderr).toContain('init')
-      expect(stderr).toContain('run')
-      expect(stderr).toContain('push')
-      expect(stderr).toContain('diff')
-      expect(stderr).toContain('backfill')
-      expect(stderr).toContain('diff')
-      expect(stderr).toContain('help')
+      await execAsync('node bin/cherry.js')
     } catch (error) {
-      expect(error).not.toBeNull()
+      expect(error.stderr).toContain('Usage: cherry [options] [command]')
+      expect(error.stderr).toContain('init')
+      expect(error.stderr).toContain('run')
+      expect(error.stderr).toContain('push')
+      expect(error.stderr).toContain('diff')
+      expect(error.stderr).toContain('backfill')
+      expect(error.stderr).toContain('diff')
+      expect(error.stderr).toContain('help')
     }
   })
 })
