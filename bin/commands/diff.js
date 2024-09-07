@@ -29,8 +29,10 @@ export default function (program) {
       const initialBranch = await git.branchName()
       if (!inputFile && !initialBranch) panic('Not on a branch, checkout a branch before running cherry diff.')
 
-      const hasUncommitedChanges = (await git.uncommittedFiles()).length > 0
-      if (!inputFile && hasUncommitedChanges) panic('Please commit your changes before running cherry diff.')
+      const uncommittedFiles = await git.uncommittedFiles()
+      const hasUncommitedChanges = uncommittedFiles.length > 0
+      if (!inputFile && hasUncommitedChanges)
+        panic(`Please commit your changes before running cherry diff: ${uncommittedFiles.join(', ')}`)
 
       // Start by calculating the occurrences for the current branch
       const currentOccurrences = await findOccurrences({
