@@ -1,33 +1,32 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { execAsync, expectError } from './helpers.js'
 
-import { exec } from 'child_process'
 import fs from 'fs'
 import path from 'path'
-import { promisify } from 'util'
-
-const execAsync = promisify(exec)
 
 const TEMPORARY_FILE_PATH = 'test_temporary_file'
 
 const CHERRY_BIN_PATH = 'node ./../../../bin/cherry.js'
 
 const originalCwd = process.cwd()
-const fixturesPath = path.join(originalCwd, 'test/fixtures/project-one')
+const fakeProjectPath = path.join(originalCwd, 'test/fixtures/project-one')
 
 describe('cherry diff', () => {
   beforeAll(() => {
+    process.chdir(fakeProjectPath)
     if (fs.existsSync(TEMPORARY_FILE_PATH)) fs.unlinkSync(TEMPORARY_FILE_PATH)
-    process.chdir(fixturesPath)
   })
+
   afterAll(() => process.chdir(originalCwd))
 
+  it('uses the default configuration', async () => {
+    const { stdout } = await execAsync(`${CHERRY_BIN_PATH} diff --quiet --metric "[loc] JavaScript"`)
+    expect(stdout).toContain('No .cherry.js file found, using default configuration...')
+  })
+
   it('should exit with an error if --metric is missing', async () => {
-    try {
-      await execAsync(`${CHERRY_BIN_PATH} diff --quiet`)
-    } catch (error) {
-      expect(error.code).toBe(1)
-      expect(error.stderr).toContain(`required option '--metric <metric>' not specified`)
-    }
+    const error = await expectError(`${CHERRY_BIN_PATH} diff --quiet`)
+    expect(error.stderr).toContain(`required option '--metric <metric>' not specified`)
   })
 
   it('can take multiple metrics', async () => {
@@ -38,21 +37,13 @@ describe('cherry diff', () => {
 
   it('requires to commit changes before running cherry diff', async () => {
     fs.writeFileSync(TEMPORARY_FILE_PATH, 'unexpected content')
-
-    try {
-      await execAsync(`${CHERRY_BIN_PATH} diff --quiet --metric TODO`)
-    } catch (error) {
-      expect(error.code).toBe(1)
-      expect(error.stderr).toContain('Please commit your changes before running cherry diff')
-    }
+    const error = await expectError(`${CHERRY_BIN_PATH} diff --quiet --metric TODO`)
+    expect(error.stderr).toContain('Please commit your changes before running cherry diff')
   })
 
   it('does not require to commit changes when --input-file is provided', async () => {
-    try {
-      await execAsync(`${CHERRY_BIN_PATH} diff --quiet --metric TODO --input-file ${TEMPORARY_FILE_PATH}`)
-    } catch (error) {
-      expect(error.code).toBe(1)
-      expect(error.stderr).not.toContain('Please commit your changes before running cherry diff')
-    }
+    const error = await expectError(`${CHERRY_BIN_PATH} diff --quiet --metric TODO --input-file ${TEMPORARY_FILE_PATH}`)
+    expect(error.code).toBe(1)
+    expect(error.stderr).not.toContain('Please commit your changes before running cherry diff')
   })
 })

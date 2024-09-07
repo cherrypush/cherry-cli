@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { exec } from 'child_process'
-import { promisify } from 'util'
-
-const execAsync = promisify(exec)
+import { execAsync } from './helpers'
 
 describe('cherry run', () => {
   it('runs all metrics from config file', async () => {

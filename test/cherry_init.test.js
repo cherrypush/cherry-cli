@@ -1,14 +1,11 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { exec } from 'child_process'
+import { execAsync } from './helpers'
 import fs from 'fs'
 import path from 'path'
-import { promisify } from 'util'
 
 const originalCwd = process.cwd()
 const fixturesPath = path.join(originalCwd, 'test/fixtures/project-one')
-
-const execAsync = promisify(exec)
 
 describe('cherry init', () => {
   beforeAll(() => process.chdir(fixturesPath))
@@ -18,7 +15,7 @@ describe('cherry init', () => {
     // Remove .cherry.js file if it exists
     if (fs.existsSync('.cherry.js')) fs.unlinkSync('.cherry.js')
 
-    // Specify the project name to "cherrypush/cherry-cli"
+    // The cherry init command prompts for a project name. Feed it with: "cherrypush/cherry-cli"
     await execAsync('echo "cherrypush/cherry-cli" | node ./../../../bin/cherry.js init')
     expect(fs.existsSync('.cherry.js')).toBe(true)
 
