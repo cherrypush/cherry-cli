@@ -1,0 +1,3 @@
+[submodule "test/fixtures/project-one"]
+	path = test/fixtures/project-one
+	url = test/fixtures/fake-remote
