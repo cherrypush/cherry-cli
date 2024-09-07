@@ -28,7 +28,7 @@ jobs:
           ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Set up node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -39,12 +39,8 @@ jobs:
       - name: Run lint
         run: npm run lint
 
-      # - name: Run format
-      #   run: |
-      #     FILES=$(git diff --name-only --diff-filter=d origin/main... | grep "\.js$")
-      #     if [ -n "$FILES" ]; then
-      #       npx prettier --check $FILES
-      #     fi
+      - name: Setup fixtures for tests
+        run: npm run test:setup
 
       - name: Run tests
         run: npm test

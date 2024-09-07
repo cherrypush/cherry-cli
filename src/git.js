@@ -1,11 +1,8 @@
 import { CONFIG_FILE_LOCAL_PATHS } from './configuration.js'
-import { toISODate } from './date.js'
 import sh from './sh.js'
+import { toISODate } from './date.js'
 
-// eslint-disable-next-line no-useless-escape
-const REPO_NAME_REGEX = /([\w\-_\.]+\/[\w\-_\.]+)\.git/g
-
-const git = async (cmd) => {
+export const git = async (cmd) => {
   const { stdout } = await sh(`git ${cmd}`)
   return stdout.toString().split('\n').filter(Boolean)
 }
@@ -19,15 +16,30 @@ export const files = async () => {
   return trackedFiles.concat(untrackedFiles).filter((file) => !rejectedFiles.includes(file))
 }
 
-export const guessProjectName = async () => {
+/**
+ * Retrieves the URL of the first Git remote for the current path.
+ */
+export const getRemoteUrl = async () => {
   const remotes = await git('remote')
-  if (!remotes.length) return ''
+  if (!remotes.length) return null
 
-  const url = (await git(`remote get-url ${remotes[0]}`))[0]
-  if (!url) return ''
+  return (await git(`remote get-url ${remotes[0]}`))[0]
+}
 
-  const matches = Array.from(url.matchAll(REPO_NAME_REGEX))[0]
-  return matches[1] || ''
+/**
+ * Guesses the project name based on the remote URL of the git repository.
+ * If the remote URL is not found, returns an empty string.
+ */
+export const guessProjectName = (remoteUrl) => {
+  if (!remoteUrl) return null
+
+  // Handle https remotes, such as in https://github.com/cherrypush/cherry-cli.git
+  if (remoteUrl.includes('https://')) return remoteUrl.split('/').slice(-2).join('/').replace('.git', '')
+
+  // Handle ssh remotes, such as in git@github.com:cherrypush/cherry-cli.git
+  if (remoteUrl.includes('git@')) return remoteUrl.split(':').slice(-1)[0].replace('.git', '')
+
+  return null
 }
 
 export const sha = async () => (await git('rev-parse HEAD')).toString()
