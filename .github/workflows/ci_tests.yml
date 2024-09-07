@@ -42,6 +42,7 @@ jobs:
       - run: git diff
       - run: sh test/fixtures/setup.sh
       - run: git diff
+      - run: git status
 
       - name: Run tests
         run: npm test
