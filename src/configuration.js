@@ -1,8 +1,9 @@
+import { getRemoteUrl, guessProjectName } from './git.js'
+
 import buildAndImport from './build-and-import.cjs'
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import fs from 'fs'
-import { guessProjectName } from './git.js'
 
 export const CONFIG_FILE_LOCAL_PATHS = ['.cherry.js', '.cherry.cjs', '.cherry.ts']
 export const WORKFLOW_FILE_LOCAL_PATH = '.github/workflows/cherry_push.yml'
@@ -30,9 +31,10 @@ export const workflowExists = () => fs.existsSync(WORKFLOW_FILE_FULL_PATH)
 export const getConfiguration = async () => {
   const configurationFile = getConfigurationFile()
   if (!configurationFile) {
-    const guessedProjectName = await guessProjectName()
+    const remoteUrl = await getRemoteUrl()
+    const guessedProjectName = guessProjectName(remoteUrl)
     console.log('ℹ️  No .cherry.js file found, using default configuration...')
-    return { project_name: guessedProjectName, plugins: ['loc'] }
+    return { project_name: guessedProjectName, plugins: { loc: {} }, metrics: [] }
   }
 
   const imported = buildAndImport(configurationFile)

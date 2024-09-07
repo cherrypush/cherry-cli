@@ -1,19 +1,17 @@
-import { exec } from 'child_process'
+import { describe, expect, it } from 'vitest'
 
-// TODO: this test should probably be moved to a different file
+import { expectError } from './helpers'
+
 describe('cherry', () => {
-  test('explains the usage', (done) => {
-    exec('node bin/cherry.js', (error, _stdout, stderr) => {
-      expect(error).not.toBeNull()
-      expect(stderr).toContain('Usage: cherry [options] [command]')
-      expect(stderr).toContain('init')
-      expect(stderr).toContain('run')
-      expect(stderr).toContain('push')
-      expect(stderr).toContain('diff')
-      expect(stderr).toContain('backfill')
-      expect(stderr).toContain('diff')
-      expect(stderr).toContain('help')
-      done()
-    })
+  it('explains the usage', async () => {
+    const error = await expectError('node bin/cherry.js')
+    expect(error.stderr).toContain('Usage: cherry [options] [command]')
+    expect(error.stderr).toContain('init')
+    expect(error.stderr).toContain('run')
+    expect(error.stderr).toContain('push')
+    expect(error.stderr).toContain('diff')
+    expect(error.stderr).toContain('backfill')
+    expect(error.stderr).toContain('diff')
+    expect(error.stderr).toContain('help')
   })
 })

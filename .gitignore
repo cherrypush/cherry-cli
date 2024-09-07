@@ -55,3 +55,7 @@ node_modules
 /vendor/bundle
 latest.dump
 results.json
+
+# Ignore test fixtures
+test/fixtures/fake-remote
+test/fixtures/project-one
