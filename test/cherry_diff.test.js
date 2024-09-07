@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { exec } from 'child_process'
 import fs from 'fs'
@@ -14,16 +14,12 @@ const CHERRY_BIN_PATH = 'node ./../../../bin/cherry.js'
 const originalCwd = process.cwd()
 const fixturesPath = path.join(originalCwd, 'test/fixtures/project-one')
 
-beforeEach(() => {
-  if (fs.existsSync(TEMPORARY_FILE_PATH)) {
-    fs.unlinkSync(TEMPORARY_FILE_PATH)
-  }
-})
-
-// TODO: Cherry diff tests fail when launched before commiting changes. We should probably create a fixture repo to test this properly.
 describe('cherry diff', () => {
-  beforeAll(() => process.chdir(fixturesPath)) // Change to `test/fixtures/project-one`
-  afterAll(() => process.chdir(originalCwd)) // Change back to the original working directory
+  beforeAll(() => {
+    if (fs.existsSync(TEMPORARY_FILE_PATH)) fs.unlinkSync(TEMPORARY_FILE_PATH)
+    process.chdir(fixturesPath)
+  })
+  afterAll(() => process.chdir(originalCwd))
 
   it('should exit with an error if --metric is missing', async () => {
     try {

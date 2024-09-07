@@ -30,7 +30,6 @@ export default function (program) {
       if (!inputFile && !initialBranch) panic('Not on a branch, checkout a branch before running cherry diff.')
 
       const hasUncommitedChanges = (await git.uncommittedFiles()).length > 0
-      console.log('await git.uncommittedFiles()', await git.uncommittedFiles())
       if (!inputFile && hasUncommitedChanges) panic('Please commit your changes before running cherry diff.')
 
       // Start by calculating the occurrences for the current branch

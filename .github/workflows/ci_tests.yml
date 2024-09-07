@@ -39,10 +39,5 @@ jobs:
       - name: Run lint
         run: npm run lint
 
-      - run: git diff
-      - run: sh test/fixtures/setup.sh
-      - run: git diff
-      - run: git status
-
       - name: Run tests
         run: npm test
