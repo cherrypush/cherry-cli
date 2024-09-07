@@ -8,7 +8,7 @@ if [ ! -d "test/fixtures/project-one/.git" ]; then
 
   # Setup git user if in the CI environment
   if [ -n "$CI" ]; then
-    echo "Setting up git user for CI environment"
+    echo "Setting up git user for CI environment..."
     git config --local user.email "ci@example.com"
     git config --local user.name "CI Bot"
   fi
@@ -19,12 +19,9 @@ if [ ! -d "test/fixtures/project-one/.git" ]; then
   git commit -m "Initial commit"
 
   # Create a directory to act as the fake remote
+  echo "Setting up a fake remote..."
   mkdir -p ../fake-remote
-
-  # Initialize a bare repository in the fake remote directory
-  git init --bare ../fake-remote
-
-  # Add the fake remote to the current project
+  git init --bare ../fake-remote --initial-branch=main
   git remote add origin ../fake-remote
 
   # Push the local branch (main) to the fake remote

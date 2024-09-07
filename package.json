@@ -11,6 +11,7 @@
     "prepare": "husky install",
     "bump": "npm version patch && npm publish",
     "test": "sh test/fixtures/setup.sh && vitest run",
+    "test:setup": "sh test/fixtures/setup.sh",
     "test:cleanup": "sh test/fixtures/cleanup.sh",
     "lint": "eslint . --ext .js",
     "format": "prettier --write ."

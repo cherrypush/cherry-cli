@@ -39,5 +39,8 @@ jobs:
       - name: Run lint
         run: npm run lint
 
+      - name: Setup fixtures for tests
+        run: npm run test:setup
+
       - name: Run tests
         run: npm test
