@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.13.0](https://github.com/cherrypush/cherry-cli/compare/v1.12.2...v1.13.0) (2024-09-08)
+
+
+### Features
+
+* allow custom permalinks ([#84](https://github.com/cherrypush/cherry-cli/issues/84)) ([63485a7](https://github.com/cherrypush/cherry-cli/commit/63485a770d67ec65b7ef02da64ad22dff9ffea63))
+
+
+### Bug Fixes
+
+* **dev:** bump @commitlint/config-conventional from 18.4.3 to 19.4.1 ([#81](https://github.com/cherrypush/cherry-cli/issues/81)) ([e7cea20](https://github.com/cherrypush/cherry-cli/commit/e7cea2093dfcae68ece6ae4aafd2204a6bf5db61))
+* use relative path for eslint ([#83](https://github.com/cherrypush/cherry-cli/issues/83)) ([bc1cdac](https://github.com/cherrypush/cherry-cli/commit/bc1cdac963a82f63f88356ec72aa5cf3f1f856ac))
+
 ## [1.12.2](https://github.com/cherrypush/cherry-cli/compare/v1.12.1...v1.12.2) (2024-09-07)
 
 
