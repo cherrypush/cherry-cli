@@ -27,6 +27,7 @@ const run = async () => {
         text: `${filePath}:${message.line}`,
         filePath: filePath,
         metricName: `[eslint] ${message.ruleId}`,
+        lineNumber: message.line,
       }))
     })
 }

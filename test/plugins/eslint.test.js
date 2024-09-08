@@ -15,8 +15,13 @@ function testEslint() {
 }
 
 describe('eslint plugin', () => {
-  it('returns paths relative to the root of the project', async () => {
+  it('works', async () => {
     const { stdout } = await execAsync('node bin/cherry.js run --metric "[eslint] no-unused-vars"')
+
+    // Uses the relative path to the project root, containing the line number
     expect(stdout).toContain('👉 test/plugins/eslint.test.js:9')
+
+    // Builds the correct permalink, also containing the line number
+    expect(stdout).toContain('https://github.com/cherrypush/cherry-cli/blob/HEAD/test/plugins/eslint.test.js#L9')
   })
 })

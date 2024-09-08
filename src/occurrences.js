@@ -2,7 +2,7 @@ import { executeWithTiming, warnsAboutLongRunningTasks } from './helpers/timer.j
 
 import Spinnies from 'spinnies'
 import _ from 'lodash'
-import { buildPermalink } from './github.js'
+import { buildPermalink } from './permalink.js'
 import eslint from './plugins/eslint.js'
 import jsCircularDependencies from './plugins/js_circular_dependencies.js'
 import jsUnimported from './plugins/js_unimported.js'
@@ -162,6 +162,7 @@ const withEmptyMetrics = (occurrences, metrics = []) => {
 
 export const findOccurrences = async ({ configuration, files, metricNames, codeOwners, quiet }) => {
   let metrics = configuration.metrics
+  const { project_name: projectName, permalink } = configuration
 
   // Prevent running all metrics if a subset is provided
   if (metricNames) metrics = metrics.filter(({ name }) => metricNames.includes(name))
@@ -181,7 +182,8 @@ export const findOccurrences = async ({ configuration, files, metricNames, codeO
     text,
     value,
     metricName,
-    url: url !== undefined ? url : filePath && buildPermalink(configuration.project_name, filePath, lineNumber),
+    // The url might have been provided by plugins or eval metrics
+    url: url !== undefined ? url : filePath && buildPermalink(permalink, projectName, filePath, lineNumber),
     owners: owners !== undefined ? owners : filePath && codeOwners.getOwners(filePath),
   }))
 
