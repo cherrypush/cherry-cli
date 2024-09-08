@@ -4,8 +4,8 @@ import { buildPermalink } from './permalink.js'
 
 describe('buildPermalink', () => {
   it('builds a permalink with a custom function', () => {
-    const permalink = ({ projectName, filePath, lineNumber }) =>
-      `https://gitlab.com/${projectName}/blob/HEAD/${filePath}${lineNumber ? `#L${lineNumber}` : ''}`
+    const permalink = ({ filePath, lineNumber }) =>
+      `https://gitlab.com/cherrypush/cherry-cli/blob/HEAD/${filePath}${lineNumber ? `#L${lineNumber}` : ''}`
 
     const projectName = 'cherrypush/cherry-cli'
     const filePath = 'src/permalink.js'
