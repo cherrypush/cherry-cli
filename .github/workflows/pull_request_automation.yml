@@ -1,0 +1,28 @@
+name: Pull Request Automation
+
+on:
+  pull_request_target:
+    types: [labeled]
+
+jobs:
+  auto-approve:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    timeout-minutes: 5
+    if: ${{ github.event.label.name == 'auto-approve' }}
+    steps:
+      - uses: hmarr/auto-approve-action@v4
+
+  auto-merge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: ${{ github.event.label.name == 'auto-merge' }}
+    steps:
+      - name: Auto merge
+        run: gh pr merge --auto ${STRATEGY} "${PR_URL}"
+        shell: bash
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STRATEGY: '--squash'
