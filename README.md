@@ -224,6 +224,24 @@ cherry_push:
       - main
 ```
 
+# Configuration
+
+## Permalink
+
+Especially if you're using Cherry in a GitLab project, you might want to setup custom permalinks for your metrics.
+
+You can do this by adding a `permalink` property to your configuration file, such as:
+
+```js
+// .cherry.js
+module.exports = {
+  project_name: 'cherrypush/cherry-cli',
+  permalink: ({ filePath, lineNumber }) =>
+    `https://gitlab.com/cherrypush/cherry-cli/blob/HEAD/${filePath}${lineNumber ? `#L${lineNumber}` : ''}`,
+  plugins: { eslint: {} },
+}
+```
+
 # Feedback 🙏
 
 Any further question or suggestion?
