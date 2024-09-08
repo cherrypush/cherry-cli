@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires -- commonjs file (we need the `module` keyword)
 const esbuild = require('esbuild')
 
 // https://stackoverflow.com/questions/17581830/load-node-js-module-from-string-in-memory
