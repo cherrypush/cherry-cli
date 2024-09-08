@@ -47,7 +47,7 @@ export default function (program) {
         if (options.metric)
           displayedOccurrences = displayedOccurrences.filter((o) => options.metric.includes(o.metricName))
 
-        displayedOccurrences.forEach((occurrence) => console.log(`👉 ${occurrence.text}`))
+        displayedOccurrences.forEach((occurrence) => console.log(`👉 ${occurrence.text} (${occurrence.url})`))
         console.log('Total occurrences:', displayedOccurrences.length)
       } else console.table(sortObject(countByMetric(occurrences)))
 

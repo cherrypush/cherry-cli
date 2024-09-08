@@ -1,10 +1,10 @@
-import axios from 'axios'
-import fs from 'fs'
-import _ from 'lodash'
-import { panic } from '../src/error.js'
 import Spinnies from 'spinnies'
+import _ from 'lodash'
+import axios from 'axios'
+import { buildRepoURL } from '../src/permalink.js'
+import fs from 'fs'
+import { panic } from '../src/error.js'
 import { v4 } from 'uuid'
-import { buildRepoURL } from '../src/github.js'
 
 export const spinnies = new Spinnies()
 
