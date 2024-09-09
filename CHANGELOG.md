@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.0.0](https://github.com/cherrypush/cherry-cli/compare/v1.13.0...v2.0.0) (2024-09-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* start migrating to typescript ([#52](https://github.com/cherrypush/cherry-cli/issues/52))
+
+### Features
+
+* start migrating to typescript ([#52](https://github.com/cherrypush/cherry-cli/issues/52)) ([c6833a4](https://github.com/cherrypush/cherry-cli/commit/c6833a4f7572dede3cde6809e99855eb77be01a8))
+
+
+### Bug Fixes
+
+* bump micromatch and lint-staged ([#86](https://github.com/cherrypush/cherry-cli/issues/86)) ([8839f72](https://github.com/cherrypush/cherry-cli/commit/8839f72c5e14d2aa06c8bbc648d8d032e3bc706e))
+* improve docs with details about the configuration file ([becc5ff](https://github.com/cherrypush/cherry-cli/commit/becc5ff3c6a1940a0f0aaec5ff1aad57579df765))
+
 ## [1.13.0](https://github.com/cherrypush/cherry-cli/compare/v1.12.2...v1.13.0) (2024-09-08)
 
 
