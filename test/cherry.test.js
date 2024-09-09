@@ -4,7 +4,7 @@ import { expectError } from './helpers'
 
 describe('cherry', () => {
   it('explains the usage', async () => {
-    const error = await expectError('node bin/cherry.js')
+    const error = await expectError('npm run cherry')
     expect(error.stderr).toContain('Usage: cherry [options] [command]')
     expect(error.stderr).toContain('init')
     expect(error.stderr).toContain('run')

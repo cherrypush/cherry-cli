@@ -2,7 +2,6 @@ import Spinnies from 'spinnies'
 import _ from 'lodash'
 import axios from 'axios'
 import { buildRepoURL } from '../src/permalink.js'
-import fs from 'fs'
 import { panic } from '../src/error.js'
 import { v4 } from 'uuid'
 
@@ -11,8 +10,6 @@ export const spinnies = new Spinnies()
 export const API_BASE_URL = process.env.API_URL ?? 'https://www.cherrypush.com/api'
 
 export const UPLOAD_BATCH_SIZE = 1000
-
-export const packageJson = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url)))
 
 export const countByMetric = (occurrences) =>
   _(occurrences)
@@ -160,7 +157,7 @@ export const buildSarifPayload = (projectName, branch, sha, occurrences) => {
         tool: {
           driver: {
             name: 'cherry',
-            version: packageJson.version,
+            version: process.env.npm_package_version,
             informationUri: 'https://github.com/cherrypush/cherrypush.com',
             rules,
           },

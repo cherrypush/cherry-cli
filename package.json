@@ -2,18 +2,24 @@
   "name": "cherrypush",
   "version": "1.13.0",
   "description": "Cherry CLI to manage your technical debt via cherrypush.com 🍒",
-  "source": "./bin/cherry.js",
+  "source": "./bin/cherry.ts",
   "type": "module",
   "bin": {
-    "cherry": "./bin/cherry.js"
+    "cherry": "./dist/bin/cherry.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "prepare": "husky install",
+    "build": "tsc",
+    "cherry": "tsx ./bin/cherry.ts",
+    "prepare": "husky install && npm run build",
     "bump": "npm version patch && npm publish",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watchAll",
+    "lint": "eslint . --ext .js,.ts",
     "test": "sh test/fixtures/setup.sh && vitest run",
     "test:setup": "sh test/fixtures/setup.sh",
     "test:cleanup": "sh test/fixtures/cleanup.sh",
-    "lint": "eslint . --ext .js",
     "format": "prettier --write ."
   },
   "repository": {
@@ -47,14 +53,16 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.4.1",
-    "@commitlint/config-conventional": "^19.4.1",
+    "@typescript-eslint/eslint-plugin": "8.x.x",
+    "@typescript-eslint/parser": "8.x.x",
     "eslint": "^8.54.0",
     "eslint-config-prettier": "^9.1.0",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.10",
+    "prettier": "^3.3.3",
+    "typescript": "5.5.4",
     "vitest": "^2.0.5",
-    "prettier": "^3.3.3"
+    "tsx": "^4.19.0"
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",

@@ -1,6 +1,6 @@
 import { warn } from './console.js'
 
-let timers = {}
+const timers: Record<string, number> = {}
 
 /**
  * Executes a provided function block and measures its execution time.
@@ -9,7 +9,8 @@ let timers = {}
  * @param {Function} codeBlock - The block of code to execute.
  * @returns {*} The result of the executed code block.
  */
-export async function executeWithTiming(codeBlock, identifier) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function executeWithTiming(codeBlock: any, identifier: string) {
   const startTime = performance.now()
 
   const result = await codeBlock()
@@ -28,7 +29,7 @@ export async function executeWithTiming(codeBlock, identifier) {
  *
  * @param {number} timeLimitInMs - The time limit in milliseconds.
  */
-export function warnsAboutLongRunningTasks(timeLimitInMs) {
+export function warnsAboutLongRunningTasks(timeLimitInMs: number) {
   for (const [identifier, executionTime] of Object.entries(timers).sort()) {
     if (executionTime > timeLimitInMs) {
       warn(`${identifier} took ${Math.round(executionTime)}ms`)
