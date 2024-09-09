@@ -22,11 +22,6 @@ const jsToTsResolver = {
 }
 
 export default defineConfig({
-  test: {
-    retry: 2,
-  },
-  resolve: {
-    extensions: ['.ts', '.js'],
-  },
+  test: { retry: 2 },
   plugins: [jsToTsResolver],
 })
