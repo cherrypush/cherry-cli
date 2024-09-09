@@ -1,7 +1,6 @@
 {
   "include": ["src/**/*", "bin/**/*"],
-  "exclude": ["node_modules"],
-
+  "exclude": ["node_modules", "**/*.test.js"],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
 
