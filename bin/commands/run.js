@@ -1,11 +1,5 @@
-import fs from 'fs'
-import _ from 'lodash'
-import Codeowners from '../../src/codeowners.js'
-import { getConfiguration } from '../../src/configuration.js'
-import { panic } from '../../src/error.js'
-import { getFiles } from '../../src/files.js'
 import * as git from '../../src/git.js'
-import { findOccurrences } from '../../src/occurrences.js'
+
 import {
   buildMetricsPayload,
   buildSarifPayload,
@@ -14,34 +8,46 @@ import {
   sortObject,
 } from '../helpers.js'
 
+import Codeowners from '../../src/codeowners.js'
+import _ from 'lodash'
+import { findOccurrences } from '../../src/occurrences.js'
+import fs from 'fs'
+import { getConfiguration } from '../../src/configuration.js'
+import { getFiles } from '../../src/files.js'
+import { panic } from '../../src/error.js'
+
+export const allowMultipleValues = (value, previous) => (previous ? [...previous, value] : [value])
+
 export default function (program) {
   program
     .command('run')
-    .option('--owner <owner>', 'only consider given owner code')
-    .option('--metric <metric>', 'only consider given metric')
+    .option('--owner <owner>', 'will only consider the provided code owners', allowMultipleValues)
+    .option('--metric <metric>', 'will only consider provided metrics', allowMultipleValues)
     .option('-o, --output <output>', 'export stats into a local file')
-    .option('-f, --format <format>', 'export format (json, sarif, sonar). default: json')
+    .option('-f, --format <format>', 'export format - json, sarif, or sonar (defaults to json)')
     .option('--quiet', 'reduce output to a minimum')
     .action(async (options) => {
       const configuration = await getConfiguration()
       const codeOwners = new Codeowners()
-      const owners = options.owners ? options.owners.split(',') : null
-      const files = options.owner ? await getFiles(options.owner.split(','), codeOwners) : await getFiles()
+      const owners = options.owner
       const quiet = options.quiet
+
+      const files = owners ? await getFiles(owners, codeOwners) : await getFiles()
 
       const occurrences = await findOccurrences({
         configuration,
         files,
-        metric: options.metric,
+        metricNames: options.metric,
         codeOwners,
         quiet,
       })
-      if (options.owner || options.metric) {
+      if (owners || options.metric) {
         let displayedOccurrences = occurrences
         if (owners) displayedOccurrences = displayedOccurrences.filter((o) => _.intersection(o.owners, owners).length)
-        if (options.metric) displayedOccurrences = displayedOccurrences.filter((o) => o.metricName === options.metric)
+        if (options.metric)
+          displayedOccurrences = displayedOccurrences.filter((o) => options.metric.includes(o.metricName))
 
-        displayedOccurrences.forEach((occurrence) => console.log(`👉 ${occurrence.text}`))
+        displayedOccurrences.forEach((occurrence) => console.log(`👉 ${occurrence.text} (${occurrence.url})`))
         console.log('Total occurrences:', displayedOccurrences.length)
       } else console.table(sortObject(countByMetric(occurrences)))
 

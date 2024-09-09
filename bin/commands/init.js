@@ -1,16 +1,19 @@
 #! /usr/bin/env node
 
-import prompt from 'prompt'
+import * as git from '../../src/git.js'
+
 import {
   createConfigurationFile,
   createWorkflowFile,
   getConfigurationFile,
   workflowExists,
 } from '../../src/configuration.js'
-import * as git from '../../src/git.js'
+
+import prompt from 'prompt'
 
 export default function (program) {
   program.command('init').action(async () => {
+    // If the configuration file already exists, don't allow the user to run the init command
     const configurationFile = getConfigurationFile()
     if (configurationFile) {
       console.error(`${configurationFile} already exists.`)
@@ -20,13 +23,14 @@ export default function (program) {
     prompt.message = ''
     prompt.start()
 
-    let projectName = await git.guessProjectName()
-    if (!projectName) {
-      projectName = await prompt.get({
-        properties: {
-          repo: { message: 'Enter your project name', required: true },
-        },
-      }).repo
+    const remoteUrl = await git.getRemoteUrl()
+    let projectName = git.guessProjectName(remoteUrl)
+
+    if (projectName === null) {
+      const { repo } = await prompt.get({
+        properties: { repo: { message: 'Enter your project name', required: true } },
+      })
+      projectName = repo
     }
     createConfigurationFile(projectName)
 

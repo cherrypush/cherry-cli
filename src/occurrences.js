@@ -1,17 +1,18 @@
-import _ from 'lodash'
-import minimatch from 'minimatch'
-import pLimit from 'p-limit'
+import { executeWithTiming, warnsAboutLongRunningTasks } from './helpers/timer.js'
+
 import Spinnies from 'spinnies'
-import { panic } from './error.js'
-import { buildPermalink } from './github.js'
+import _ from 'lodash'
+import { buildPermalink } from './permalink.js'
 import eslint from './plugins/eslint.js'
 import jsCircularDependencies from './plugins/js_circular_dependencies.js'
 import jsUnimported from './plugins/js_unimported.js'
 import loc from './plugins/loc.js'
+import minimatch from 'minimatch'
 import npmOutdated from './plugins/npm_outdated.js'
+import pLimit from 'p-limit'
+import { panic } from './error.js'
 import rubocop from './plugins/rubocop.js'
 import yarnOutdated from './plugins/yarn_outdated.js'
-import { executeWithTiming, warnsAboutLongRunningTasks } from './helpers/timer.js'
 
 const spinnies = new Spinnies()
 
@@ -128,7 +129,7 @@ const runEvals = (metrics, codeOwners, quiet) => {
   return promise
 }
 
-const runPlugins = async (plugins, quiet) => {
+const runPlugins = async (plugins = {}, quiet) => {
   if (!Object.keys(plugins).length) return []
 
   if (!quiet) spinnies.add('plugins', { text: 'Running plugins...', indent: 2 })
@@ -159,19 +160,20 @@ const withEmptyMetrics = (occurrences, metrics = []) => {
   return allMetricNames.map((metricName) => occurrencesByMetric[metricName] || [emptyMetric(metricName)]).flat()
 }
 
-export const findOccurrences = async ({ configuration, files, metric, codeOwners, quiet }) => {
+export const findOccurrences = async ({ configuration, files, metricNames, codeOwners, quiet }) => {
   let metrics = configuration.metrics
+  const { project_name: projectName, permalink } = configuration
 
-  if (metric) metrics = metrics.filter(({ name }) => name === metric)
+  // Prevent running all metrics if a subset is provided
+  if (metricNames) metrics = metrics.filter(({ name }) => metricNames.includes(name))
+
+  // Separate metrics into eval and file metrics
   const [evalMetrics, fileMetrics] = _.partition(metrics, (metric) => metric.eval)
-  let plugins = configuration.plugins || {}
-  // From ['loc'] to { 'loc': {} } to handle deprecated array configuration for plugins
-  if (Array.isArray(plugins)) plugins = plugins.reduce((acc, value) => ({ ...acc, [value]: {} }), {})
 
   const result = await Promise.all([
     matchPatterns(files, fileMetrics, quiet),
     runEvals(evalMetrics, codeOwners, quiet),
-    runPlugins(plugins, quiet),
+    runPlugins(configuration.plugins, quiet),
   ])
 
   warnsAboutLongRunningTasks(5000)
@@ -180,7 +182,8 @@ export const findOccurrences = async ({ configuration, files, metric, codeOwners
     text,
     value,
     metricName,
-    url: url !== undefined ? url : filePath && buildPermalink(configuration.project_name, filePath, lineNumber),
+    // The url might have been provided by plugins or eval metrics
+    url: url !== undefined ? url : filePath && buildPermalink(permalink, projectName, filePath, lineNumber),
     owners: owners !== undefined ? owners : filePath && codeOwners.getOwners(filePath),
   }))
 

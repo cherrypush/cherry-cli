@@ -56,5 +56,9 @@ node_modules
 latest.dump
 results.json
 
-# typescript files
+# TypeScript files
 dist/
+
+# Ignore test fixtures
+test/fixtures/fake-remote
+test/fixtures/project-one

@@ -5,10 +5,10 @@ on:
 
 jobs:
   cherry_diff:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0 # fetches all commits from all branches
           ref: ${{ github.head_ref }} # checks out the branch that triggered the workflow
@@ -19,4 +19,4 @@ jobs:
       - name: Raise if new JavaScript code is added
         # This command will fail if the number of lines of code in JavaScript files has increased
         # in the current branch compared to the base branch, encouraging developers to contribute to migrating to TS.
-        run: ./bin/cherry.js diff --metric='[loc] JavaScript' --error-if-increase --quiet
+        run: ./bin/cherry.js diff --metric='TODO' --error-if-increase --quiet

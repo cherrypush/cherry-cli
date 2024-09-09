@@ -1,5 +1,90 @@
 # Changelog
 
+## [1.13.0](https://github.com/cherrypush/cherry-cli/compare/v1.12.2...v1.13.0) (2024-09-08)
+
+
+### Features
+
+* allow custom permalinks ([#84](https://github.com/cherrypush/cherry-cli/issues/84)) ([63485a7](https://github.com/cherrypush/cherry-cli/commit/63485a770d67ec65b7ef02da64ad22dff9ffea63))
+
+
+### Bug Fixes
+
+* **dev:** bump @commitlint/config-conventional from 18.4.3 to 19.4.1 ([#81](https://github.com/cherrypush/cherry-cli/issues/81)) ([e7cea20](https://github.com/cherrypush/cherry-cli/commit/e7cea2093dfcae68ece6ae4aafd2204a6bf5db61))
+* use relative path for eslint ([#83](https://github.com/cherrypush/cherry-cli/issues/83)) ([bc1cdac](https://github.com/cherrypush/cherry-cli/commit/bc1cdac963a82f63f88356ec72aa5cf3f1f856ac))
+
+## [1.12.2](https://github.com/cherrypush/cherry-cli/compare/v1.12.1...v1.12.2) (2024-09-07)
+
+
+### Bug Fixes
+
+* update readme and fix owners option from cherry run ([92c4e9c](https://github.com/cherrypush/cherry-cli/commit/92c4e9caac91c842b1308eb9b5ccc6470002a7fe))
+
+## [1.12.1](https://github.com/cherrypush/cherry-cli/compare/v1.12.0...v1.12.1) (2024-09-07)
+
+
+### Bug Fixes
+
+* update axios from 1.6.2 to 1.7.7 ([c274586](https://github.com/cherrypush/cherry-cli/commit/c27458696d1d33331d854da23161a7c65303e8f7))
+* update braces to 3.0.3 ([f61567a](https://github.com/cherrypush/cherry-cli/commit/f61567ab625cd84d4b3d877cae63dfa727f0e85c))
+
+## [1.12.0](https://github.com/cherrypush/cherry-cli/compare/v1.11.0...v1.12.0) (2024-09-07)
+
+
+### Features
+
+* handle https remotes when trying to guess project name ([#73](https://github.com/cherrypush/cherry-cli/issues/73)) ([a254986](https://github.com/cherrypush/cherry-cli/commit/a2549866f083d23828dd158cd4f9ac37bcf04858))
+
+## [1.11.0](https://github.com/cherrypush/cherry-cli/compare/v1.10.0...v1.11.0) (2024-09-06)
+
+
+### Features
+
+* filter out metrics for cherry diff (part 2) ([36024aa](https://github.com/cherrypush/cherry-cli/commit/36024aa2bcbde6ee1cd52a944e674e48aef8b3b7))
+
+## [1.10.0](https://github.com/cherrypush/cherry-cli/compare/v1.9.2...v1.10.0) (2024-09-05)
+
+
+### Features
+
+* filter out metrics for cherry diff ([#68](https://github.com/cherrypush/cherry-cli/issues/68)) ([12189df](https://github.com/cherrypush/cherry-cli/commit/12189dfd715ac1260d30c6733884cc66659ebf2a))
+
+## [1.9.2](https://github.com/cherrypush/cherry-cli/compare/v1.9.1...v1.9.2) (2024-09-05)
+
+
+### Bug Fixes
+
+* add registry url to setup node step ([2157ef0](https://github.com/cherrypush/cherry-cli/commit/2157ef0d9b85ac6b4661132899616fc356efd379))
+* automate package publishing ([#64](https://github.com/cherrypush/cherry-cli/issues/64)) ([6e4a420](https://github.com/cherrypush/cherry-cli/commit/6e4a4203277f6532cff6961357ed6ed698a57c2e))
+
+## [1.9.1](https://github.com/cherrypush/cherry-cli/compare/v1.9.0...v1.9.1) (2024-09-05)
+
+
+### Bug Fixes
+
+* automation to release package ([#62](https://github.com/cherrypush/cherry-cli/issues/62)) ([a6ba9d7](https://github.com/cherrypush/cherry-cli/commit/a6ba9d731eb59f37eab284232b12f3c7bfddf1f6))
+
+## [1.9.0](https://github.com/cherrypush/cherry-cli/compare/v1.8.0...v1.9.0) (2024-09-05)
+
+
+### Features
+
+* update madge (used for jsCircularDependencies plugin) ([#60](https://github.com/cherrypush/cherry-cli/issues/60)) ([7bf126a](https://github.com/cherrypush/cherry-cli/commit/7bf126ab5e734f393ae466d84ab3b0161592c9a0))
+
+## [1.8.0](https://github.com/cherrypush/cherry-cli/compare/v1.7.0...v1.8.0) (2024-08-30)
+
+
+### Features
+
+* automatically publish npm package when release please pr is merged ([7bdfaf2](https://github.com/cherrypush/cherry-cli/commit/7bdfaf26bd5c1f1e65e28f394b29952845ad48cc))
+
+## [1.7.0](https://github.com/cherrypush/cherry-cli/compare/v1.6.0...v1.7.0) (2024-08-30)
+
+
+### Features
+
+* allow to provide multiple metrics to cherry run ([#56](https://github.com/cherrypush/cherry-cli/issues/56)) ([8350602](https://github.com/cherrypush/cherry-cli/commit/8350602a4ed5deef2025dfdd402c890bf6916e0f))
+
 ## [1.6.0](https://github.com/cherrypush/cherry-cli/compare/v1.5.0...v1.6.0) (2024-07-01)
 
 

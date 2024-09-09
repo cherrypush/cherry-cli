@@ -6,7 +6,7 @@ const run = async () => {
 
   try {
     const { stdout } = await sh(
-      './node_modules/eslint/bin/eslint.js . --format=json --ext .js,.jsx,.ts,.tsx --no-inline-config --ignore-path .gitignore',
+      './node_modules/eslint/bin/eslint.js . --format=json --ext .js,.jsx,.ts,.tsx,.cjs,.mjs --no-inline-config --ignore-path .gitignore',
       {
         throwOnError: false,
       }
@@ -18,13 +18,18 @@ const run = async () => {
 
   return files
     .filter((file) => file.errorCount > 0)
-    .flatMap((file) =>
-      file.messages.map((message) => ({
-        text: `${file.filePath}:${message.line}`,
-        filePath: file.filePath,
+    .flatMap((file) => {
+      // File path is in the form: /Users/fwuensche/projects/cherry-cli/src/plugins/eslint.js:4
+      // We only want it relative to the project root: src/plugins/eslint.js
+      const filePath = file.filePath.replace(`${process.cwd()}/`, '')
+
+      return file.messages.map((message) => ({
+        text: `${filePath}:${message.line}`,
+        filePath: filePath,
         metricName: `[eslint] ${message.ruleId}`,
+        lineNumber: message.line,
       }))
-    )
+    })
 }
 
 export default { run }
