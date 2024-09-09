@@ -32,7 +32,7 @@ A very minimal config file can look something like this:
 ```js
 module.exports = {
   project_name: 'PROJECT_NAME',
-  plugins: ['loc'],
+  plugins: { loc: true }, // Add metrics about number of lines of code
   metrics: [
     {
       name: 'TODO/FIXME',
