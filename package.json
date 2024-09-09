@@ -12,6 +12,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "cherry": "tsx ./bin/cherry.ts",
     "prepare": "husky install && npm run build",
     "bump": "npm version patch && npm publish",
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watchAll",
@@ -62,7 +63,8 @@
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
     "typescript": "5.5.4",
-    "vitest": "^2.0.5"
+    "vitest": "^2.0.5",
+    "tsx": "^4.19.0"
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",
