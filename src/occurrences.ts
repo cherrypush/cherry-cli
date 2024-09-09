@@ -5,7 +5,6 @@ import Spinnies from 'spinnies'
 import _ from 'lodash'
 import { buildPermalink } from './permalink.js'
 import eslint from './plugins/eslint.js'
-import { flattenDeep } from '../bin/helpers.js'
 import jsCircularDependencies from './plugins/js_circular_dependencies.js'
 import jsUnimported from './plugins/js_unimported.js'
 import loc from './plugins/loc.js'
@@ -28,9 +27,9 @@ const PLUGINS = {
   yarnOutdated,
 }
 
-const minimatchCache = {}
+const minimatchCache: Record<string, boolean> = {}
 
-const matchPattern = (path, patternOrPatterns) => {
+const matchPattern = (path: string, patternOrPatterns: string | string[]) => {
   const patterns = Array.isArray(patternOrPatterns) ? patternOrPatterns : [patternOrPatterns]
 
   return patterns.some((pattern) => {
@@ -41,7 +40,7 @@ const matchPattern = (path, patternOrPatterns) => {
   })
 }
 
-const findFileOccurences = async (file, metrics) => {
+const findFileOccurences = async (file: File, metrics: Metric[]) => {
   const relevantMetrics = metrics.filter((metric) => {
     const pathIncluded = metric.include ? matchPattern(file.path, metric.include) : true
     const pathExcluded = metric.exclude ? matchPattern(file.path, metric.exclude) : false
@@ -196,7 +195,7 @@ export const findOccurrences = async ({
 
   warnsAboutLongRunningTasks(5000)
 
-  const occurrences = flattenDeep(result).map(({ text, value, metricName, filePath, lineNumber, url, owners }) => ({
+  const occurrences = _.flattenDeep(result).map(({ text, value, metricName, filePath, lineNumber, url, owners }) => ({
     text,
     value,
     metricName,

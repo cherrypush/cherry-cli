@@ -1,6 +1,6 @@
 export type Occurrence = {
   metricName: string
-  filePath: string
+  filePath?: string // TODO: it's weird that filePath is optional here, let's review this
   text: string
   value: number
   lineNumber?: number
@@ -16,20 +16,15 @@ export type EvalMetric = {
   eval: (options: { codeOwners: Codeowners }) => Promise<Occurrence[]>
 }
 
-type Glob = string
-
 export type PatternMetric = {
   name: string
   pattern?: RegExp
-  include?: Glob | Glob[]
-  exclude?: Glob | Glob[]
+  include?: string | string[]
+  exclude?: string | string[]
   groupByFile?: boolean
 }
 
-export type Metric = {
-  name: string
-  eval: () => Promise<Occurrence[]>
-}
+export type Metric = EvalMetric | PatternMetric
 
 export type Configuration = {
   project_name: string
