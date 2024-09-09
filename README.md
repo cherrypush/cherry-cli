@@ -168,6 +168,63 @@ jobs:
         run: ./cli/bin/cherry.js diff --metric='eslint' --error-if-increase --quiet
 ```
 
+# Configuration 🛠
+
+Your configuration file `.cherry.js` is where you define your project's metrics and plugins.
+
+Here's a kind of self-explanatory example:
+
+```js
+module.exports = {
+  project_name: 'cherrypush/cherry-cli',
+  plugins: { loc: {}, eslint: {} },
+  metrics: [
+    // Classic metrics allow you to rely on patterns to include, exclude, and group results by file:
+    {
+      name: 'TODO/FIXME',
+      pattern: /(TODO|FIXME):/i, // the i flag makes the regex case insensitive
+    },
+    // You can include and exclude files using glob patterns:
+    {
+      name: 'Skipped tests',
+      pattern: /@skip/,
+      include: '**/*.test.{ts,tsx}', // Will only include test files, ignoring everything else
+    },
+    // You can also group results by file to avoid the noise of having too many occurrences in the same file:
+    {
+      name: '[TypeScript Migration] TS lines of code',
+      include: '**/*.{ts,tsx}',
+      exclude: '**/*.test.{ts,tsx}', // Exclude test files if you want to focus on the source code
+      groupByFile: true, // Group results by file
+    },
+    // If you need more customization, you can use the eval function to implement your own custom metrics using JavaScript.
+    {
+      name: 'Runtime per test file in seconds',
+      eval: () => getTestDurations().map(([filePath, duration]) => ({ text: filePath, value: duration, filePath })),
+    },
+  ],
+}
+```
+
+If you prefer a more detailed structure, here's a breakdown of the configuration object and its properties:
+
+| Property                  | Type                                                        | Description                                                                                                                                                                                                                                                                                                                                      |
+| ------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `project_name`            | `string`                                                    | **Required.** The name of your project.                                                                                                                                                                                                                                                                                                          |
+| `$.permalink`             | `({filePath: string, lineNumber: number}) => string`        | **Optional.** A function that returns a custom permalink for your metrics. Provides an object with the `filePath` and `lineNumber` so you can use them to build your URL pattern. This is especiallly useful if you use anything other than GitHub for source control, in which case you might want to setup custom permalinks for your metrics. |
+| `$.plugins`               | `object`                                                    | **Optional.** An object containing the plugins to activate.                                                                                                                                                                                                                                                                                      |
+| `$.plugins.plugin`        | `object`                                                    | **Required.** Each plugin must provide an options object (even if empty).                                                                                                                                                                                                                                                                        |
+| `$.metrics`               | `object[]`                                                  | **Required.** An array of objects defining the metrics to track.                                                                                                                                                                                                                                                                                 |
+| `$.metrics[].name`        | `string`                                                    | **Required.** The name of the metric (e.g., `'[TS Migration] TS lines of code'`).                                                                                                                                                                                                                                                                |
+| `$.metrics[].include`     | `string` (glob)                                             | **Optional.** Glob pattern for files to include (e.g., `'**/*.{ts,tsx}'`).                                                                                                                                                                                                                                                                       |
+| `$.metrics[].exclude`     | `string` (glob)                                             | **Optional.** Glob pattern for files to exclude (e.g., `'**/*.test.{ts,tsx}'`).                                                                                                                                                                                                                                                                  |
+| `$.metrics[].groupByFile` | `boolean`                                                   | **Optional.** Whether to group results by file. Defaults to `false`.                                                                                                                                                                                                                                                                             |
+| `$.metrics[].eval`        | `() => ({ text: string, value: number, filePath: string })` | **Optional.** Use eval to implement your own custom metrics using JavaScript. As long as you return a valid format of occurrence, you're good to go.                                                                                                                                                                                             |
+
+This structure should now be clearer, but there are some additional hidden features (especially concerning evals) that I
+preferred to keep out of the documentation to keep it simple. If you're interested, let me know and I'll create a
+dedicated folder with further examples and explanations.
+
 # Integrations 🧩
 
 ## GitHub Actions
@@ -222,24 +279,6 @@ cherry_push:
   only:
     refs:
       - main
-```
-
-# Configuration
-
-## Permalink
-
-Especially if you're using Cherry in a GitLab project, you might want to setup custom permalinks for your metrics.
-
-You can do this by adding a `permalink` property to your configuration file, such as:
-
-```js
-// .cherry.js
-module.exports = {
-  project_name: 'cherrypush/cherry-cli',
-  permalink: ({ filePath, lineNumber }) =>
-    `https://gitlab.com/cherrypush/cherry-cli/blob/HEAD/${filePath}${lineNumber ? `#L${lineNumber}` : ''}`,
-  plugins: { eslint: {} },
-}
 ```
 
 # Feedback 🙏
