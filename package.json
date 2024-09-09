@@ -11,8 +11,6 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
-    "cherry": "tsx ./bin/cherry.ts",
     "prepare": "husky install && npm run build",
     "bump": "npm version patch && npm publish",
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watchAll",

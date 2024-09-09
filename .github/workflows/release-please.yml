@@ -33,9 +33,6 @@ jobs:
       - run: npm ci
         if: ${{ steps.release.outputs.release_created }}
 
-      - run: npm run build
-        if: ${{ steps.release.outputs.release_created }}
-
       # Make sure that the NPM_TOKEN has been set as a "Repository secret"
       - run: npm publish
         env:
