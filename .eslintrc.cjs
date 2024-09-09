@@ -16,6 +16,7 @@ module.exports = {
   rules: {
     '@typescript-eslint/no-unused-vars': [
       'error',
+      // We need to ignore unused variables that start with an underscore to avoid linting errors on catch(error) blocks
       {
         args: 'all',
         argsIgnorePattern: '^_',
