@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/cherrypush/cherry-cli/compare/v2.0.0...v2.0.1) (2024-09-09)
+
+
+### Bug Fixes
+
+* TS import issue ([#92](https://github.com/cherrypush/cherry-cli/issues/92)) ([bef3eb1](https://github.com/cherrypush/cherry-cli/commit/bef3eb15a588ea8078764124eed7dd91e823ef01))
+
 ## [2.0.0](https://github.com/cherrypush/cherry-cli/compare/v1.13.0...v2.0.0) (2024-09-09)
 
 
