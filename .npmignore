@@ -4,4 +4,3 @@
 # include these
 !dist/
 !package.json
-!package-lock.json
