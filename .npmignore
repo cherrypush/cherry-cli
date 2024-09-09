@@ -1,6 +1,0 @@
-# ignore everything
-*
-
-# include these
-!dist/
-!package.json
