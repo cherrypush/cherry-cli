@@ -2,7 +2,7 @@ import child_process from 'child_process'
 import { debug } from './log.js'
 
 // From https://stackoverflow.com/a/68958420/9847645, to avoid 200Kb limit causing ENOBUFS errors for large output
-const sh = (cmd: string, { throwOnError = true } = {}) =>
+const sh = (cmd: string, { throwOnError = true } = {}): Promise<{ stderr: string; stdout: string }> =>
   new Promise((resolve, reject) => {
     debug('#', cmd)
     const [command, ...args] = cmd.split(/\s+/)

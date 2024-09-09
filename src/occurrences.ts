@@ -1,3 +1,4 @@
+import { Configuration, EvalMetric, Metric, Occurrence, PatternMetric } from './types.js'
 import { executeWithTiming, warnsAboutLongRunningTasks } from './helpers/timer.js'
 
 import Spinnies from 'spinnies'
@@ -27,6 +28,7 @@ const PLUGINS = {
 }
 
 const minimatchCache = {}
+
 const matchPattern = (path, patternOrPatterns) => {
   const patterns = Array.isArray(patternOrPatterns) ? patternOrPatterns : [patternOrPatterns]
 
@@ -83,7 +85,7 @@ const findFileOccurences = async (file, metrics) => {
   })
 }
 
-const matchPatterns = (files, metrics, quiet) => {
+const matchPatterns = (files: File[], metrics: PatternMetric[], quiet: boolean) => {
   if (!files.length || !metrics.length) return []
 
   if (!quiet) spinnies.add('patterns', { text: 'Matching patterns...', indent: 2 })
@@ -100,7 +102,8 @@ const matchPatterns = (files, metrics, quiet) => {
   return promise
 }
 
-const runEvals = (metrics, codeOwners, quiet) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const runEvals = (metrics: EvalMetric[], codeOwners: any, quiet: boolean) => {
   if (!metrics.length) return []
 
   if (!quiet) spinnies.add('evals', { text: 'Running eval()...', indent: 2 })
@@ -129,7 +132,7 @@ const runEvals = (metrics, codeOwners, quiet) => {
   return promise
 }
 
-const runPlugins = async (plugins = {}, quiet) => {
+const runPlugins = async (plugins = {}, quiet: boolean) => {
   if (typeof plugins !== 'object' || plugins === null) panic('Plugins should be an object')
   if (!Object.keys(plugins).length) return []
 
@@ -149,19 +152,32 @@ const runPlugins = async (plugins = {}, quiet) => {
   return promise
 }
 
-export const emptyMetric = (metricName) => ({
+export const emptyMetric = (metricName: string) => ({
   metricName,
   text: 'No occurrences',
   value: 0,
 })
 
-const withEmptyMetrics = (occurrences, metrics = []) => {
-  const occurrencesByMetric = _.groupBy(occurrences, 'metricName')
-  const allMetricNames = _.uniq(metrics.map((metric) => metric.name).concat(Object.keys(occurrencesByMetric)))
+const withEmptyMetrics = (occurrences: Occurrence[], metrics: Metric[] = []) => {
+  const occurrencesByMetric: Record<string, Occurrence[]> = _.groupBy(occurrences, 'metricName')
+  const allMetricNames: string[] = _.uniq(metrics.map((metric) => metric.name).concat(Object.keys(occurrencesByMetric)))
   return allMetricNames.map((metricName) => occurrencesByMetric[metricName] || [emptyMetric(metricName)]).flat()
 }
 
-export const findOccurrences = async ({ configuration, files, metricNames, codeOwners, quiet }) => {
+export const findOccurrences = async ({
+  configuration,
+  files,
+  metricNames,
+  codeOwners,
+  quiet,
+}: {
+  configuration: Configuration
+  files: File[]
+  metricNames: string[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  codeOwners: any
+  quiet: boolean
+}) => {
   let metrics = configuration.metrics
   const { project_name: projectName, permalink } = configuration
 
