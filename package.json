@@ -11,7 +11,7 @@
     "dist"
   ],
   "scripts": {
-    "prepare": "husky install && npm run build",
+    "prepare": "husky install",
     "bump": "npm version patch && npm publish",
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watchAll",
     "lint": "eslint . --ext .js,.ts",
