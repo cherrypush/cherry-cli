@@ -5,6 +5,7 @@ import Spinnies from 'spinnies'
 import _ from 'lodash'
 import { buildPermalink } from './permalink.js'
 import eslint from './plugins/eslint.js'
+import { flattenDeep } from '../bin/helpers.js'
 import jsCircularDependencies from './plugins/js_circular_dependencies.js'
 import jsUnimported from './plugins/js_unimported.js'
 import loc from './plugins/loc.js'
@@ -85,7 +86,7 @@ const findFileOccurences = async (file, metrics) => {
   })
 }
 
-const matchPatterns = (files: File[], metrics: PatternMetric[], quiet: boolean) => {
+const matchPatterns = async (files: File[], metrics: PatternMetric[], quiet: boolean): Promise<Occurrence[]> => {
   if (!files.length || !metrics.length) return []
 
   if (!quiet) spinnies.add('patterns', { text: 'Matching patterns...', indent: 2 })
@@ -103,7 +104,7 @@ const matchPatterns = (files: File[], metrics: PatternMetric[], quiet: boolean) 
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const runEvals = (metrics: EvalMetric[], codeOwners: any, quiet: boolean) => {
+const runEvals = async (metrics: EvalMetric[], codeOwners: any, quiet: boolean): Promise<Occurrence[]> => {
   if (!metrics.length) return []
 
   if (!quiet) spinnies.add('evals', { text: 'Running eval()...', indent: 2 })
@@ -132,7 +133,7 @@ const runEvals = (metrics: EvalMetric[], codeOwners: any, quiet: boolean) => {
   return promise
 }
 
-const runPlugins = async (plugins = {}, quiet: boolean) => {
+const runPlugins = async (plugins = {}, quiet: boolean): Promise<Occurrence[]> => {
   if (typeof plugins !== 'object' || plugins === null) panic('Plugins should be an object')
   if (!Object.keys(plugins).length) return []
 
@@ -195,7 +196,7 @@ export const findOccurrences = async ({
 
   warnsAboutLongRunningTasks(5000)
 
-  const occurrences = _.flattenDeep(result).map(({ text, value, metricName, filePath, lineNumber, url, owners }) => ({
+  const occurrences = flattenDeep(result).map(({ text, value, metricName, filePath, lineNumber, url, owners }) => ({
     text,
     value,
     metricName,

@@ -3,6 +3,9 @@ export type Occurrence = {
   filePath: string
   text: string
   value: number
+  lineNumber?: number
+  url?: string
+  owners?: string[]
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

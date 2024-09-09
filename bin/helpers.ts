@@ -185,3 +185,7 @@ export const buildSonarGenericImportPayload = (occurrences) => ({
 })
 
 export const sortObject = (object) => _(object).toPairs().sortBy(0).fromPairs().value()
+
+export function flattenDeep<T>(array: T[][]): T[] {
+  return _.flattenDeep(array)
+}
