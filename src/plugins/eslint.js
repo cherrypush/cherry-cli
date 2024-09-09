@@ -12,7 +12,7 @@ const run = async () => {
       }
     )
     files = JSON.parse(stdout)
-  } catch (error) {
+  } catch (_error) {
     panic('An error happened while executing eslint\n- Make sure eslint is properly installed')
   }
 

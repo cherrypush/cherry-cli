@@ -1,6 +1,3 @@
-#!/usr/bin/env sh
-. "$(dirname "$0")/_/husky.sh"
-
 npx lint-staged
 
 # TODO: it'd be nice to run tests here, but it does not work because cherry diff requires the git diff to be clean.
