@@ -130,8 +130,8 @@ const runEvals = (metrics, codeOwners, quiet) => {
 }
 
 const runPlugins = async (plugins = {}, quiet) => {
+  if (typeof plugins !== 'object' || plugins === null) panic('Plugins should be an object')
   if (!Object.keys(plugins).length) return []
-  if (Array.isArray(plugins)) panic('Plugins should be an object, not an array')
 
   if (!quiet) spinnies.add('plugins', { text: 'Running plugins...', indent: 2 })
   const promise = Promise.all(
