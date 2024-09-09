@@ -16,7 +16,7 @@ function testEslint() {
 
 describe('eslint plugin', () => {
   it('works', async () => {
-    const { stdout } = await execAsync('tsx ./bin/cherry.ts run --metric "[eslint] no-unused-vars"')
+    const { stdout } = await execAsync('tsx ./bin/cherry.ts run --metric "[eslint] @typescript-eslint/no-unused-vars"')
 
     // Uses the relative path to the project root, containing the line number
     expect(stdout).toContain('👉 test/plugins/eslint.test.js:9')
