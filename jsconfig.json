@@ -1,0 +1,13 @@
+{
+  "include": ["src/**/*", "bin/**/*"],
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "allowJs": true,
+    "checkJs": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
+  }
+}

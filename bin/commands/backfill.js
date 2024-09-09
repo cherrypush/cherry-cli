@@ -26,7 +26,8 @@ export default function (program) {
       if (since > until) panic('The since date must be before the until date')
       const initialBranch = await git.branchName()
       if (!initialBranch) panic('Not on a branch, checkout a branch before running the backfill.')
-      const hasUncommitedChanges = (await git.uncommittedFiles()).length > 0
+      const uncommittedFiles = await git.uncommittedFiles()
+      const hasUncommitedChanges = uncommittedFiles.length > 0
       if (hasUncommitedChanges) panic('Please commit your changes before running cherry backfill.')
 
       const configuration = await getConfiguration()

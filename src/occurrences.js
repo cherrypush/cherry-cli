@@ -14,6 +14,13 @@ import { panic } from './error.js'
 import rubocop from './plugins/rubocop.js'
 import yarnOutdated from './plugins/yarn_outdated.js'
 
+/**
+ * @typedef {import('./types.js').Occurrence} Occurrence
+ * @typedef {import('./types.js').Metric} Metric
+ * @typedef {import('./types.js').Configuration} Configuration
+ * @typedef {import('./types.js').File} File
+ */
+
 const spinnies = new Spinnies()
 
 const PLUGINS = {
@@ -26,7 +33,20 @@ const PLUGINS = {
   yarnOutdated,
 }
 
+/**
+ * A cache object that stores the results of path matches to avoid recomputation.
+ * The keys are a combination of the path and pattern, and the values are the result of the minimatch operation.
+ * @type {Object<string, boolean>}
+ */
 const minimatchCache = {}
+
+/**
+ * Matches a path against a pattern or an array of patterns.
+ * The result is cached to avoid recomputing the same match.
+ * @param {string} path - The path to match.
+ * @param {string|string[]} patternOrPatterns - The pattern or patterns to match against.
+ * @returns {boolean} Whether the path matches the pattern or patterns.
+ */
 const matchPattern = (path, patternOrPatterns) => {
   const patterns = Array.isArray(patternOrPatterns) ? patternOrPatterns : [patternOrPatterns]
 
@@ -38,6 +58,12 @@ const matchPattern = (path, patternOrPatterns) => {
   })
 }
 
+/**
+ * Finds occurrences in a file based on the provided metrics.
+ * @param {File} file
+ * @param {Metric[]} metrics
+ * @returns {Promise<Occurrence[]>}
+ */
 const findFileOccurences = async (file, metrics) => {
   const relevantMetrics = metrics.filter((metric) => {
     const pathIncluded = metric.include ? matchPattern(file.path, metric.include) : true
@@ -83,7 +109,13 @@ const findFileOccurences = async (file, metrics) => {
   })
 }
 
-const matchPatterns = (files, metrics, quiet) => {
+/**
+ * @param {File[]} files
+ * @param {Metric[]} metrics
+ * @param {boolean} quiet
+ * @returns {Promise<Occurrence[]>}
+ */
+const matchPatterns = async (files, metrics, quiet) => {
   if (!files.length || !metrics.length) return []
 
   if (!quiet) spinnies.add('patterns', { text: 'Matching patterns...', indent: 2 })
@@ -100,6 +132,12 @@ const matchPatterns = (files, metrics, quiet) => {
   return promise
 }
 
+/**
+ * @param {Metric[]} metrics
+ * @param {*} codeOwners
+ * @param {boolean} quiet
+ * @returns {Promise<Occurrence[]>}
+ */
 const runEvals = (metrics, codeOwners, quiet) => {
   if (!metrics.length) return []
 
@@ -149,18 +187,42 @@ const runPlugins = async (plugins = {}, quiet) => {
   return promise
 }
 
+/**
+ * Creates an occurrence with value 0 for a metric that has no occurrences.
+ *
+ * @param {string} metricName - The name of the metric.
+ * @returns {Occurrence} An occurrence object.
+ */
 export const emptyMetric = (metricName) => ({
   metricName,
   text: 'No occurrences',
   value: 0,
 })
 
+/**
+ * Adds empty metrics to a list of occurrences for any metrics that have no occurrences.
+ *
+ * @param {Occurrence[]} occurrences - The list of occurrences.
+ * @param {Metric[]} metrics - The list of metrics.
+ * @returns {Occurrence[]} A list of occurrences including any empty metrics for metrics with no occurrences.
+ */
 const withEmptyMetrics = (occurrences, metrics = []) => {
   const occurrencesByMetric = _.groupBy(occurrences, 'metricName')
   const allMetricNames = _.uniq(metrics.map((metric) => metric.name).concat(Object.keys(occurrencesByMetric)))
   return allMetricNames.map((metricName) => occurrencesByMetric[metricName] || [emptyMetric(metricName)]).flat()
 }
 
+/**
+ * Finds occurrences based on the provided configuration.
+ *
+ * @param {Object} options
+ * @param {Configuration} options.configuration - The configuration object.
+ * @param {import('./types.js').File[]} options.files - The list of files.
+ * @param {string[]} [options.metricNames] - The list of metric names to run.
+ * @param {import('./types.js').Codeowners} options.codeOwners - The code owners.
+ * @param {boolean} options.quiet - Whether to reduce output to a minimum.
+ * @returns {Promise<Occurrence[]>} The list of occurrences.
+ */
 export const findOccurrences = async ({ configuration, files, metricNames, codeOwners, quiet }) => {
   let metrics = configuration.metrics
   const { project_name: projectName, permalink } = configuration

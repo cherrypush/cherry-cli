@@ -14,6 +14,16 @@ export const WORKFLOW_FILE_FULL_PATH = `${process.cwd()}/${WORKFLOW_FILE_LOCAL_P
 const CONFIG_TEMPLATE_PATH = dirname(fileURLToPath(import.meta.url)) + '/templates/.cherry.js.template'
 const WORKFLOW_TEMPLATE_PATH = dirname(fileURLToPath(import.meta.url)) + '/templates/.cherry_push.yml.template'
 
+/**
+ * Creates a configuration file for the project.
+ *
+ * This function reads a template configuration file, replaces the placeholder
+ * 'PROJECT_NAME' with the provided project name, and writes the result to the
+ * configuration file path.
+ *
+ * @param {string} projectName - The name of the project to insert into the configuration file.
+ * @returns {void}
+ */
 export const createConfigurationFile = (projectName) =>
   fs.writeFileSync(
     CONFIG_FILE_FULL_PATHS[0],
@@ -28,6 +38,12 @@ export const createWorkflowFile = () => {
 export const getConfigurationFile = () => CONFIG_FILE_FULL_PATHS.find((filePath) => fs.existsSync(filePath))
 export const workflowExists = () => fs.existsSync(WORKFLOW_FILE_FULL_PATH)
 
+/**
+ * Retrieves the configuration for the project.
+ * If no configuration file is found, it uses a default configuration.
+ *
+ * @returns {Promise<{ project_name: string }>} The configuration object.
+ */
 export const getConfiguration = async () => {
   const configurationFile = getConfigurationFile()
   if (!configurationFile) {

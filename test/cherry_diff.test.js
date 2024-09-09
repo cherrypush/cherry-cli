@@ -6,7 +6,7 @@ import path from 'path'
 
 const TEMPORARY_FILE_PATH = 'test_temporary_file'
 
-const CHERRY_BIN_PATH = 'tsx ./../../../bin/cherry.ts'
+const CHERRY_BIN_PATH = 'node ./../../../bin/cherry.js'
 
 const originalCwd = process.cwd()
 const fakeProjectPath = path.join(originalCwd, 'test/fixtures/project-one')

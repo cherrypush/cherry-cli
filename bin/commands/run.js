@@ -35,7 +35,7 @@ export default function (program) {
       const files = owners ? await getFiles(owners, codeOwners) : await getFiles()
 
       const occurrences = await findOccurrences({
-        configuration,
+        configuration: configuration,
         files,
         metricNames: options.metric,
         codeOwners,
@@ -54,7 +54,7 @@ export default function (program) {
       if (options.output) {
         const filepath = process.cwd() + '/' + options.output
         const format = options.format || 'json'
-        let content
+        let content = ''
 
         if (format === 'json') {
           const metrics = buildMetricsPayload(occurrences)
@@ -68,6 +68,7 @@ export default function (program) {
           const sonar = buildSonarGenericImportPayload(occurrences)
           content = JSON.stringify(sonar, null, 2)
         }
+
         fs.writeFile(filepath, content, 'utf8', function (err) {
           if (err) panic(err)
           console.log(`File has been saved as ${filepath}`)

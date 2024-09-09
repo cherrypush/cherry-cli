@@ -53,16 +53,12 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "8.x.x",
-    "@typescript-eslint/parser": "8.x.x",
     "eslint": "^8.54.0",
     "eslint-config-prettier": "^9.1.0",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
-    "typescript": "5.5.4",
-    "vitest": "^2.0.5",
-    "tsx": "^4.19.0"
+    "vitest": "^2.0.5"
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",

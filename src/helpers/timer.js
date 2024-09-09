@@ -1,16 +1,20 @@
 import { warn } from './console.js'
 
-const timers: Record<string, number> = {}
+/**
+ * An object to store timers, where the keys are timer names (strings) and the values are numbers (timestamps or durations).
+ * @type {Object<string, number>}
+ */
+const timers = {}
 
 /**
  * Executes a provided function block and measures its execution time.
  * Logs a message if the execution time exceeds 2 seconds.
  *
  * @param {Function} codeBlock - The block of code to execute.
- * @returns {*} The result of the executed code block.
+ * @param {string} identifier - The block of code to execute.
+ * @returns {Promise<any>} The result of the executed code block.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function executeWithTiming(codeBlock: any, identifier: string) {
+export async function executeWithTiming(codeBlock, identifier) {
   const startTime = performance.now()
 
   const result = await codeBlock()
@@ -29,7 +33,7 @@ export async function executeWithTiming(codeBlock: any, identifier: string) {
  *
  * @param {number} timeLimitInMs - The time limit in milliseconds.
  */
-export function warnsAboutLongRunningTasks(timeLimitInMs: number) {
+export function warnsAboutLongRunningTasks(timeLimitInMs) {
   for (const [identifier, executionTime] of Object.entries(timers).sort()) {
     if (executionTime > timeLimitInMs) {
       warn(`${identifier} took ${Math.round(executionTime)}ms`)
