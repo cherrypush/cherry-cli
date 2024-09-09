@@ -17,6 +17,7 @@ import yarnOutdated from './plugins/yarn_outdated.js'
 /**
  * @typedef {import('./types.js').Occurrence} Occurrence
  * @typedef {import('./types.js').Metric} Metric
+ * @typedef {import('./types.js').Plugins} Plugins
  * @typedef {import('./types.js').Configuration} Configuration
  * @typedef {import('./types.js').File} File
  */
@@ -138,7 +139,7 @@ const matchPatterns = async (files, metrics, quiet) => {
  * @param {boolean} quiet
  * @returns {Promise<Occurrence[]>}
  */
-const runEvals = (metrics, codeOwners, quiet) => {
+const runEvals = async (metrics, codeOwners, quiet) => {
   if (!metrics.length) return []
 
   if (!quiet) spinnies.add('evals', { text: 'Running eval()...', indent: 2 })
@@ -167,6 +168,12 @@ const runEvals = (metrics, codeOwners, quiet) => {
   return promise
 }
 
+/**
+ * Runs the provided plugins.
+ * @param {Plugins} plugins
+ * @param {boolean} quiet
+ * @returns
+ */
 const runPlugins = async (plugins = {}, quiet) => {
   if (typeof plugins !== 'object' || plugins === null) panic('Plugins should be an object')
   if (!Object.keys(plugins).length) return []

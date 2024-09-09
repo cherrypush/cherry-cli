@@ -2,15 +2,25 @@ import { CONFIG_FILE_LOCAL_PATHS } from './configuration.js'
 import sh from './sh.js'
 import { toISODate } from './date.js'
 
-export const git = async (cmd) => {
+/**
+ * Executes a Git command.
+ * @param {string} cmd - The Git command to execute.
+ * @returns {Promise<string[]>} A promise that resolves to an array of lines of the command output.
+ */
+export async function git(cmd) {
   const { stdout } = await sh(`git ${cmd}`)
   return stdout.toString().split('\n').filter(Boolean)
 }
 
-export const files = async () => {
+/**
+ * Retrieves a list of files in the repository.
+ * @returns {Promise<string[]>} A promise that resolves to an array of file paths.
+ * @see https://git-scm.com/docs/git-ls-files
+ */
+export async function files() {
   const trackedFiles = await git('ls-files')
   const untrackedFiles = await git('ls-files --others --exclude-standard')
-  const deletedFiles = await git('ls-files -d')
+  const deletedFiles = await git('ls-files --deleted')
   const rejectedFiles = [...deletedFiles, ...CONFIG_FILE_LOCAL_PATHS]
 
   return trackedFiles.concat(untrackedFiles).filter((file) => !rejectedFiles.includes(file))
@@ -18,8 +28,10 @@ export const files = async () => {
 
 /**
  * Retrieves the URL of the first Git remote for the current path.
+ * @returns {Promise<string|null>} The URL of the first Git remote or null if no remotes are found.
+ * @see https://git-scm.com/docs/git-remote
  */
-export const getRemoteUrl = async () => {
+export async function getRemoteUrl() {
   const remotes = await git('remote')
   if (!remotes.length) return null
 
@@ -29,7 +41,6 @@ export const getRemoteUrl = async () => {
 /**
  * Guesses the project name based on the remote URL of the git repository.
  * If the remote URL is not found, returns null.
- *
  * @param {string} remoteUrl - The remote URL of the git repository.
  * @returns {string|null} The guessed project name or null if it cannot be determined.
  */
@@ -45,8 +56,18 @@ export const guessProjectName = (remoteUrl) => {
   return null
 }
 
+/**
+ * Retrieves the SHA of the current commit.
+ * @returns {Promise<string>} The commit SHA.
+ * @see https://git-scm.com/docs/git-rev-parse
+ */
 export const sha = async () => (await git('rev-parse HEAD')).toString()
 
+/**
+ * Returns the name of the default branch.
+ * @returns {Promise<string>} The name of the default branch.
+ * @see https://git-scm.com/docs/git-rev-parse#Documentation/git-rev-parse.txt---abbrev-refstrictloose
+ */
 export const getDefaultBranchName = async () => {
   // If we are on a GitHub Action, we can use the GITHUB_BASE_REF env variable
   if (process.env.GITHUB_BASE_REF) return process.env.GITHUB_BASE_REF
@@ -56,6 +77,12 @@ export const getDefaultBranchName = async () => {
   return defaultBranch.replace('origin/', '').trim()
 }
 
+/**
+ * Returns the commit SHA of the merge base between the current branch and the default branch.
+ * @param {string} currentBranchName
+ * @param {string} defaultBranchName
+ * @returns {Promise<string>} The commit SHA of the merge base.
+ */
 export const getMergeBase = async (currentBranchName, defaultBranchName) =>
   (await git(`merge-base ${currentBranchName} origin/${defaultBranchName}`)).toString().trim()
 
@@ -90,7 +117,7 @@ export const commitShaAt = async (date, branch) =>
   (await git(`rev-list --reverse --after=${toISODate(date)} ${branch}`))[0]
 
 /**
- * Checks out a commit.
+ * Checks out a specific commit.
  * @param {string} sha - The commit SHA.
  */
 export const checkout = async (sha) => {

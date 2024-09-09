@@ -22,11 +22,18 @@
  */
 
 /**
+ * @typedef {Object<string, object>} Plugins
+ */
+
+/**
  * @typedef {object} Configuration
  * @property {string} project_name - The name of the project.
- * @property {object} [plugins] - The pattern to search for.
- * @property {string[]} [include] - The patterns to include.
- * @property {string[]} [exclude] - The patterns to exclude.
- * @property {boolean} [groupByFile] - Whether to group occurrences by file.
- * @property {Function} [eval] - An eval function to run.
+ * @property {Plugins} [plugins] - The pattern to search for.
+ * @property {Metric[]} [metrics] - The pattern to search for.
+ */
+
+/**
+ * @typedef {object} File
+ * @property {string} path - The path of the file.
+ * @property {function(): Promise<string[]>} readLines - A function that reads the lines of the file and returns a promise resolving to an array of strings.
  */

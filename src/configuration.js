@@ -5,6 +5,10 @@ import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import fs from 'fs'
 
+/**
+ * @typedef {import('./types.js').Configuration} Configuration
+ */
+
 export const CONFIG_FILE_LOCAL_PATHS = ['.cherry.js', '.cherry.cjs', '.cherry.ts']
 export const WORKFLOW_FILE_LOCAL_PATH = '.github/workflows/cherry_push.yml'
 
@@ -42,7 +46,7 @@ export const workflowExists = () => fs.existsSync(WORKFLOW_FILE_FULL_PATH)
  * Retrieves the configuration for the project.
  * If no configuration file is found, it uses a default configuration.
  *
- * @returns {Promise<{ project_name: string }>} The configuration object.
+ * @returns {Promise<Configuration>} The configuration object.
  */
 export const getConfiguration = async () => {
   const configurationFile = getConfigurationFile()
