@@ -2,14 +2,11 @@
   "name": "cherrypush",
   "version": "2.0.0",
   "description": "Cherry CLI to manage your technical debt via cherrypush.com 🍒",
-  "source": "./bin/cherry.ts",
+  "source": "./bin/cherry.js",
   "type": "module",
   "bin": {
-    "cherry": "./dist/bin/cherry.js"
+    "cherry": "./bin/cherry.js"
   },
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "prepare": "husky install",
     "bump": "npm version patch && npm publish",
