@@ -1,5 +1,5 @@
 import child_process from 'child_process'
-import { debug } from './log.js'
+import { debug } from './log.ts'
 
 // From https://stackoverflow.com/a/68958420/9847645, to avoid 200Kb limit causing ENOBUFS errors for large output
 const sh = (cmd, { throwOnError = true } = {}) =>

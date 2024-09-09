@@ -16,7 +16,7 @@ describe('cherry init', () => {
     if (fs.existsSync('.cherry.js')) fs.unlinkSync('.cherry.js')
 
     // The cherry init command prompts for a project name. Feed it with: "cherrypush/cherry-cli"
-    await execAsync('echo "cherrypush/cherry-cli" | node ./../../../bin/cherry.js init')
+    await execAsync('echo "cherrypush/cherry-cli" | tsx ./../../../bin/cherry.js init')
     expect(fs.existsSync('.cherry.js')).toBe(true)
 
     const cherryConfig = await import(path.join(process.cwd(), '.cherry.js'))
