@@ -17,4 +17,4 @@ jobs:
         run: npm install
 
       - name: Push metrics
-        run: node ./bin/cherry.js push --quiet --api-key=${{ secrets.CHERRY_API_KEY }}
+        run: ./bin/cherry.js push --quiet --api-key=${{ secrets.CHERRY_API_KEY }}
