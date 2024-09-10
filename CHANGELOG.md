@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/cherrypush/cherry-cli/compare/v2.0.1...v2.1.0) (2024-09-10)
+
+
+### Features
+
+* migrate to typescript ([#95](https://github.com/cherrypush/cherry-cli/issues/95)) ([3ce73eb](https://github.com/cherrypush/cherry-cli/commit/3ce73ebca965cd393ceffd66aedd74a937c7fa4a))
+
 ## [2.0.1](https://github.com/cherrypush/cherry-cli/compare/v2.0.0...v2.0.1) (2024-09-09)
 
 
