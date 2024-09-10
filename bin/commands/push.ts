@@ -9,11 +9,13 @@ import { getConfiguration } from '../../src/configuration.js'
 import { getFiles } from '../../src/files.js'
 import { panic } from '../../src/error.js'
 
+// @ts-expect-error TODO: properly type this
 export default function (program) {
   program
     .command('push')
     .option('--api-key <api_key>', 'your cherrypush.com API key')
     .option('--quiet', 'reduce output to a minimum')
+    // @ts-expect-error TODO: properly type this
     .action(async (options) => {
       const configuration = await getConfiguration()
       const initialBranch = await git.branchName()
@@ -28,7 +30,7 @@ export default function (program) {
         console.log('Computing metrics for current commit...')
         const occurrences = await findOccurrences({
           configuration,
-          files: await getFiles(),
+          filePaths: await getFiles(),
           codeOwners: new Codeowners(),
           quiet: options.quiet,
         })
