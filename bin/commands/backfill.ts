@@ -9,6 +9,7 @@ import { getConfiguration } from '../../src/configuration.js'
 import { getFiles } from '../../src/files.js'
 import { panic } from '../../src/error.js'
 
+// @ts-expect-error TODO: properly type this
 export default function (program) {
   program
     .command('backfill')
@@ -17,11 +18,14 @@ export default function (program) {
     .option('--until <until>', 'the date at which the backfill will stop as yyyy-mm-dd (defaults to today)')
     .option('--interval <interval>', 'the number of days between backfills (defaults to 30)')
     .option('--quiet', 'reduce output to a minimum')
+    // @ts-expect-error TODO: properly type this
     .action(async (options) => {
       const since = options.since ? new Date(options.since) : substractDays(new Date(), 90)
       const until = options.until ? new Date(options.until) : new Date()
       const interval = options.interval ? parseInt(options.interval) : 30
+      // @ts-expect-error TODO: properly type this
       if (isNaN(since)) panic('Invalid since date')
+      // @ts-expect-error TODO: properly type this
       if (isNaN(until)) panic('Invalid until date')
       if (since > until) panic('The since date must be before the until date')
       const initialBranch = await git.branchName()
@@ -42,11 +46,10 @@ export default function (program) {
 
           await git.checkout(sha)
 
-          const files = await getFiles()
           const codeOwners = new Codeowners()
           const occurrences = await findOccurrences({
             configuration,
-            files,
+            filePaths: await getFiles(),
             codeOwners,
             quiet: options.quiet,
           })

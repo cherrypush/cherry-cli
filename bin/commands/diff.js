@@ -35,7 +35,7 @@ export default function (program) {
       // Start by calculating the occurrences for the current branch
       const currentOccurrences = await findOccurrences({
         configuration,
-        files: await getFiles(),
+        filePaths: await getFiles(),
         metricNames,
         codeOwners: new Codeowners(),
         quiet: options.quiet,
@@ -49,7 +49,7 @@ export default function (program) {
         await git.checkout(baseBranchCommit)
         previousOccurrences = await findOccurrences({
           configuration,
-          files: await getFiles(),
+          filePaths: await getFiles(),
           metricNames,
           codeOwners: new Codeowners(),
           quiet: options.quiet,
