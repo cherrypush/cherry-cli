@@ -19,4 +19,4 @@ jobs:
       - name: Raise if new JavaScript code is added
         # This command will fail if the number of lines of code in JavaScript files has increased
         # in the current branch compared to the base branch, encouraging developers to contribute to migrating to TS.
-        run: npm run cherry -- diff --metric='TODO' --error-if-increase --quiet
+        run: npm run cherry -- diff --metric='[TS Migration] JS lines of code' --error-if-increase --quiet
