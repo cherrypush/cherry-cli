@@ -1,6 +1,6 @@
 {
   "name": "cherrypush",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Cherry CLI to manage your technical debt via cherrypush.com 🍒",
   "source": "./bin/cherry.ts",
   "type": "module",
