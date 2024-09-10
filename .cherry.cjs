@@ -15,15 +15,5 @@ module.exports = {
       name: 'TODO',
       pattern: /TODO/,
     },
-    {
-      name: '[TS Migration] TS lines of code',
-      include: TS_FILES,
-      groupByFile: true,
-    },
-    {
-      name: '[TS Migration] JS lines of code',
-      include: JS_FILES,
-      groupByFile: true,
-    },
   ],
 }
