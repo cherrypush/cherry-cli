@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/cherrypush/cherry-cli/compare/v2.1.0...v2.1.1) (2024-09-10)
+
+
+### Bug Fixes
+
+* error on cherry push & migrate to typescript ([c694029](https://github.com/cherrypush/cherry-cli/commit/c6940294e278c5ebea8ab45f473bc628806764fd))
+
 ## [2.1.0](https://github.com/cherrypush/cherry-cli/compare/v2.0.1...v2.1.0) (2024-09-10)
 
 
