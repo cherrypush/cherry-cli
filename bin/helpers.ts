@@ -1,3 +1,5 @@
+import { Contribution, EvalMetric, Metric, Occurrence } from '../src/types.js'
+
 import Spinnies from 'spinnies'
 import _ from 'lodash'
 import axios from 'axios'
@@ -11,7 +13,7 @@ export const API_BASE_URL = process.env.API_URL ?? 'https://www.cherrypush.com/a
 
 export const UPLOAD_BATCH_SIZE = 1000
 
-export const countByMetric = (occurrences) =>
+export const countByMetric = (occurrences: Occurrence[]) =>
   _(occurrences)
     .groupBy('metricName')
     .mapValues((occurrences) =>
@@ -19,10 +21,12 @@ export const countByMetric = (occurrences) =>
     )
     .value()
 
-const handleApiError = async (callback) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const handleApiError = async (callback: any) => {
   try {
     return await callback()
-  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
     if (error.response)
       throw new Error(
         `❌ Error while calling cherrypush.com API ${error.response.status}: ${
@@ -33,7 +37,7 @@ const handleApiError = async (callback) => {
   }
 }
 
-export const buildMetricsPayload = (occurrences) =>
+export const buildMetricsPayload = (occurrences: Occurrence[]) =>
   _(occurrences)
     .groupBy('metricName')
     .mapValues((occurrences, metricName) => ({
@@ -44,7 +48,15 @@ export const buildMetricsPayload = (occurrences) =>
     .flatten()
     .value()
 
-export const uploadContributions = async (apiKey, projectName, authorName, authorEmail, sha, date, contributions) =>
+export const uploadContributions = async (
+  apiKey: string,
+  projectName: string,
+  authorName: string,
+  authorEmail: string,
+  sha: string,
+  date: Date,
+  contributions: Contribution[]
+) =>
   handleApiError(() =>
     axios
       .post(
@@ -55,7 +67,14 @@ export const uploadContributions = async (apiKey, projectName, authorName, autho
       .then(({ data }) => data)
   )
 
-const buildContributionsPayload = (projectName, authorName, authorEmail, sha, date, contributions) => ({
+const buildContributionsPayload = (
+  projectName: string,
+  authorName: string,
+  authorEmail: string,
+  sha: string,
+  date: Date,
+  contributions: Contribution[]
+) => ({
   project_name: projectName,
   author_name: authorName,
   author_email: authorEmail,
@@ -67,7 +86,7 @@ const buildContributionsPayload = (projectName, authorName, authorEmail, sha, da
   })),
 })
 
-export const upload = async (apiKey, projectName, date, occurrences) => {
+export const upload = async (apiKey: string, projectName: string, date: Date, occurrences: Occurrence[]) => {
   if (!projectName) panic('specify a project_name in your cherry.js configuration file before pushing metrics')
 
   const uuid = await v4()
@@ -101,7 +120,8 @@ export const upload = async (apiKey, projectName, date, occurrences) => {
             })
           )
       )
-    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       spinnies.fail('batches', {
         text: `Batch ${index + 1} out of ${occurrencesBatches.length}: ${error.message}`,
       })
@@ -109,7 +129,19 @@ export const upload = async (apiKey, projectName, date, occurrences) => {
   }
 }
 
-const buildPushPayload = ({ apiKey, projectName, uuid, date, occurrences }) => ({
+const buildPushPayload = ({
+  apiKey,
+  projectName,
+  uuid,
+  date,
+  occurrences,
+}: {
+  apiKey: string
+  projectName: string
+  uuid: string
+  date: Date
+  occurrences: Occurrence[]
+}) => ({
   api_key: apiKey,
   project_name: projectName,
   date: date.toISOString(),
@@ -117,7 +149,7 @@ const buildPushPayload = ({ apiKey, projectName, uuid, date, occurrences }) => (
   metrics: buildMetricsPayload(occurrences),
 })
 
-export const buildSarifPayload = (projectName, branch, sha, occurrences) => {
+export const buildSarifPayload = (projectName: string, branch: string, sha: string, occurrences: Occurrence[]) => {
   const rules = _(occurrences)
     .groupBy('metricName')
     .map((occurrences) => ({
@@ -168,7 +200,7 @@ export const buildSarifPayload = (projectName, branch, sha, occurrences) => {
   }
 }
 
-export const buildSonarGenericImportPayload = (occurrences) => ({
+export const buildSonarGenericImportPayload = (occurrences: Occurrence[]) => ({
   issues: occurrences.map((occurrence) => ({
     engineId: 'cherry',
     ruleId: occurrence.metricName,
@@ -184,4 +216,8 @@ export const buildSonarGenericImportPayload = (occurrences) => ({
   })),
 })
 
-export const sortObject = (object) => _(object).toPairs().sortBy(0).fromPairs().value()
+export const sortObject = (object: object) => _(object).toPairs().sortBy(0).fromPairs().value()
+
+export function isEvalMetric(metric: Metric): metric is EvalMetric {
+  return 'eval' in metric
+}

@@ -2,7 +2,7 @@ import { CONFIG_FILE_LOCAL_PATHS } from './configuration.js'
 import sh from './sh.js'
 import { toISODate } from './date.js'
 
-export const git = async (cmd) => {
+export const git = async (cmd: string): Promise<string[]> => {
   const { stdout } = await sh(`git ${cmd}`)
   return stdout.toString().split('\n').filter(Boolean)
 }
@@ -30,7 +30,7 @@ export const getRemoteUrl = async () => {
  * Guesses the project name based on the remote URL of the git repository.
  * If the remote URL is not found, returns an empty string.
  */
-export const guessProjectName = (remoteUrl) => {
+export const guessProjectName = (remoteUrl: string) => {
   if (!remoteUrl) return null
 
   // Handle https remotes, such as in https://github.com/cherrypush/cherry-cli.git
@@ -53,19 +53,19 @@ export const getDefaultBranchName = async () => {
   return defaultBranch.replace('origin/', '').trim()
 }
 
-export const getMergeBase = async (currentBranchName, defaultBranchName) =>
+export const getMergeBase = async (currentBranchName: string, defaultBranchName: string) =>
   (await git(`merge-base ${currentBranchName} origin/${defaultBranchName}`)).toString().trim()
 
-export const authorName = async (sha) => (await git(`show ${sha} --format=%an --no-patch`))[0]
+export const authorName = async (sha: string) => (await git(`show ${sha} --format=%an --no-patch`))[0]
 
-export const authorEmail = async (sha) => (await git(`show ${sha} --format=%ae --no-patch`))[0]
+export const authorEmail = async (sha: string) => (await git(`show ${sha} --format=%ae --no-patch`))[0]
 
-export const commitDate = async (sha) => new Date((await git(`show -s --format=%ci ${sha}`))[0])
+export const commitDate = async (sha: string) => new Date((await git(`show -s --format=%ci ${sha}`))[0])
 
-export const commitShaAt = async (date, branch) =>
+export const commitShaAt = async (date: Date, branch: string) =>
   (await git(`rev-list --reverse --after=${toISODate(date)} ${branch}`))[0]
 
-export const checkout = async (sha) => {
+export const checkout = async (sha: string) => {
   console.log(`Checking out ${sha}`)
   await git(`checkout ${sha}`)
 }

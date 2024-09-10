@@ -32,11 +32,11 @@ export default function (program) {
       const owners = options.owner
       const quiet = options.quiet
 
-      const files = owners ? await getFiles(owners, codeOwners) : await getFiles()
+      const filePaths = owners ? await getFiles(owners, codeOwners) : await getFiles()
 
       const occurrences = await findOccurrences({
         configuration,
-        files,
+        filePaths,
         metricNames: options.metric,
         codeOwners,
         quiet,

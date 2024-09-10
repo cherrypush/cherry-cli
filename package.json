@@ -20,6 +20,7 @@
     "test": "sh test/fixtures/setup.sh && vitest run",
     "test:setup": "sh test/fixtures/setup.sh",
     "test:cleanup": "sh test/fixtures/cleanup.sh",
+    "type-check": "tsc --noEmit",
     "format": "prettier --write ."
   },
   "repository": {
@@ -53,6 +54,9 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.7",
+    "@types/spinnies": "^0.5.3",
+    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "8.x.x",
     "@typescript-eslint/parser": "8.x.x",
     "eslint": "^8.54.0",
@@ -60,9 +64,9 @@
     "husky": "^9.0.11",
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
+    "tsx": "^4.19.0",
     "typescript": "5.5.4",
-    "vitest": "^2.0.5",
-    "tsx": "^4.19.0"
+    "vitest": "^2.0.5"
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",

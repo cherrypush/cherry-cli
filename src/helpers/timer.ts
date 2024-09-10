@@ -4,10 +4,6 @@ const timers: Record<string, number> = {}
 
 /**
  * Executes a provided function block and measures its execution time.
- * Logs a message if the execution time exceeds 2 seconds.
- *
- * @param {Function} codeBlock - The block of code to execute.
- * @returns {*} The result of the executed code block.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function executeWithTiming(codeBlock: any, identifier: string) {
