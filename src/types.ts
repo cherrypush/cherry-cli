@@ -8,6 +8,11 @@ export type Occurrence = {
   owners?: string[]
 }
 
+export type Contribution = {
+  metricName: string
+  diff: number
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Codeowners = any
 
@@ -26,9 +31,12 @@ export type PatternMetric = {
 
 export type Metric = EvalMetric | PatternMetric
 
+export type PluginName = 'loc' | 'jsCircularDependencies' | 'eslint'
+export type Plugins = Partial<Record<PluginName, object>>
+
 export type Configuration = {
   project_name: string
   permalink: () => string
   metrics: Metric[]
-  plugins: Record<string, object>
+  plugins?: Plugins
 }

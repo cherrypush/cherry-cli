@@ -1,4 +1,5 @@
-import { Occurrence } from '../src/types.js'
+import { Contribution, EvalMetric, Metric, Occurrence } from '../src/types.js'
+
 import Spinnies from 'spinnies'
 import _ from 'lodash'
 import axios from 'axios'
@@ -12,7 +13,7 @@ export const API_BASE_URL = process.env.API_URL ?? 'https://www.cherrypush.com/a
 
 export const UPLOAD_BATCH_SIZE = 1000
 
-export const countByMetric = (occurrences) =>
+export const countByMetric = (occurrences: Occurrence[]) =>
   _(occurrences)
     .groupBy('metricName')
     .mapValues((occurrences) =>
@@ -20,10 +21,12 @@ export const countByMetric = (occurrences) =>
     )
     .value()
 
-const handleApiError = async (callback) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const handleApiError = async (callback: any) => {
   try {
     return await callback()
-  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
     if (error.response)
       throw new Error(
         `❌ Error while calling cherrypush.com API ${error.response.status}: ${
@@ -34,7 +37,7 @@ const handleApiError = async (callback) => {
   }
 }
 
-export const buildMetricsPayload = (occurrences) =>
+export const buildMetricsPayload = (occurrences: Occurrence[]) =>
   _(occurrences)
     .groupBy('metricName')
     .mapValues((occurrences, metricName) => ({
@@ -52,7 +55,7 @@ export const uploadContributions = async (
   authorEmail: string,
   sha: string,
   date: Date,
-  contributions
+  contributions: Contribution[]
 ) =>
   handleApiError(() =>
     axios
@@ -70,7 +73,7 @@ const buildContributionsPayload = (
   authorEmail: string,
   sha: string,
   date: Date,
-  contributions
+  contributions: Contribution[]
 ) => ({
   project_name: projectName,
   author_name: authorName,
@@ -214,3 +217,7 @@ export const buildSonarGenericImportPayload = (occurrences: Occurrence[]) => ({
 })
 
 export const sortObject = (object: object) => _(object).toPairs().sortBy(0).fromPairs().value()
+
+export function isEvalMetric(metric: Metric): metric is EvalMetric {
+  return 'eval' in metric
+}

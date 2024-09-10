@@ -1,22 +1,23 @@
-import { promises as fs } from 'fs'
-import intersection from 'lodash/intersection.js'
 import * as git from './git.js'
 
-class File {
-  constructor(path) {
-    this.path = path
-  }
+import { promises as fs } from 'fs'
+import intersection from 'lodash/intersection.js'
 
-  async readLines() {
-    try {
-      return Buffer.from(await fs.readFile(this.path))
-        .toString()
-        .split(/\r\n|\r|\n/)
-    } catch (error) {
-      if (error.code === 'ENOENT') return []
-      if (error.code === 'EISDIR') return []
-      throw error
-    }
+/**
+ * Reads the lines from a file at a given path.
+ *
+ * @param {string} path - The path to the file.
+ * @returns {Promise<string[]>} A promise that resolves to an array of lines in the file, or an empty array if the file doesn't exist or is a directory.
+ */
+export async function readLines(path) {
+  try {
+    const data = await fs.readFile(path)
+    return Buffer.from(data)
+      .toString()
+      .split(/\r\n|\r|\n/)
+  } catch (error) {
+    if (error.code === 'ENOENT' || error.code === 'EISDIR') return []
+    throw error
   }
 }
 
@@ -25,5 +26,5 @@ export const getFiles = async (owners, codeOwners) => {
   let selectedPaths = allPaths
   if (owners) selectedPaths = intersection(codeOwners.getFiles(owners), selectedPaths)
 
-  return selectedPaths.map((path) => new File(path))
+  return selectedPaths
 }

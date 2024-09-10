@@ -40,7 +40,7 @@ export default function (program) {
         await git.checkout(`${sha}~`)
         const previousOccurrences = await findOccurrences({
           configuration,
-          files: await getFiles(),
+          filePaths: await getFiles(),
           codeOwners: new Codeowners(),
           quiet: options.quiet,
         })
