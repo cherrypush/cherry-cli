@@ -22,6 +22,6 @@ const jsToTsResolver = {
 }
 
 export default defineConfig({
-  test: { retry: 2 },
+  test: { retry: 0 },
   plugins: [jsToTsResolver],
 })

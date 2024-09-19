@@ -7,11 +7,11 @@ describe('eslint plugin', () => {
     const { stdout } = await execAsync('npm run cherry -- run --metric "[eslint] @typescript-eslint/no-unused-vars"')
 
     // Uses the relative path to the project root, containing the line number
-    expect(stdout).toContain('👉 test/fixtures/sample-project-one/main.js:2')
+    expect(stdout).toContain('👉 test/fixtures/super-project/main.js:2')
 
     // Builds the correct permalink, also containing the line number
     expect(stdout).toContain(
-      'https://github.com/cherrypush/cherry-cli/blob/HEAD/test/fixtures/sample-project-one/main.js#L2'
+      'https://github.com/cherrypush/cherry-cli/blob/HEAD/test/fixtures/super-project/main.js#L2'
     )
   })
 })

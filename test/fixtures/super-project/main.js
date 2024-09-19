@@ -4,5 +4,6 @@ function testEslint() {
   var unusedVar = 42
   console.log('ESLint test')
   let obj = { key: 'value' }
+  // TODO: This is a comment that should be picked up by the metrics
   return obj
 }

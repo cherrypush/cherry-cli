@@ -1,4 +1,4 @@
-import { gitProjectRoot, gitRemoteUrl, guessProjectName, guessRepositoryInfo } from './git.js'
+import { gitProjectRoot, gitRemoteUrl, guessRepositoryInfo } from './git.js'
 
 import { Configuration } from './types.js'
 import buildAndImport from './build-and-import.cjs'
@@ -35,20 +35,8 @@ export const getConfiguration = async (): Promise<Configuration> => {
   const remoteUrl = await gitRemoteUrl()
   const projectRoot = await gitProjectRoot()
 
-  // If no configuration file is found, try to guess the project name and repository
-  // and use the default configuration, which only includes the loc plugin
-  if (!configFile) {
-    const remoteUrl = await gitRemoteUrl()
-    const guessedProjectName = guessProjectName(remoteUrl)
-    if (!guessedProjectName) throw new Error('Please set up cherry using the command: cherry init')
-    console.log('ℹ️  No .cherry.js file found, using default configuration...')
-    return {
-      project_name: guessedProjectName,
-      plugins: { loc: {} },
-      metrics: [],
-      repository: await guessRepositoryInfo({ remoteUrl, configFile, projectRoot }),
-    }
-  }
+  // Require the user to set up Cherry before running any command
+  if (!configFile) throw new Error('Please set up Cherry using the command: cherry init')
 
   const imported = buildAndImport(configFile)
   // Allow both syntaxes on configuration files:

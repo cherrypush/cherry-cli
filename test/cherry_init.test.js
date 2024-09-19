@@ -5,7 +5,7 @@ import fs from 'fs'
 import path from 'path'
 
 const originalCwd = process.cwd()
-const fixturesPath = path.join(originalCwd, 'test/fixtures/project-one')
+const fixturesPath = path.join(originalCwd, 'test/fixtures/empty-project-source')
 
 describe('cherry init', () => {
   beforeAll(() => process.chdir(fixturesPath))
