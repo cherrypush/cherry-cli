@@ -15,7 +15,7 @@ if [ ! -d "test/fixtures/project-one/.git" ]; then
 
   # Create a dummy commit
   echo "test" > README.md
-  git add README.md
+  git add .
   git commit -m "Initial commit"
 
   # Create a directory to act as the fake remote

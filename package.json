@@ -17,7 +17,7 @@
     "bump": "npm version patch && npm publish",
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watchAll",
     "lint": "eslint . --ext .js,.ts",
-    "test": "sh test/fixtures/setup.sh && vitest run",
+    "test": "sh test/fixtures/cleanup.sh && sh test/fixtures/setup.sh && vitest run",
     "test:setup": "sh test/fixtures/setup.sh",
     "test:cleanup": "sh test/fixtures/cleanup.sh",
     "type-check": "tsc --noEmit",

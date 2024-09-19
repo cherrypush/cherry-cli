@@ -40,7 +40,7 @@ export const getConfiguration = async (): Promise<Configuration> => {
   if (!configFile) {
     const remoteUrl = await gitRemoteUrl()
     const guessedProjectName = guessProjectName(remoteUrl)
-    if (!guessedProjectName) throw new Error('No configuration file found and no remote URL provided. Exiting...')
+    if (!guessedProjectName) throw new Error('Please set up cherry using the command: cherry init')
     console.log('ℹ️  No .cherry.js file found, using default configuration...')
     return {
       project_name: guessedProjectName,
