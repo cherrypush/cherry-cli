@@ -4,9 +4,10 @@ import * as git from '../../src/git.js'
 
 import { createConfigurationFile, createWorkflowFile, getConfigFile, workflowExists } from '../../src/configuration.js'
 
+import { Command } from 'commander'
 import prompt from 'prompt'
 
-export default function (program) {
+export default function (program: Command) {
   program.command('init').action(async () => {
     // If the configuration file already exists, don't allow the user to run the init command
     const configurationFile = getConfigFile()
@@ -25,8 +26,11 @@ export default function (program) {
       const { repo } = await prompt.get({
         properties: { repo: { message: 'Enter your project name', required: true } },
       })
-      projectName = repo
+      if (typeof repo === 'string') projectName = repo
     }
+
+    if (!projectName) throw new Error('Project name is required')
+
     createConfigurationFile(projectName)
 
     if (!workflowExists()) createWorkflowFile()

@@ -41,3 +41,8 @@ export type Configuration = {
   metrics: Metric[]
   plugins?: Plugins
 }
+
+export type OutputFile = {
+  name: Pick<Metric, 'name'>
+  occurrences: Occurrence[]
+}[]

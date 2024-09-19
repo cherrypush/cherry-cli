@@ -10,6 +10,7 @@ import {
 } from '../helpers.js'
 
 import Codeowners from '../../src/codeowners.js'
+import { Command } from 'commander'
 import _ from 'lodash'
 import { findOccurrences } from '../../src/occurrences.js'
 import fs from 'fs'
@@ -17,7 +18,9 @@ import { getConfiguration } from '../../src/configuration.js'
 import { getFiles } from '../../src/files.js'
 import { panic } from '../../src/error.js'
 
-export default function (program) {
+const ALLOWED_FORMATS = ['json', 'sarif', 'sonar']
+
+export default function (program: Command) {
   program
     .command('run')
     .option('--owner <owner>', 'will only consider the provided code owners', allowMultipleValues)
@@ -67,6 +70,13 @@ export default function (program) {
           const sonar = buildSonarGenericImportPayload(occurrences)
           content = JSON.stringify(sonar, null, 2)
         }
+
+        if (!content) {
+          panic(`Invalid format provided: ${format}`)
+          console.log(`Allowed formats: ${ALLOWED_FORMATS.join(', ')}`)
+          return
+        }
+
         fs.writeFile(filepath, content, 'utf8', function (err) {
           if (err) panic(err)
           console.log(`File has been saved as ${filepath}`)

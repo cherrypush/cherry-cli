@@ -54,6 +54,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@types/commander": "^2.12.2",
     "@types/lodash": "^4.17.7",
     "@types/prompt": "^1.1.9",
     "@types/spinnies": "^0.5.3",
