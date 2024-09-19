@@ -1,6 +1,6 @@
 if [ ! -d "test/fixtures/project-one/.git" ]; then
-  # Create an empty test/fixtures/project-one directory
-  mkdir -p test/fixtures/project-one
+  # Copy the testing sample repo into a new folder
+  cp test/fixtures/sample-project-one test/fixtures/project-one -r
 
   # Initialize a git repository in the directory
   cd test/fixtures/project-one

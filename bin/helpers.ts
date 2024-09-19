@@ -13,6 +13,10 @@ export const API_BASE_URL = process.env.API_URL ?? 'https://www.cherrypush.com/a
 
 export const UPLOAD_BATCH_SIZE = 1000
 
+export function allowMultipleValues(value: string, previous: string[]) {
+  return previous ? [...previous, value] : [value]
+}
+
 export const countByMetric = (occurrences: Occurrence[]) =>
   _(occurrences)
     .groupBy('metricName')

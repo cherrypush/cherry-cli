@@ -1,10 +1,16 @@
 import { CONFIG_FILE_LOCAL_PATHS } from './configuration.js'
+import { panic } from './error.js'
 import sh from './sh.js'
 import { toISODate } from './date.js'
 
 export const git = async (cmd: string): Promise<string[]> => {
   const { stdout } = await sh(`git ${cmd}`)
   return stdout.toString().split('\n').filter(Boolean)
+}
+
+export async function gitProjectRoot() {
+  const { stdout } = await sh('git rev-parse --show-toplevel')
+  return stdout.toString().trim()
 }
 
 export const files = async () => {
@@ -19,7 +25,7 @@ export const files = async () => {
 /**
  * Retrieves the URL of the first Git remote for the current path.
  */
-export const getRemoteUrl = async () => {
+export const gitRemoteUrl = async () => {
   const remotes = await git('remote')
   if (!remotes.length) return null
 
@@ -30,8 +36,11 @@ export const getRemoteUrl = async () => {
  * Guesses the project name based on the remote URL of the git repository.
  * If the remote URL is not found, returns an empty string.
  */
-export const guessProjectName = (remoteUrl: string) => {
-  if (!remoteUrl) return null
+export function guessProjectName(remoteUrl: string | null): string | null {
+  if (typeof remoteUrl !== 'string') {
+    panic("You must provide a remote URL to guess the project's name")
+    return null
+  }
 
   // Handle https remotes, such as in https://github.com/cherrypush/cherry-cli.git
   if (remoteUrl.includes('https://')) return remoteUrl.split('/').slice(-2).join('/').replace('.git', '')
@@ -40,6 +49,62 @@ export const guessProjectName = (remoteUrl: string) => {
   if (remoteUrl.includes('git@')) return remoteUrl.split(':').slice(-1)[0].replace('.git', '')
 
   return null
+}
+
+export function guessRepositorySubdir({
+  configFile,
+  projectRoot,
+}: {
+  projectRoot: string
+  configFile: string | null
+}): string {
+  if (!configFile) return ''
+
+  return configFile.replace(projectRoot, '').split('/').slice(1, -1).join('/')
+}
+
+/**
+ * Guesses the repository information based on the remote URL and the config file path.
+ *
+ * The remote URL is, for instance, in the form of git@github.com:cherrypush/cherry-cli.git
+ * The repository info, then, would be { host: 'github', owner: 'cherrypush', name: 'cherry-cli', subdir: '' }
+ */
+export async function guessRepositoryInfo({
+  remoteUrl,
+  configFile,
+  projectRoot,
+}: {
+  remoteUrl: string | null
+  configFile: string | null
+  projectRoot: string
+}) {
+  if (remoteUrl === null) {
+    throw new Error('Could not guess repository info: no remote URL found')
+  }
+
+  // For github ssh remotes such as git@github.com:cherrypush/cherry-cli.git
+  if (remoteUrl.includes('git@github.com')) {
+    return {
+      host: 'github',
+      owner: remoteUrl.split(':')[1].split('/')[0],
+      name: remoteUrl.split('/')[1].replace('.git', ''),
+      subdir: guessRepositorySubdir({ configFile, projectRoot }),
+    }
+  }
+
+  // For github https remotes such as https://github.com/cherrypush/cherry-cli.git
+  if (remoteUrl.includes('https://github.com')) {
+    return {
+      host: 'github',
+      owner: remoteUrl.split('/')[3],
+      name: remoteUrl.split('/')[4].replace('.git', ''),
+      subdir: guessRepositorySubdir({ configFile, projectRoot }),
+    }
+  }
+
+  // TODO: add support for other git hosts such as GitLab and Bitbucket
+
+  throw new Error(`Could not guess repository info from remote URL: ${remoteUrl}`)
 }
 
 export const sha = async () => (await git('rev-parse HEAD')).toString()
@@ -72,4 +137,4 @@ export const checkout = async (sha: string) => {
 
 export const branchName = async () => (await git(`branch --show-current`))[0]
 
-export const uncommittedFiles = async () => await git('status --porcelain=v1')
+export const uncommittedFiles = async () => git('status --porcelain=v1')

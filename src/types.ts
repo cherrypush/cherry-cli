@@ -36,7 +36,8 @@ export type Plugins = Partial<Record<PluginName, object>>
 
 export type Configuration = {
   project_name: string
-  permalink: () => string
+  repository: { host: string; owner: string; name: string; subdir: string }
+  permalink?: () => string
   metrics: Metric[]
   plugins?: Plugins
 }
