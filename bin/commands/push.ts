@@ -3,19 +3,18 @@ import * as git from '../../src/git.js'
 import { upload, uploadContributions } from '../helpers.js'
 
 import Codeowners from '../../src/codeowners.js'
+import { Command } from 'commander'
 import { computeContributions } from '../../src/contributions.js'
 import { findOccurrences } from '../../src/occurrences.js'
 import { getConfiguration } from '../../src/configuration.js'
 import { getFiles } from '../../src/files.js'
 import { panic } from '../../src/error.js'
 
-// @ts-expect-error TODO: properly type this
-export default function (program) {
+export default function (program: Command) {
   program
     .command('push')
     .option('--api-key <api_key>', 'your cherrypush.com API key')
     .option('--quiet', 'reduce output to a minimum')
-    // @ts-expect-error TODO: properly type this
     .action(async (options) => {
       const configuration = await getConfiguration()
       const initialBranch = await git.branchName()
