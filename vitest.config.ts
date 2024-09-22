@@ -1,6 +1,6 @@
-import { defineConfig } from 'vitest/config'
 import fs from 'fs'
 import path from 'path'
+import { defineConfig } from 'vitest/config'
 
 const fileExists = (filePath: string): boolean => fs.existsSync(filePath)
 
@@ -22,6 +22,6 @@ const jsToTsResolver = {
 }
 
 export default defineConfig({
-  test: { retry: 0 },
+  test: { retry: 0, reporters: ['basic'] },
   plugins: [jsToTsResolver],
 })

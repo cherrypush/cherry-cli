@@ -1,6 +1,5 @@
 import { CONFIG_FILE_LOCAL_PATHS } from './configuration.js'
 import { toISODate } from './date.js'
-import { panic } from './error.js'
 import sh from './sh.js'
 
 export const git = async (cmd: string): Promise<string[]> => {
@@ -37,10 +36,7 @@ export const gitRemoteUrl = async () => {
  * If the remote URL is not found, returns an empty string.
  */
 export function guessProjectName(remoteUrl: string | null): string | null {
-  if (typeof remoteUrl !== 'string') {
-    panic("You must provide a remote URL to guess the project's name")
-    return null
-  }
+  if (!remoteUrl) return null
 
   // Handle https remotes, such as in https://github.com/cherrypush/cherry-cli.git
   if (remoteUrl.includes('https://')) return remoteUrl.split('/').slice(-2).join('/').replace('.git', '')

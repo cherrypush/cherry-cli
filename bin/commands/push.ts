@@ -1,11 +1,11 @@
 import * as git from '../../src/git.js'
 
-import { upload, uploadContributions } from '../helpers.js'
+import { upload } from '../helpers.js'
 
 import { Command } from 'commander'
 import Codeowners from '../../src/codeowners.js'
 import { getConfiguration } from '../../src/configuration.js'
-import { computeContributions } from '../../src/contributions.js'
+import { computeContributions, uploadContributions } from '../../src/contributions.js'
 import { panic } from '../../src/error.js'
 import { getFiles } from '../../src/files.js'
 import { findOccurrences } from '../../src/occurrences.js'

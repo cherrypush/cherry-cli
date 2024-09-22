@@ -25,8 +25,8 @@ describe('guessRepositorySubdir', () => {
 })
 
 describe('guessProjectName', () => {
-  it('raises an error if no remote URL is provided', () => {
-    expect(() => guessProjectName(null)).toThrow()
+  it('returns null if no remote URL is provided', () => {
+    expect(guessProjectName(null)).toEqual(null)
   })
 
   it('returns an empty string if no pattern is recognized', async () => {
@@ -51,7 +51,7 @@ describe('guessRepositoryInfo', () => {
       projectRoot: '/Users/fwuensche/projects/cherry-cli',
     })
 
-    expect(result.host).toEqual('github')
+    expect(result.host).toEqual('github.com')
     expect(result.owner).toEqual('cherrypush')
     expect(result.name).toEqual('cherry-cli')
     expect(result.subdir).toEqual('another/subdir')
