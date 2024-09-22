@@ -1,8 +1,8 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { execAsync } from './helpers'
 import fs from 'fs'
 import path from 'path'
+import { execAsync } from './helpers'
 
 const originalCwd = process.cwd()
 const fixturesPath = path.join(originalCwd, 'test/fixtures/empty-project-source')
@@ -25,6 +25,6 @@ describe('cherry init', () => {
     // Remove .cherry.js file
     if (fs.existsSync('.cherry.js')) fs.unlinkSync('.cherry.js')
     // Remove .github folder
-    if (fs.existsSync('.github')) fs.rmdirSync('.github', { recursive: true })
+    if (fs.existsSync('.github')) fs.rmSync('.github', { recursive: true })
   })
 })
