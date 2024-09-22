@@ -37,7 +37,7 @@ If you use another provider, please open an issue at https://github.com/cherrypu
   )
 }
 
-const buildContributionsPayload = (
+export const buildContributionsPayload = (
   projectName: string,
   authorName: string,
   authorEmail: string,
