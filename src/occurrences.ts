@@ -1,19 +1,19 @@
-import { Configuration, EvalMetric, Metric, Occurrence, PatternMetric, PluginName, Plugins } from './types.js'
 import { executeWithTiming, warnsAboutLongRunningTasks } from './helpers/timer.js'
+import { Configuration, EvalMetric, Metric, Occurrence, PatternMetric, PluginName, Plugins } from './types.js'
 
-import Spinnies from 'spinnies'
 import _ from 'lodash'
+import minimatch from 'minimatch'
+import pLimit from 'p-limit'
+import Spinnies from 'spinnies'
+import { isEvalMetric } from '../bin/helpers.js'
+import { panic } from './error.js'
+import { readLines } from './files.js'
 import { buildPermalink } from './permalink.js'
 import eslint from './plugins/eslint.js'
-import { isEvalMetric } from '../bin/helpers.js'
 import jsCircularDependencies from './plugins/js_circular_dependencies.js'
 import jsUnimported from './plugins/js_unimported.js'
 import loc from './plugins/loc.js'
-import minimatch from 'minimatch'
 import npmOutdated from './plugins/npm_outdated.js'
-import pLimit from 'p-limit'
-import { panic } from './error.js'
-import { readLines } from './files.js'
 import rubocop from './plugins/rubocop.js'
 import yarnOutdated from './plugins/yarn_outdated.js'
 
@@ -102,7 +102,7 @@ const matchPatterns = async (files: string[], metrics: PatternMetric[], quiet: b
     'All pattern metrics together'
   )
 
-  if (!quiet) promise.then(() => spinnies.succeed('patterns', { text: 'Matching patterns' }))
+  if (!quiet) await promise.then(() => spinnies.succeed('patterns', { text: 'Matching patterns' }))
 
   return promise
 }
@@ -124,7 +124,7 @@ const runEvals = async (metrics: EvalMetric[], codeOwners: any, quiet: boolean):
 
       // TODO: properly type executeWithTiming and remove the cast
       const occurrences = (await executeWithTiming(
-        async () => await metric.eval({ codeOwners }),
+        async () => metric.eval({ codeOwners }),
         `Metric '${metric.name}'`
       )) as Occurrence[]
 
@@ -135,7 +135,7 @@ const runEvals = async (metrics: EvalMetric[], codeOwners: any, quiet: boolean):
     })
   )
 
-  if (!quiet) promise.then(() => spinnies.succeed('evals', { text: 'Running eval()' }))
+  if (!quiet) await promise.then(() => spinnies.succeed('evals', { text: 'Running eval()' }))
 
   return promise
 }

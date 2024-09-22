@@ -16,10 +16,13 @@ export default function (program: Command) {
     .option('--api-key <api_key>', 'your cherrypush.com API key')
     .option('--quiet', 'reduce output to a minimum')
     .action(async (options) => {
+      const sha = await git.sha()
       const configuration = await getConfiguration()
       const initialBranch = await git.branchName()
       if (!initialBranch) panic('Not on a branch, checkout a branch before pushing metrics.')
-      const sha = await git.sha()
+
+      const hasUncommitedChanges = (await git.uncommittedFiles()).length > 0
+      if (hasUncommitedChanges) panic('Please commit your changes before running cherry diff.')
 
       const apiKey = options.apiKey || process.env.CHERRY_API_KEY
       if (!apiKey) panic('Please provide an API key with --api-key or CHERRY_API_KEY environment variable')
@@ -36,8 +39,7 @@ export default function (program: Command) {
 
         await upload(apiKey, configuration.project_name, await git.commitDate(sha), occurrences)
 
-        console.log('')
-        console.log('Computing metrics for previous commit...')
+        console.log('\nComputing metrics for previous commit...')
         await git.checkout(`${sha}~`)
         const previousOccurrences = await findOccurrences({
           configuration,
@@ -49,7 +51,7 @@ export default function (program: Command) {
         const contributions = computeContributions(occurrences, previousOccurrences)
 
         if (contributions.length) {
-          console.log(`  Uploading contributions...`)
+          console.log('\nUploading contributions...')
           await uploadContributions(
             apiKey,
             configuration.project_name,
