@@ -35,6 +35,7 @@ describe('cherry diff', () => {
 
   it('should exit with an error if --metric is missing', async () => {
     const error = await expectError(`${CHERRY_BIN_PATH} diff --quiet`)
+    // @ts-expect-error - TODO: properly type error
     expect(error.stderr).toContain(`required option '--metric <metric>' not specified`)
   })
 
@@ -47,6 +48,7 @@ describe('cherry diff', () => {
   it('requires to commit changes before running cherry diff', async () => {
     fs.writeFileSync(OCCURRENCES_FILE_PATH, 'unexpected content')
     const error = await expectError(`${CHERRY_BIN_PATH} diff --quiet --metric TODO`)
+    // @ts-expect-error - TODO: properly type error
     expect(error.stderr).toContain('Please commit your changes before running cherry diff')
   })
 

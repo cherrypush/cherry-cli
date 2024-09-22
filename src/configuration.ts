@@ -1,10 +1,11 @@
-import { gitProjectRoot, gitRemoteUrl, guessRepositoryInfo } from './git.js'
+import { gitProjectRoot, gitRemoteUrl } from './git.js'
 
-import { Configuration } from './types.js'
-import buildAndImport from './build-and-import.cjs'
+import fs from 'fs'
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
-import fs from 'fs'
+import buildAndImport from './build-and-import.cjs'
+import { guessRepositoryInfo } from './repository.js'
+import { Configuration } from './types.js'
 
 export const CONFIG_FILE_LOCAL_PATHS = ['.cherry.js', '.cherry.cjs', '.cherry.ts']
 export const WORKFLOW_FILE_LOCAL_PATH = '.github/workflows/cherry_push.yml'

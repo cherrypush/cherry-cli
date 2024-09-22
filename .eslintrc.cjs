@@ -1,5 +1,5 @@
 module.exports = {
-  ignorePatterns: ['dist/', 'node_modules/', '.eslintrc.cjs', '**/*.test.*'],
+  ignorePatterns: ['dist/', 'node_modules/', '.eslintrc.cjs'],
   env: {
     node: true,
     es2021: true,
