@@ -1,11 +1,11 @@
-import { Contribution, EvalMetric, Metric, Occurrence } from '../src/types.js'
+import { EvalMetric, Metric, Occurrence } from '../src/types.js'
 
-import Spinnies from 'spinnies'
-import _ from 'lodash'
 import axios from 'axios'
-import { buildRepoURL } from '../src/permalink.js'
-import { panic } from '../src/error.js'
+import _ from 'lodash'
+import Spinnies from 'spinnies'
 import { v4 } from 'uuid'
+import { panic } from '../src/error.js'
+import { buildRepoURL } from '../src/permalink.js'
 
 export const spinnies = new Spinnies()
 
@@ -26,7 +26,7 @@ export const countByMetric = (occurrences: Occurrence[]) =>
     .value()
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const handleApiError = async (callback: any) => {
+export const handleApiError = async (callback: any) => {
   try {
     return await callback()
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -52,48 +52,10 @@ export const buildMetricsPayload = (occurrences: Occurrence[]) =>
     .flatten()
     .value()
 
-export const uploadContributions = async (
-  apiKey: string,
-  projectName: string,
-  authorName: string,
-  authorEmail: string,
-  sha: string,
-  date: Date,
-  contributions: Contribution[]
-) =>
-  handleApiError(() =>
-    axios
-      .post(
-        API_BASE_URL + '/contributions',
-        buildContributionsPayload(projectName, authorName, authorEmail, sha, date, contributions),
-        { params: { api_key: apiKey } }
-      )
-      .then(({ data }) => data)
-  )
-
-const buildContributionsPayload = (
-  projectName: string,
-  authorName: string,
-  authorEmail: string,
-  sha: string,
-  date: Date,
-  contributions: Contribution[]
-) => ({
-  project_name: projectName,
-  author_name: authorName,
-  author_email: authorEmail,
-  commit_sha: sha,
-  commit_date: date.toISOString(),
-  contributions: contributions.map((contribution) => ({
-    metric_name: contribution.metricName,
-    diff: contribution.diff,
-  })),
-})
-
 export const upload = async (apiKey: string, projectName: string, date: Date, occurrences: Occurrence[]) => {
   if (!projectName) panic('specify a project_name in your cherry.js configuration file before pushing metrics')
 
-  const uuid = await v4()
+  const uuid = v4()
   const occurrencesBatches = _.chunk(occurrences, UPLOAD_BATCH_SIZE)
 
   console.log('')

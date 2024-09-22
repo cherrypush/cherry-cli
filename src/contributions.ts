@@ -1,4 +1,6 @@
-import { Contribution, Occurrence } from './types.js'
+import axios from 'axios'
+import { API_BASE_URL, handleApiError } from '../bin/helpers.js'
+import { Contribution, Host, Occurrence, Repository } from './types.js'
 
 import _ from 'lodash'
 
@@ -20,3 +22,58 @@ export const computeContributions = (occurrences: Occurrence[], previousOccurren
 
   return contributions
 }
+
+export function buildCommitUrl(repository: Repository, sha: string) {
+  if (repository.host === 'github.com')
+    return `https://${repository.host}/${repository.owner}/${repository.name}/commit/${sha}`
+
+  if (repository.host === 'gitlab.com')
+    return `https://${repository.host}/${repository.owner}/${repository.name}/-/commit/${sha}`
+
+  throw new Error(
+    `Unsupported host: ${repository.host}
+Supported hosts are: ${Object.values(Host).join(', ')}
+If you use another provider, please open an issue at https://github.com/cherrypush/cherry-cli/issues`
+  )
+}
+
+const buildContributionsPayload = (
+  projectName: string,
+  authorName: string,
+  authorEmail: string,
+  sha: string,
+  date: Date,
+  contributions: Contribution[],
+  repository: Repository
+) => ({
+  project_name: projectName,
+  author_name: authorName,
+  author_email: authorEmail,
+  commit_sha: sha,
+  commit_url: buildCommitUrl(repository, sha),
+  commit_date: date.toISOString(),
+  contributions: contributions.map((contribution) => ({
+    metric_name: contribution.metricName,
+    diff: contribution.diff,
+  })),
+})
+
+export const uploadContributions = async (
+  apiKey: string,
+  projectName: string,
+  authorName: string,
+  authorEmail: string,
+  sha: string,
+  date: Date,
+  contributions: Contribution[],
+  repository: Repository
+) =>
+  handleApiError(() =>
+    axios
+      .post(
+        API_BASE_URL + '/contributions',
+        buildContributionsPayload(projectName, authorName, authorEmail, sha, date, contributions, repository),
+        { params: { api_key: apiKey } }
+      )
+      .then(({ data }) => data)
+  )
