@@ -46,10 +46,12 @@ export type Repository = {
   subdir: string // e.g. src, or an empty string for the root
 }
 
+export type PermalinkFn = (options: { filePath: string; lineNumber?: number }) => string
+
 export type Configuration = {
   project_name: string
   repository: Repository
-  permalink?: () => string
+  permalink?: PermalinkFn
   metrics: Metric[]
   plugins?: Plugins
 }

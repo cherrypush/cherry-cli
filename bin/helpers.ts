@@ -5,7 +5,6 @@ import _ from 'lodash'
 import Spinnies from 'spinnies'
 import { v4 } from 'uuid'
 import { panic } from '../src/error.js'
-import { buildRepoURL } from '../src/permalink.js'
 
 export const spinnies = new Spinnies()
 
@@ -113,73 +112,6 @@ const buildPushPayload = ({
   date: date.toISOString(),
   uuid,
   metrics: buildMetricsPayload(occurrences),
-})
-
-export const buildSarifPayload = (projectName: string, branch: string, sha: string, occurrences: Occurrence[]) => {
-  const rules = _(occurrences)
-    .groupBy('metricName')
-    .map((occurrences) => ({
-      id: occurrences[0].metricName,
-    }))
-
-  const results = occurrences.map((occurrence) => ({
-    ruleId: occurrence.metricName,
-    level: 'none',
-    message: { text: `${occurrence.metricName} at ${occurrence.text}` },
-    locations: [
-      {
-        physicalLocation: {
-          artifactLocation: {
-            uri: occurrence.text.split(':')[0],
-          },
-          region: {
-            startLine: parseInt(occurrence.text.split(':')[1]) || 1,
-          },
-        },
-      },
-    ],
-  }))
-
-  return {
-    $schema: 'https://json.schemastore.org/sarif-2.1.0.json',
-    version: '2.1.0',
-    runs: [
-      {
-        versionControlProvenance: [
-          {
-            repositoryUri: buildRepoURL(projectName),
-            revisionId: sha,
-            branch,
-          },
-        ],
-        tool: {
-          driver: {
-            name: 'cherry',
-            version: process.env.npm_package_version,
-            informationUri: 'https://github.com/cherrypush/cherrypush.com',
-            rules,
-          },
-        },
-        results,
-      },
-    ],
-  }
-}
-
-export const buildSonarGenericImportPayload = (occurrences: Occurrence[]) => ({
-  issues: occurrences.map((occurrence) => ({
-    engineId: 'cherry',
-    ruleId: occurrence.metricName,
-    type: 'CODE_SMELL',
-    severity: 'INFO',
-    primaryLocation: {
-      message: `${occurrence.metricName} at ${occurrence.text}`,
-      filePath: occurrence.text.split(':')[0],
-      textRange: {
-        startLine: parseInt(occurrence.text.split(':')[1]) || 1,
-      },
-    },
-  })),
 })
 
 export const sortObject = (object: object) => _(object).toPairs().sortBy(0).fromPairs().value()

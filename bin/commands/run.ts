@@ -1,22 +1,17 @@
 import * as git from '../../src/git.js'
 
-import {
-  allowMultipleValues,
-  buildMetricsPayload,
-  buildSarifPayload,
-  buildSonarGenericImportPayload,
-  countByMetric,
-  sortObject,
-} from '../helpers.js'
+import { allowMultipleValues, buildMetricsPayload, countByMetric, sortObject } from '../helpers.js'
 
-import Codeowners from '../../src/codeowners.js'
 import { Command } from 'commander'
-import _ from 'lodash'
-import { findOccurrences } from '../../src/occurrences.js'
 import fs from 'fs'
+import _ from 'lodash'
+import Codeowners from '../../src/codeowners.js'
 import { getConfiguration } from '../../src/configuration.js'
-import { getFiles } from '../../src/files.js'
 import { panic } from '../../src/error.js'
+import { getFiles } from '../../src/files.js'
+import { buildSarifPayload } from '../../src/helpers/sarif.js'
+import { buildSonarGenericImportPayload } from '../../src/helpers/sonar.js'
+import { findOccurrences } from '../../src/occurrences.js'
 
 const ALLOWED_FORMATS = ['json', 'sarif', 'sonar']
 
@@ -70,7 +65,7 @@ export default function (program: Command) {
         } else if (format === 'sarif') {
           const branch = await git.branchName()
           const sha = await git.sha()
-          const sarif = buildSarifPayload(configuration.project_name, branch, sha, occurrences)
+          const sarif = buildSarifPayload(configuration.repository, branch, sha, occurrences)
           content = JSON.stringify(sarif, null, 2)
         } else if (format === 'sonar') {
           const sonar = buildSonarGenericImportPayload(occurrences)

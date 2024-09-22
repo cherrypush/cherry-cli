@@ -8,7 +8,6 @@ import Spinnies from 'spinnies'
 import { isEvalMetric } from '../bin/helpers.js'
 import { panic } from './error.js'
 import { readLines } from './files.js'
-import { buildPermalink } from './permalink.js'
 import eslint from './plugins/eslint.js'
 import jsCircularDependencies from './plugins/js_circular_dependencies.js'
 import jsUnimported from './plugins/js_unimported.js'
@@ -16,6 +15,7 @@ import loc from './plugins/loc.js'
 import npmOutdated from './plugins/npm_outdated.js'
 import rubocop from './plugins/rubocop.js'
 import yarnOutdated from './plugins/yarn_outdated.js'
+import { buildPermalink } from './repository.js'
 
 const spinnies = new Spinnies()
 
@@ -190,7 +190,6 @@ export const findOccurrences = async ({
   quiet: boolean
 }) => {
   let metrics = configuration.metrics
-  const { project_name: projectName, permalink } = configuration
 
   // Prevent running all metrics if a subset is provided
   if (metricNames) metrics = metrics.filter(({ name }) => metricNames.includes(name))
@@ -211,7 +210,10 @@ export const findOccurrences = async ({
     value,
     metricName,
     // The url might have been provided by plugins or eval metrics
-    url: url !== undefined ? url : filePath && buildPermalink(permalink, projectName, filePath, lineNumber),
+    url:
+      url !== undefined
+        ? url
+        : filePath && buildPermalink(configuration.permalink, configuration.repository, filePath, lineNumber),
     owners: owners !== undefined ? owners : filePath && codeOwners.getOwners(filePath),
   }))
 
