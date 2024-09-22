@@ -64,8 +64,9 @@ export default function (program) {
       } catch (exception) {
         error = exception
       } finally {
-        git.checkout(initialBranch)
+        await git.checkout(initialBranch)
       }
+
       if (error) {
         console.error(error)
         process.exit(1)

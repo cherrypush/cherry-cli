@@ -58,6 +58,12 @@ export default function (program: Command) {
         const format = options.format || 'json'
         let content
 
+        if (!ALLOWED_FORMATS.includes(format)) {
+          panic(`Invalid format provided: ${format}`)
+          console.log(`Allowed formats: ${ALLOWED_FORMATS.join(', ')}`)
+          return
+        }
+
         if (format === 'json') {
           const metrics = buildMetricsPayload(occurrences)
           content = JSON.stringify(metrics, null, 2)
@@ -72,8 +78,7 @@ export default function (program: Command) {
         }
 
         if (!content) {
-          panic(`Invalid format provided: ${format}`)
-          console.log(`Allowed formats: ${ALLOWED_FORMATS.join(', ')}`)
+          panic('Error while generating content')
           return
         }
 
