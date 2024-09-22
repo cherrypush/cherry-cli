@@ -152,13 +152,13 @@ const runPlugins = async (plugins: Plugins = {}, quiet: boolean): Promise<Occurr
       if (!plugin) panic(`Unsupported '${name}' plugin\nExpected one of: ${Object.keys(PLUGINS).join(', ')}`)
       if (!quiet) spinnies.add(`plugin_${name}`, { text: `${name}...`, indent: 4 })
       // @ts-expect-error TODO: properly type plugin options
-      const result = executeWithTiming(async () => await plugin.run(options), `Plugin '${name}'`)
+      const result = executeWithTiming(async () => plugin.run(options), `Plugin '${name}'`)
       if (!quiet) spinnies.succeed(`plugin_${name}`, { text: name })
       return result
     })
   )
 
-  if (!quiet) promise.then(() => spinnies.succeed('plugins', { text: 'Running plugin' }))
+  if (!quiet) await promise.then(() => spinnies.succeed('plugins', { text: 'Running plugin' }))
 
   return promise
 }
