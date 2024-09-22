@@ -22,6 +22,6 @@ const jsToTsResolver = {
 }
 
 export default defineConfig({
-  test: { retry: 0, reporters: ['basic'] },
+  test: { retry: 0, reporters: ['basic'], testTimeout: process.env.CI ? 10_000 : 5_000 },
   plugins: [jsToTsResolver],
 })
