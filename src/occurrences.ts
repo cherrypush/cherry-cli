@@ -16,6 +16,7 @@ import { panic } from './error.js'
 import { readLines } from './files.js'
 import rubocop from './plugins/rubocop.js'
 import yarnOutdated from './plugins/yarn_outdated.js'
+import yarnOutdatedSplit from './plugins/yarn_outdated_split.js'
 
 const spinnies = new Spinnies()
 
@@ -27,6 +28,7 @@ const PLUGINS = {
   jsUnimported,
   npmOutdated,
   yarnOutdated,
+  yarnOutdatedSplit,
 }
 
 const minimatchCache: Record<string, boolean> = {}
