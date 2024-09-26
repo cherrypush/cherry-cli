@@ -6,8 +6,8 @@
 # precedence. When someone opens a pull request that only
 # modifies JS files, only these and not the global
 # owner(s) will be requested for a review.
-*.js @fwuensche
+*.js @rchoquet
 
 # In this example, the user owns any files in the src directory
 # at the root of the repository and any of its subdirectories.
-/src/ @fwuensche
+/src/ @fwuensche @rchoquet
