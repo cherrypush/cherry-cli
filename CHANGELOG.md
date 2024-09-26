@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.2](https://github.com/cherrypush/cherry-cli/compare/v2.1.1...v2.1.2) (2024-09-26)
+
+
+### Bug Fixes
+
+* codeowners didn't work for paths starting with / ([#105](https://github.com/cherrypush/cherry-cli/issues/105)) ([a05682f](https://github.com/cherrypush/cherry-cli/commit/a05682ff0543fe60f43d29deaf5c543d1fe715db))
+
 ## [2.1.1](https://github.com/cherrypush/cherry-cli/compare/v2.1.0...v2.1.1) (2024-09-10)
 
 
