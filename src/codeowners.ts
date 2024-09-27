@@ -68,8 +68,10 @@ class Codeowners {
 
   /** Returns the files from the codebase mathing the given pattern */
   #globPatterns(pattern: string) {
+    // Wilcard pattern
     if (pattern.includes('*')) return glob.sync(pattern.replace('*', '**/*'), { nodir: true, ignore: IGNORES })
 
+    // Subdirectory pattern
     if (pattern.endsWith('/')) {
       if (pattern.startsWith('/')) {
         return glob.sync(path.join(pattern.substring(1), '**', '*'), { nodir: true, ignore: IGNORES })
@@ -77,7 +79,9 @@ class Codeowners {
         return glob.sync(path.join('**', pattern, '*'), { nodir: true, ignore: IGNORES })
       }
     }
-    return [pattern]
+
+    // Exact file pattern
+    return [pattern.replace(/^\//, '')]
   }
 
   getOwners(file: string) {
