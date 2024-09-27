@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.4](https://github.com/cherrypush/cherry-cli/compare/v2.1.3...v2.1.4) (2024-09-27)
+
+
+### Bug Fixes
+
+* codeowners exact match patterns starting with slash [#109](https://github.com/cherrypush/cherry-cli/issues/109) ([b751123](https://github.com/cherrypush/cherry-cli/commit/b751123716b941b97ae19a2934dfda2d71eaca5d))
+
 ## [2.1.3](https://github.com/cherrypush/cherry-cli/compare/v2.1.2...v2.1.3) (2024-09-27)
 
 
