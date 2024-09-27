@@ -1,29 +1,30 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, test } from 'vitest'
 
 import Codeowners from './codeowners.js'
 
 describe('getOwners', () => {
-  // Assuming src folder is owned by @fwuensche and @rchoquet
-  it('recognizes folder patterns', async () => {
+  test('/src/ pattern matches files inside src folder', async () => {
     const codeowners = new Codeowners()
-    expect(codeowners.getOwners('src/codeowners.test.ts')).toEqual(['@fwuensche', '@rchoquet'])
+    expect(codeowners.getOwners('src/codeowners.test.ts')).toEqual(['@source'])
   })
 
-  // Assuming bin folder has no defined owners, but @fwuensche is the default owner
-  it('recognizes default owners', async () => {
+  test('plugins/ pattern should match any folder named plugins', async () => {
     const codeowners = new Codeowners()
-    expect(codeowners.getOwners('bin/commands/run.ts')).toEqual(['@fwuensche'])
+    expect(codeowners.getOwners('src/plugins/eslint.js')).toEqual(['@plugins'])
   })
 
-  // Assuming js files are owned by @rchoquet
-  it('recognizes file extension patterns', async () => {
+  test('defaults to the root owner', async () => {
     const codeowners = new Codeowners()
-    expect(codeowners.getOwners('bin/codeowners.js')).toEqual(['@rchoquet'])
+    expect(codeowners.getOwners('bin/commands/push.ts')).toEqual(['@root'])
   })
 
-  // Assuming the file does not exist, but matches an existing pattern
-  it('returns who would theoretically own the file even tho it does not exist', async () => {
+  test('*.js also matches files from subfolders', async () => {
     const codeowners = new Codeowners()
-    expect(codeowners.getOwners('bin/non-existing-file')).toEqual(['@fwuensche'])
+    expect(codeowners.getOwners('bin/commands/diff.js')).toEqual(['@javascript'])
+  })
+
+  test('non existing files return an empty list of owners', async () => {
+    const codeowners = new Codeowners()
+    expect(codeowners.getOwners('bin/non-existing-file')).toEqual([])
   })
 })
