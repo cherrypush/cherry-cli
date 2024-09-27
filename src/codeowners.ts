@@ -8,7 +8,7 @@ import trueCasePath from 'true-case-path'
 import uniq from 'lodash/uniq.js'
 
 // TODO: This should be dynamically generated from the .gitignore file
-const IGNORES = ['**/node_modules/**', '**/.git/**', '**/.github/**', '**/.gitlab/**', '**/docs/**']
+const IGNORES = ['**/node_modules/**', '**/.git/**', '**/.github/**', '**/.gitlab/**']
 
 const { trueCasePathSync } = trueCasePath
 
