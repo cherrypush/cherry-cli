@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.3](https://github.com/cherrypush/cherry-cli/compare/v2.1.2...v2.1.3) (2024-09-27)
+
+
+### Bug Fixes
+
+* codeowners was consuming too much memory ([#107](https://github.com/cherrypush/cherry-cli/issues/107)) ([c7a3811](https://github.com/cherrypush/cherry-cli/commit/c7a3811af67492f37b2a98c59c35c280c0cd9da1))
+
 ## [2.1.2](https://github.com/cherrypush/cherry-cli/compare/v2.1.1...v2.1.2) (2024-09-26)
 
 
