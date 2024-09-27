@@ -11,3 +11,7 @@
 # In this example, the user owns any files in the src directory
 # at the root of the repository and any of its subdirectories.
 /src/ @fwuensche @rchoquet
+
+# There's a plugin folder inside /src/ that we'll be using to test
+# that the pattern matching is working correctly. See codeowners.test.ts
+plugins/ @fwuensche
