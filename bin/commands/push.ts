@@ -63,11 +63,11 @@ export default function (program: Command) {
           )
         } else console.log('No contribution found, skipping')
 
+        await git.checkout(initialBranch)
         console.log(`Your dashboard is available at https://www.cherrypush.com/user/projects`)
       } catch (error) {
         console.error(error)
         process.exitCode = 1
-      } finally {
         await git.checkout(initialBranch)
       }
     })
