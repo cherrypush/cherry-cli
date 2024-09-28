@@ -13,7 +13,7 @@ import { buildSarifPayload } from '../../src/helpers/sarif.js'
 import { buildSonarGenericImportPayload } from '../../src/helpers/sonar.js'
 import { findOccurrences } from '../../src/occurrences.js'
 
-const ALLOWED_FORMATS = ['json', 'sarif', 'sonar']
+const ALLOWED_FORMATS = ['json', 'sarif', 'sonar'] as const
 
 export default function (program: Command) {
   program
