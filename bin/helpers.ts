@@ -52,7 +52,7 @@ export const buildMetricsPayload = (occurrences: Occurrence[]) =>
     .value()
 
 export const upload = async (apiKey: string, projectName: string, date: Date, occurrences: Occurrence[]) => {
-  if (!projectName) panic('specify a project_name in your cherry.js configuration file before pushing metrics')
+  if (!projectName) panic('Specify a project_name in your cherry.js configuration file before pushing metrics')
 
   const uuid = v4()
   const occurrencesBatches = _.chunk(occurrences, UPLOAD_BATCH_SIZE)
