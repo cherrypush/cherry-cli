@@ -1,6 +1,6 @@
 {
   "name": "cherrypush",
-  "version": "2.1.1",
+  "version": "2.1.4",
   "description": "Cherry CLI to manage your technical debt via cherrypush.com 🍒",
   "source": "./bin/cherry.ts",
   "type": "module",
@@ -15,7 +15,7 @@
     "cherry": "tsx ./bin/cherry.ts",
     "prepare": "husky install && npm run build",
     "bump": "npm version patch && npm publish",
-    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watchAll",
+    "test:watch": "vitest watch",
     "lint": "eslint . --ext .js,.ts",
     "test": "sh test/fixtures/cleanup.sh && sh test/fixtures/setup.sh && vitest run",
     "test:setup": "sh test/fixtures/setup.sh",
@@ -39,6 +39,7 @@
   "homepage": "https://github.com/fwuensche/cherry-cli#readme",
   "dependencies": {
     "axios": "^1.2.3",
+    "codeowners": "^5.1.1",
     "commander": "^10.0.0",
     "dotenv": "^16.4.5",
     "esbuild": "^0.20.0",
@@ -55,6 +56,7 @@
   },
   "devDependencies": {
     "@types/commander": "^2.12.2",
+    "@types/glob": "^8.1.0",
     "@types/lodash": "^4.17.7",
     "@types/prompt": "^1.1.9",
     "@types/spinnies": "^0.5.3",
