@@ -124,7 +124,7 @@ const runEvals = async (metrics: EvalMetric[], codeOwners: any, quiet: boolean):
 
       // TODO: properly type executeWithTiming and remove the cast
       const occurrences = (await executeWithTiming(
-        async () => metric.eval({ codeOwners }),
+        () => metric.eval({ codeOwners }),
         `Metric '${metric.name}'`
       )) as Occurrence[]
 
@@ -152,7 +152,7 @@ const runPlugins = async (plugins: Plugins = {}, quiet: boolean): Promise<Occurr
       if (!plugin) panic(`Unsupported '${name}' plugin\nExpected one of: ${Object.keys(PLUGINS).join(', ')}`)
       if (!quiet) spinnies.add(`plugin_${name}`, { text: `${name}...`, indent: 4 })
       // @ts-expect-error TODO: properly type plugin options
-      const result = executeWithTiming(async () => plugin.run(options), `Plugin '${name}'`)
+      const result = executeWithTiming(() => plugin.run(options), `Plugin '${name}'`)
       if (!quiet) spinnies.succeed(`plugin_${name}`, { text: name })
       return result
     })
