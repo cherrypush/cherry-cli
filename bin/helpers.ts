@@ -1,9 +1,9 @@
 import { EvalMetric, Metric, Occurrence } from '../src/types.js'
 
 import axios from 'axios'
+import { randomUUID } from 'crypto'
 import _ from 'lodash'
 import Spinnies from 'spinnies'
-import { v4 } from 'uuid'
 import { panic } from '../src/error.js'
 
 export const spinnies = new Spinnies()
@@ -54,7 +54,7 @@ export const buildMetricsPayload = (occurrences: Occurrence[]) =>
 export const upload = async (apiKey: string, projectName: string, date: Date, occurrences: Occurrence[]) => {
   if (!projectName) panic('Specify a project_name in your cherry.js configuration file before pushing metrics')
 
-  const uuid = v4()
+  const uuid = randomUUID()
   const occurrencesBatches = _.chunk(occurrences, UPLOAD_BATCH_SIZE)
 
   console.log('')
