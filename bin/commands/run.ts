@@ -1,24 +1,21 @@
 import * as git from '../../src/git.js'
 
-import {
-  buildMetricsPayload,
-  buildSarifPayload,
-  buildSonarGenericImportPayload,
-  countByMetric,
-  sortObject,
-} from '../helpers.js'
+import { allowMultipleValues, buildMetricsPayload, countByMetric, sortObject } from '../helpers.js'
 
-import Codeowners from '../../src/codeowners.js'
-import _ from 'lodash'
-import { findOccurrences } from '../../src/occurrences.js'
+import { Command } from 'commander'
 import fs from 'fs'
+import _ from 'lodash'
+import Codeowners from '../../src/codeowners.js'
 import { getConfiguration } from '../../src/configuration.js'
-import { getFiles } from '../../src/files.js'
 import { panic } from '../../src/error.js'
+import { getFiles } from '../../src/files.js'
+import { buildSarifPayload } from '../../src/helpers/sarif.js'
+import { buildSonarGenericImportPayload } from '../../src/helpers/sonar.js'
+import { findOccurrences } from '../../src/occurrences.js'
 
-export const allowMultipleValues = (value, previous) => (previous ? [...previous, value] : [value])
+const ALLOWED_FORMATS = ['json', 'sarif', 'sonar'] as const
 
-export default function (program) {
+export default function (program: Command) {
   program
     .command('run')
     .option('--owner <owner>', 'will only consider the provided code owners', allowMultipleValues)
@@ -54,7 +51,13 @@ export default function (program) {
       if (options.output) {
         const filepath = process.cwd() + '/' + options.output
         const format = options.format || 'json'
-        let content
+        let content: string | undefined
+
+        if (!ALLOWED_FORMATS.includes(format)) {
+          panic(`Invalid format provided: ${format}`)
+          console.log(`Allowed formats: ${ALLOWED_FORMATS.join(', ')}`)
+          return
+        }
 
         if (format === 'json') {
           const metrics = buildMetricsPayload(occurrences)
@@ -62,12 +65,18 @@ export default function (program) {
         } else if (format === 'sarif') {
           const branch = await git.branchName()
           const sha = await git.sha()
-          const sarif = buildSarifPayload(configuration.project_name, branch, sha, occurrences)
+          const sarif = buildSarifPayload(configuration.repository, branch, sha, occurrences)
           content = JSON.stringify(sarif, null, 2)
         } else if (format === 'sonar') {
           const sonar = buildSonarGenericImportPayload(occurrences)
           content = JSON.stringify(sonar, null, 2)
         }
+
+        if (!content) {
+          panic('Error while generating content')
+          return
+        }
+
         fs.writeFile(filepath, content, 'utf8', function (err) {
           if (err) panic(err)
           console.log(`File has been saved as ${filepath}`)

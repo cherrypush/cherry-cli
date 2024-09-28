@@ -1,31 +1,32 @@
 import * as git from '../../src/git.js'
 
-import { upload, uploadContributions } from '../helpers.js'
+import { upload } from '../helpers.js'
 
+import { Command } from 'commander'
 import Codeowners from '../../src/codeowners.js'
-import { computeContributions } from '../../src/contributions.js'
-import { findOccurrences } from '../../src/occurrences.js'
 import { getConfiguration } from '../../src/configuration.js'
-import { getFiles } from '../../src/files.js'
+import { computeContributions, uploadContributions } from '../../src/contributions.js'
 import { panic } from '../../src/error.js'
+import { getFiles } from '../../src/files.js'
+import { findOccurrences } from '../../src/occurrences.js'
 
-// @ts-expect-error TODO: properly type this
-export default function (program) {
+export default function (program: Command) {
   program
     .command('push')
     .option('--api-key <api_key>', 'your cherrypush.com API key')
     .option('--quiet', 'reduce output to a minimum')
-    // @ts-expect-error TODO: properly type this
     .action(async (options) => {
+      const sha = await git.sha()
       const configuration = await getConfiguration()
       const initialBranch = await git.branchName()
       if (!initialBranch) panic('Not on a branch, checkout a branch before pushing metrics.')
-      const sha = await git.sha()
+
+      const hasUncommitedChanges = (await git.uncommittedFiles()).length > 0
+      if (hasUncommitedChanges) panic('Please commit your changes before running cherry push.')
 
       const apiKey = options.apiKey || process.env.CHERRY_API_KEY
       if (!apiKey) panic('Please provide an API key with --api-key or CHERRY_API_KEY environment variable')
 
-      let error
       try {
         console.log('Computing metrics for current commit...')
         const occurrences = await findOccurrences({
@@ -37,8 +38,7 @@ export default function (program) {
 
         await upload(apiKey, configuration.project_name, await git.commitDate(sha), occurrences)
 
-        console.log('')
-        console.log('Computing metrics for previous commit...')
+        console.log('\nComputing metrics for previous commit...')
         await git.checkout(`${sha}~`)
         const previousOccurrences = await findOccurrences({
           configuration,
@@ -50,7 +50,7 @@ export default function (program) {
         const contributions = computeContributions(occurrences, previousOccurrences)
 
         if (contributions.length) {
-          console.log(`  Uploading contributions...`)
+          console.log('\nUploading contributions...')
           await uploadContributions(
             apiKey,
             configuration.project_name,
@@ -58,19 +58,17 @@ export default function (program) {
             await git.authorEmail(sha),
             sha,
             await git.commitDate(sha),
-            contributions
+            contributions,
+            configuration.repository
           )
         } else console.log('No contribution found, skipping')
-      } catch (exception) {
-        error = exception
-      } finally {
-        git.checkout(initialBranch)
-      }
-      if (error) {
-        console.error(error)
-        process.exit(1)
-      }
 
-      console.log(`Your dashboard is available at https://www.cherrypush.com/user/projects`)
+        await git.checkout(initialBranch)
+        console.log(`Your dashboard is available at https://www.cherrypush.com/user/projects`)
+      } catch (error) {
+        console.error(error)
+        process.exitCode = 1
+        await git.checkout(initialBranch)
+      }
     })
 }

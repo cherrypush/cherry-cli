@@ -34,9 +34,29 @@ export type Metric = EvalMetric | PatternMetric
 export type PluginName = 'loc' | 'jsCircularDependencies' | 'eslint'
 export type Plugins = Partial<Record<PluginName, object>>
 
+export enum Host {
+  Github = 'github.com',
+  Gitlab = 'gitlab.com',
+}
+
+export type Repository = {
+  host: Host
+  owner: string // e.g. cherrypush
+  name: string // e.g. cherry-cli
+  subdir: string // e.g. src, or an empty string for the root
+}
+
+export type PermalinkFn = (options: { filePath: string; lineNumber?: number }) => string
+
 export type Configuration = {
   project_name: string
-  permalink: () => string
+  repository: Repository
+  permalink?: PermalinkFn
   metrics: Metric[]
   plugins?: Plugins
 }
+
+export type OutputFile = {
+  name: Pick<Metric, 'name'>
+  occurrences: Occurrence[]
+}[]

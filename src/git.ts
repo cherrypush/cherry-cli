@@ -1,10 +1,15 @@
 import { CONFIG_FILE_LOCAL_PATHS } from './configuration.js'
-import sh from './sh.js'
 import { toISODate } from './date.js'
+import sh from './sh.js'
 
 export const git = async (cmd: string): Promise<string[]> => {
   const { stdout } = await sh(`git ${cmd}`)
   return stdout.toString().split('\n').filter(Boolean)
+}
+
+export async function gitProjectRoot() {
+  const { stdout } = await sh('git rev-parse --show-toplevel')
+  return stdout.toString().trim()
 }
 
 export const files = async () => {
@@ -19,7 +24,7 @@ export const files = async () => {
 /**
  * Retrieves the URL of the first Git remote for the current path.
  */
-export const getRemoteUrl = async () => {
+export const gitRemoteUrl = async () => {
   const remotes = await git('remote')
   if (!remotes.length) return null
 
@@ -30,7 +35,7 @@ export const getRemoteUrl = async () => {
  * Guesses the project name based on the remote URL of the git repository.
  * If the remote URL is not found, returns an empty string.
  */
-export const guessProjectName = (remoteUrl: string) => {
+export function guessProjectName(remoteUrl: string | null): string | null {
   if (!remoteUrl) return null
 
   // Handle https remotes, such as in https://github.com/cherrypush/cherry-cli.git
@@ -72,4 +77,4 @@ export const checkout = async (sha: string) => {
 
 export const branchName = async () => (await git(`branch --show-current`))[0]
 
-export const uncommittedFiles = async () => await git('status --porcelain=v1')
+export const uncommittedFiles = async () => git('status --porcelain=v1')
