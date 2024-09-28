@@ -22,12 +22,11 @@ export default function (program: Command) {
       if (!initialBranch) panic('Not on a branch, checkout a branch before pushing metrics.')
 
       const hasUncommitedChanges = (await git.uncommittedFiles()).length > 0
-      if (hasUncommitedChanges) panic('Please commit your changes before running cherry diff.')
+      if (hasUncommitedChanges) panic('Please commit your changes before running cherry push.')
 
       const apiKey = options.apiKey || process.env.CHERRY_API_KEY
       if (!apiKey) panic('Please provide an API key with --api-key or CHERRY_API_KEY environment variable')
 
-      let error
       try {
         console.log('Computing metrics for current commit...')
         const occurrences = await findOccurrences({
@@ -63,17 +62,13 @@ export default function (program: Command) {
             configuration.repository
           )
         } else console.log('No contribution found, skipping')
-      } catch (exception) {
-        error = exception
+
+        console.log(`Your dashboard is available at https://www.cherrypush.com/user/projects`)
+      } catch (error) {
+        console.error(error)
+        process.exitCode = 1
       } finally {
         await git.checkout(initialBranch)
       }
-
-      if (error) {
-        console.error(error)
-        process.exit(1)
-      }
-
-      console.log(`Your dashboard is available at https://www.cherrypush.com/user/projects`)
     })
 }
