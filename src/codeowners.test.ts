@@ -18,9 +18,9 @@ describe('getOwners', () => {
     expect(codeowners.getOwners('bin/commands/push.ts')).toEqual(['@root'])
   })
 
-  test('*.js also matches files from subfolders', async () => {
+  test('*.test.ts also matches files from subfolders', async () => {
     const codeowners = new Codeowners()
-    expect(codeowners.getOwners('bin/commands/diff.js')).toEqual(['@javascript'])
+    expect(codeowners.getOwners('test/cherry_diff.test.ts')).toEqual(['@test'])
   })
 
   test('non existing files return an empty list of owners', async () => {
