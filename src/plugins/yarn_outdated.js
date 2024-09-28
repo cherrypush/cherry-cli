@@ -1,6 +1,6 @@
 import _ from 'lodash'
-import { panic } from '../error.js'
 import { emptyMetric } from '../occurrences.js'
+import { panic } from '../error.js'
 import sh from '../sh.js'
 
 const getMetricName = (cwd) => {

@@ -1,3 +1,7 @@
-# Remove folder test/fixtures/project-one if it exists
-rm -rf test/fixtures/project-one
-rm -rf test/fixtures/fake-remote
+# Remove fixture folders
+
+rm -rf test/fixtures/super-project-source
+rm -rf test/fixtures/super-project-remote
+
+rm -rf test/fixtures/empty-project-source
+rm -rf test/fixtures/empty-project-remote

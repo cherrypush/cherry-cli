@@ -60,5 +60,7 @@ results.json
 dist/
 
 # Ignore test fixtures
-test/fixtures/fake-remote
-test/fixtures/project-one
+test/fixtures/super-project-source
+test/fixtures/super-project-remote
+test/fixtures/empty-project-source
+test/fixtures/empty-project-remote
