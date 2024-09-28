@@ -51,7 +51,7 @@ export default function (program: Command) {
       if (options.output) {
         const filepath = process.cwd() + '/' + options.output
         const format = options.format || 'json'
-        let content
+        let content: string | undefined
 
         if (!ALLOWED_FORMATS.includes(format)) {
           panic(`Invalid format provided: ${format}`)
