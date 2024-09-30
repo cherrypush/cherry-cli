@@ -1,17 +1,23 @@
+import path from 'path'
 import { PermalinkFn, Repository } from './types.js'
 
 export const buildRepoURL = (repository: Repository) =>
   `https://${repository.host}/${repository.owner}/${repository.name}`
 
-export const buildPermalink = (
+/**
+ * Builds the permalink for a file in a remote repository.
+ *
+ * If a custom permalink function is provided, it will be used.
+ * Otherwise, we'll compose the permalink based on the repository information.
+ */
+export function buildPermalink(
   permalink: PermalinkFn | undefined,
   repository: Repository,
   filePath: string,
   lineNumber: number | undefined
-) => {
-  if (!permalink) return `${buildRepoURL(repository)}/blob/HEAD/${filePath}${lineNumber ? `#L${lineNumber}` : ''}`
-
-  return permalink({ filePath, lineNumber })
+) {
+  if (permalink) return permalink({ filePath, lineNumber })
+  return `${buildRepoURL(repository)}/blob/HEAD/${path.join(repository.subdir, filePath)}${lineNumber ? `#L${lineNumber}` : ''}`
 }
 
 /**
@@ -58,6 +64,13 @@ export async function guessRepositoryInfo({
   throw new Error(`Could not guess repository info from remote URL: ${remoteUrl}`)
 }
 
+/**
+ * Guesses the subdirectory of the repository.
+ *
+ * We compare the config file path with the git project root to determine the subdirectory.
+ * For instance, if the config file is at /Users/fwuensche/projects/cherry-cli/another/subdir/config.js
+ * and the git project root is /Users/fwuensche/projects/cherry-cli, the subdirectory would be another/subdir.
+ */
 export function guessRepositorySubdir({
   configFile,
   projectRoot,
