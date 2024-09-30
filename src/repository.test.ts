@@ -1,18 +1,21 @@
 import { describe, expect, it } from 'vitest'
 import { buildPermalink, guessRepositoryInfo, guessRepositorySubdir } from './repository.js'
+import { Host, PermalinkFn } from './types.js'
 
 describe('buildPermalink', () => {
-  it('builds a permalink with a custom function', () => {
-    const permalink = ({ filePath, lineNumber }) =>
+  it('uses the custom permalink function if it is present', () => {
+    const permalink: PermalinkFn = ({ filePath, lineNumber }) =>
       `https://gitlab.com/cherrypush/cherry-cli/blob/HEAD/${filePath}${lineNumber ? `#L${lineNumber}` : ''}`
 
-    const projectName = 'cherrypush/cherry-cli'
-    const filePath = 'src/permalink.js'
-    const lineNumber = 1
-
-    const result = buildPermalink(permalink, projectName, filePath, lineNumber)
-
+    const repositoryInfo = { host: Host.Github, owner: 'owner', name: 'name', subdir: '' }
+    const result = buildPermalink(permalink, repositoryInfo, 'src/permalink.js', 1)
     expect(result).toBe('https://gitlab.com/cherrypush/cherry-cli/blob/HEAD/src/permalink.js#L1')
+  })
+
+  it('works for config files inside sub folders', () => {
+    const repositoryInfo = { host: Host.Github, owner: 'cherrypush', name: 'cherrypush.com', subdir: 'frontend' }
+    const result = buildPermalink(undefined, repositoryInfo, 'permalink.js', 1)
+    expect(result).toBe('https://github.com/cherrypush/cherrypush.com/blob/HEAD/frontend/permalink.js#L1')
   })
 })
 
