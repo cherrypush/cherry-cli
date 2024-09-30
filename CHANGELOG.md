@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.0](https://github.com/cherrypush/cherry-cli/compare/v2.1.4...v2.2.0) (2024-09-30)
+
+
+### Features
+
+* add support to custom repository info ([#100](https://github.com/cherrypush/cherry-cli/issues/100)) ([59d383b](https://github.com/cherrypush/cherry-cli/commit/59d383b4e44d6998b1b4d3a4ce0943c884a9a2d0))
+* use repository info to build permalink ([#113](https://github.com/cherrypush/cherry-cli/issues/113)) ([90314a2](https://github.com/cherrypush/cherry-cli/commit/90314a245de66b3f37f9c73b67078e1206fee874))
+
 ## [2.1.4](https://github.com/cherrypush/cherry-cli/compare/v2.1.3...v2.1.4) (2024-09-27)
 
 
