@@ -2,7 +2,7 @@
   "sort-imports.on-save": false,
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.organizeImports": "explicit"
+    "source.sortImports": "explicit"
   },
   "typescript.preferences.importModuleSpecifier": "relative"
 }
