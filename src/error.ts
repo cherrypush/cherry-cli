@@ -1,10 +1,10 @@
 export const panic = (error: unknown): never => {
   if (typeof error === 'string') {
-    panic(error)
+    console.log(error)
   } else if (error instanceof Error) {
-    panic(error.message)
+    console.log(error.message)
   } else {
-    panic('An unknown error occurred')
+    console.log('An unknown error occurred')
   }
 
   process.exit(1)
