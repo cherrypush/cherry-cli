@@ -1,11 +1,13 @@
 import _ from 'lodash'
-import { emptyMetric } from '../occurrences.js'
+import semverDiff from 'semver/functions/diff.js'
 import { panic } from '../error.js'
+import { emptyMetric } from '../occurrences.js'
 import sh from '../sh.js'
 
-const getMetricName = (cwd) => {
+const getMetricName = (cwd, current, latest) => {
   const packageJsonPath = _.compact([cwd, 'package.json']).join('/')
-  return `yarn outdated dependencies (${packageJsonPath})`
+  const version_diff_type = semverDiff(current, latest)
+  return `[yarnOutdated] outdated dependencies for ${packageJsonPath} (${version_diff_type})`
 }
 
 const run = async ({ cwd }) => {
@@ -30,7 +32,7 @@ const run = async ({ cwd }) => {
 
   const occurrences = outdatedDependencies.map((dependency) => ({
     text: `${dependency.name} (${dependency.current} -> ${dependency.latest})`,
-    metricName: getMetricName(cwd),
+    metricName: getMetricName(cwd, dependency.current, dependency.latest),
   }))
 
   return occurrences.length === 0 ? [emptyMetric(getMetricName(cwd))] : occurrences
