@@ -4,8 +4,9 @@ import { panic } from '../error.js'
 import { emptyMetric } from '../occurrences.js'
 import sh from '../sh.js'
 
-// We know there are a other release types, but we're only interested in these three
-const RELEASE_TYPES = ['major', 'minor', 'patch']
+// We're focusing only on the three main release types: major, minor, and patch.
+// Other release types are not relevant in this context.
+const RELEASE_TYPES = ['major', 'minor', 'patch'] as const
 
 type Dependency = {
   name: string
