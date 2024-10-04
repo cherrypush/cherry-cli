@@ -1,22 +1,21 @@
-import { Configuration, EvalMetric, Metric, Occurrence, PatternMetric, PluginName, Plugins } from './types.js'
 import { executeWithTiming, warnsAboutLongRunningTasks } from './helpers/timer.js'
+import { Configuration, EvalMetric, Metric, Occurrence, PatternMetric, PluginName, Plugins } from './types.js'
 
-import Spinnies from 'spinnies'
 import _ from 'lodash'
-import { buildPermalink } from './permalink.js'
-import eslint from './plugins/eslint.js'
+import minimatch from 'minimatch'
+import pLimit from 'p-limit'
+import Spinnies from 'spinnies'
 import { isEvalMetric } from '../bin/helpers.js'
+import { panic } from './error.js'
+import { readLines } from './files.js'
+import eslint from './plugins/eslint.js'
 import jsCircularDependencies from './plugins/js_circular_dependencies.js'
 import jsUnimported from './plugins/js_unimported.js'
 import loc from './plugins/loc.js'
-import minimatch from 'minimatch'
 import npmOutdated from './plugins/npm_outdated.js'
-import pLimit from 'p-limit'
-import { panic } from './error.js'
-import { readLines } from './files.js'
 import rubocop from './plugins/rubocop.js'
 import yarnOutdated from './plugins/yarn_outdated.js'
-import yarnOutdatedSplit from './plugins/yarn_outdated_split.js'
+import { buildPermalink } from './repository.js'
 
 const spinnies = new Spinnies()
 
@@ -28,7 +27,6 @@ const PLUGINS = {
   jsUnimported,
   npmOutdated,
   yarnOutdated,
-  yarnOutdatedSplit,
 }
 
 const minimatchCache: Record<string, boolean> = {}
@@ -104,7 +102,7 @@ const matchPatterns = async (files: string[], metrics: PatternMetric[], quiet: b
     'All pattern metrics together'
   )
 
-  if (!quiet) promise.then(() => spinnies.succeed('patterns', { text: 'Matching patterns' }))
+  if (!quiet) await promise.then(() => spinnies.succeed('patterns', { text: 'Matching patterns' }))
 
   return promise
 }
@@ -126,7 +124,7 @@ const runEvals = async (metrics: EvalMetric[], codeOwners: any, quiet: boolean):
 
       // TODO: properly type executeWithTiming and remove the cast
       const occurrences = (await executeWithTiming(
-        async () => await metric.eval({ codeOwners }),
+        () => metric.eval({ codeOwners }),
         `Metric '${metric.name}'`
       )) as Occurrence[]
 
@@ -137,7 +135,7 @@ const runEvals = async (metrics: EvalMetric[], codeOwners: any, quiet: boolean):
     })
   )
 
-  if (!quiet) promise.then(() => spinnies.succeed('evals', { text: 'Running eval()' }))
+  if (!quiet) await promise.then(() => spinnies.succeed('evals', { text: 'Running eval()' }))
 
   return promise
 }
@@ -154,13 +152,13 @@ const runPlugins = async (plugins: Plugins = {}, quiet: boolean): Promise<Occurr
       if (!plugin) panic(`Unsupported '${name}' plugin\nExpected one of: ${Object.keys(PLUGINS).join(', ')}`)
       if (!quiet) spinnies.add(`plugin_${name}`, { text: `${name}...`, indent: 4 })
       // @ts-expect-error TODO: properly type plugin options
-      const result = executeWithTiming(async () => await plugin.run(options), `Plugin '${name}'`)
+      const result = executeWithTiming(() => plugin.run(options), `Plugin '${name}'`)
       if (!quiet) spinnies.succeed(`plugin_${name}`, { text: name })
       return result
     })
   )
 
-  if (!quiet) promise.then(() => spinnies.succeed('plugins', { text: 'Running plugin' }))
+  if (!quiet) await promise.then(() => spinnies.succeed('plugins', { text: 'Running plugin' }))
 
   return promise
 }
@@ -192,7 +190,6 @@ export const findOccurrences = async ({
   quiet: boolean
 }) => {
   let metrics = configuration.metrics
-  const { project_name: projectName, permalink } = configuration
 
   // Prevent running all metrics if a subset is provided
   if (metricNames) metrics = metrics.filter(({ name }) => metricNames.includes(name))
@@ -213,7 +210,10 @@ export const findOccurrences = async ({
     value,
     metricName,
     // The url might have been provided by plugins or eval metrics
-    url: url !== undefined ? url : filePath && buildPermalink(permalink, projectName, filePath, lineNumber),
+    url:
+      url !== undefined
+        ? url
+        : filePath && buildPermalink(configuration.permalink, configuration.repository, filePath, lineNumber),
     owners: owners !== undefined ? owners : filePath && codeOwners.getOwners(filePath),
   }))
 

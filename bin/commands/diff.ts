@@ -1,16 +1,18 @@
 import * as git from '../../src/git.js'
 
+import { Occurrence, OutputFile } from '../../src/types.js'
+import { allowMultipleValues, countByMetric } from '../helpers.js'
+
 import Codeowners from '../../src/codeowners.js'
+import { Command } from 'commander'
 import _ from 'lodash'
-import { allowMultipleValues } from './run.js'
-import { countByMetric } from '../helpers.js'
 import { findOccurrences } from '../../src/occurrences.js'
 import fs from 'fs'
 import { getConfiguration } from '../../src/configuration.js'
 import { getFiles } from '../../src/files.js'
 import { panic } from '../../src/error.js'
 
-export default function (program) {
+export default function (program: Command) {
   program
     .command('diff')
     .requiredOption('--metric <metric>', 'will only consider provided metrics', allowMultipleValues)
@@ -23,7 +25,7 @@ export default function (program) {
       const inputFile = options.inputFile
 
       let lastMetricValue
-      let previousOccurrences
+      let previousOccurrences: Occurrence[] = []
       let metricOccurrences
 
       const initialBranch = await git.branchName()
@@ -66,8 +68,8 @@ export default function (program) {
 
           if (inputFile) {
             const content = fs.readFileSync(inputFile, 'utf8')
-            const metrics = JSON.parse(content)
-            metricOccurrences = metrics.find((m) => m.name === metricName)?.occurrences || []
+            const metrics: OutputFile = JSON.parse(content)
+            metricOccurrences = metrics.find((metric) => metric.name === metricName)?.occurrences || []
             previousOccurrences = metricOccurrences
             lastMetricValue = _.sumBy(metricOccurrences, (occurrence) =>
               _.isNumber(occurrence.value) ? occurrence.value : 1

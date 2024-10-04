@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest'
-
 import { guessProjectName } from './git.js'
 
 describe('guessProjectName', () => {
+  it('returns null if no remote URL is provided', () => {
+    expect(guessProjectName(null)).toEqual(null)
+  })
+
   it('returns an empty string if no pattern is recognized', async () => {
-    expect(guessProjectName(null)).toBe(null)
     expect(guessProjectName('')).toBe(null)
     expect(guessProjectName('../fake-remote')).toBe(null)
   })
