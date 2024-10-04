@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/cherrypush/cherry-cli/compare/v2.2.0...v2.2.1) (2024-10-04)
+
+
+### Bug Fixes
+
+* update tsx to 4.19.1 ([9fe46cc](https://github.com/cherrypush/cherry-cli/commit/9fe46cc19a76053d0203778ce588ab71f6bbc4ae))
+
 ## [2.2.0](https://github.com/cherrypush/cherry-cli/compare/v2.1.4...v2.2.0) (2024-09-30)
 
 
