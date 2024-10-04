@@ -59,6 +59,7 @@
     "@types/glob": "^8.1.0",
     "@types/lodash": "^4.17.7",
     "@types/prompt": "^1.1.9",
+    "@types/semver": "^7.5.8",
     "@types/spinnies": "^0.5.3",
     "@typescript-eslint/eslint-plugin": "8.x.x",
     "@typescript-eslint/parser": "8.x.x",
