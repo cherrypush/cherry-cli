@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/cherrypush/cherry-cli/compare/v2.2.1...v2.3.0) (2024-10-04)
+
+
+### Features
+
+* split yarn outdated into semver groups ([#115](https://github.com/cherrypush/cherry-cli/issues/115)) ([b3ac57c](https://github.com/cherrypush/cherry-cli/commit/b3ac57ce6fbb67e16449606a4d80b6a67e00e99d))
+
 ## [2.2.1](https://github.com/cherrypush/cherry-cli/compare/v2.2.0...v2.2.1) (2024-10-04)
 
 
