@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.1](https://github.com/cherrypush/cherry-cli/compare/v2.3.0...v2.3.1) (2024-10-05)
+
+
+### Bug Fixes
+
+* security updates for vite and rollup ([6aa7b3e](https://github.com/cherrypush/cherry-cli/commit/6aa7b3e0b92d93913fc1d059906805a7479e3e88))
+
 ## [2.3.0](https://github.com/cherrypush/cherry-cli/compare/v2.2.1...v2.3.0) (2024-10-04)
 
 
