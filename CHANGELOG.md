@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.2](https://github.com/cherrypush/cherry-cli/compare/v2.3.1...v2.3.2) (2024-12-07)
+
+
+### Bug Fixes
+
+* cherry init template should explicitly set up repository info ([#145](https://github.com/cherrypush/cherry-cli/issues/145)) ([9734a1e](https://github.com/cherrypush/cherry-cli/commit/9734a1e81446472e5d3a2e9070500f2aa4ecbeb4))
+
 ## [2.3.1](https://github.com/cherrypush/cherry-cli/compare/v2.3.0...v2.3.1) (2024-10-05)
 
 
