@@ -22,10 +22,9 @@ export default function (program: Command) {
     if (!repositoryInfo.host || !repositoryInfo.owner || !repositoryInfo.name)
       throw new Error('Could not guess repository info. Please setup your config file manually.')
 
-    console.log(`Creating configuration file for ${repositoryInfo.owner}/${repositoryInfo.name}...`)
     createConfigurationFile(repositoryInfo)
 
     if (!workflowExists()) createWorkflowFile()
-    console.log('Your initial setup is done! Now try the command `cherry run` to see your first metrics.')
+    console.log('Your initial setup is complete! Run `cherry run` to view your metrics.')
   })
 }

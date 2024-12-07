@@ -16,9 +16,12 @@ export const WORKFLOW_FILE_FULL_PATH = `${process.cwd()}/${WORKFLOW_FILE_LOCAL_P
 const CONFIG_TEMPLATE_PATH = dirname(fileURLToPath(import.meta.url)) + '/templates/.cherry.js.template'
 const WORKFLOW_TEMPLATE_PATH = dirname(fileURLToPath(import.meta.url)) + '/templates/.cherry_push.yml.template'
 
-export const createConfigurationFile = (repositoryInfo: Repository) =>
+export const createConfigurationFile = (repositoryInfo: Repository) => {
+  const filePath = CONFIG_FILE_FULL_PATHS[0]
+  console.log('Creating configuration file at:', filePath)
+
   fs.writeFileSync(
-    CONFIG_FILE_FULL_PATHS[0],
+    filePath,
     fs
       .readFileSync(CONFIG_TEMPLATE_PATH)
       .toString()
@@ -27,6 +30,7 @@ export const createConfigurationFile = (repositoryInfo: Repository) =>
       .replace('{{HOST}}', repositoryInfo.host)
       .replace('{{SUBDIR}}', repositoryInfo.subdir)
   )
+}
 
 export const createWorkflowFile = () => {
   fs.mkdirSync(`${process.cwd()}/.github/workflows`, { recursive: true })

@@ -4,7 +4,7 @@
 // In this configuration file, you can set up your repository information,
 // enable plugins, and build custom metrics for your codebase.
 
-module.exports = {
+export default {
   repository: {
     host: '{{HOST}}',
     owner: '{{OWNER}}',
