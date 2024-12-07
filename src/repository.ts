@@ -1,5 +1,5 @@
 import path from 'path'
-import { PermalinkFn, Repository } from './types.js'
+import { Host, PermalinkFn, Repository } from './types.js'
 
 export const buildRepoURL = (repository: Repository) =>
   `https://${repository.host}/${repository.owner}/${repository.name}`
@@ -34,7 +34,7 @@ export async function guessRepositoryInfo({
   remoteUrl: string | null
   configFile: string | null
   projectRoot: string
-}) {
+}): Promise<Repository> {
   if (remoteUrl === null) {
     throw new Error('Could not guess repository info: no remote URL found')
   }
@@ -42,7 +42,7 @@ export async function guessRepositoryInfo({
   // For github ssh remotes such as git@github.com:cherrypush/cherry-cli.git
   if (remoteUrl.includes('git@github.com')) {
     return {
-      host: 'github.com',
+      host: Host.Github,
       owner: remoteUrl.split(':')[1].split('/')[0],
       name: remoteUrl.split('/')[1].replace('.git', ''),
       subdir: guessRepositorySubdir({ configFile, projectRoot }),
@@ -52,7 +52,7 @@ export async function guessRepositoryInfo({
   // For github https remotes such as https://github.com/cherrypush/cherry-cli.git
   if (remoteUrl.includes('https://github.com')) {
     return {
-      host: 'github.com',
+      host: Host.Github,
       owner: remoteUrl.split('/')[3],
       name: remoteUrl.split('/')[4].replace('.git', ''),
       subdir: guessRepositorySubdir({ configFile, projectRoot }),

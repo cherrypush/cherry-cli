@@ -1,6 +1,3 @@
-const JS_FILES = '**/*.{js,jsx}'
-const TS_FILES = '**/*.{ts,tsx}'
-
 module.exports = {
   project_name: 'cherrypush/cherry-cli',
   plugins: {
