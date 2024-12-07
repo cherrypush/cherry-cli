@@ -23,8 +23,8 @@ export default function (program: Command) {
       throw new Error('Could not guess repository info. Please setup your config file manually.')
 
     createConfigurationFile(repositoryInfo)
-
     if (!workflowExists()) createWorkflowFile()
+
     console.log('Your initial setup is complete! Run `cherry run` to view your metrics.')
   })
 }

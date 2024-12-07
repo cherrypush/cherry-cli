@@ -11,6 +11,7 @@
     "dist"
   ],
   "scripts": {
+    "install:global": "npm install -g .",
     "build": "tsc",
     "cherry": "tsx ./bin/cherry.ts",
     "prepare": "husky install && npm run build",
