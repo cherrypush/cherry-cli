@@ -3,7 +3,6 @@
 import { createConfigurationFile, createWorkflowFile, getConfigFile, workflowExists } from '../../src/configuration.js'
 
 import { Command } from 'commander'
-import prompt from 'prompt'
 import { gitProjectRoot, gitRemoteUrl } from '../../src/git.js'
 import { guessRepositoryInfo } from '../../src/repository.js'
 
@@ -15,9 +14,6 @@ export default function (program: Command) {
       console.error(`${configurationFile} already exists.`)
       process.exit(1)
     }
-
-    prompt.message = ''
-    prompt.start()
 
     const remoteUrl = await gitRemoteUrl()
     const projectRoot = await gitProjectRoot()
