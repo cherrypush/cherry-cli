@@ -1,48 +1,35 @@
-# Initial setup ⚡️
+# Initial Setup ⚡️
 
-Install the CLI globally with:
+## 1. Install the CLI
 
-```sh
+```
 npm install -g cherrypush
 ```
 
-Inside the root of your project, initialize your cherry configuration:
+## 2. Initialize Cherry
 
-```sh
+Go to your project’s root directory and run:
+
+```
 cherry init
 ```
 
-Add your API key into a .env file at the root of your project:
+This command creates a `.cherry.js` configuration file tailored to your repository, as well as a GitHub Actions workflow
+file to automate the submission of your metrics.
 
-```sh
-CHERRY_API_KEY=YOUR_API_KEY
+## 3. Add Your API Key
+
+Create a `.env` file in your project’s root directory and add:
+
+```
+CHERRY_API_KEY={{YOUR_API_KEY}}
 ```
 
-You can find your API key at https://www.cherrypush.com/user/settings
+You can find your API key by visiting [your Cherry account settings](https://www.cherrypush.com/user/settings).
 
-# CLI commands 😌
+With that, you’re ready to start tracking your codebase metrics!
 
-## cherry init
-
-The init command will initialize your config file `.cherry.js` and create a sample GitHub workflow file that you can use
-to integrate Cherry to your CI/CD workflow via GitHub Actions.
-
-A very minimal config file can look something like this:
-
-```js
-module.exports = {
-  project_name: 'PROJECT_NAME',
-  plugins: { loc: {} }, // Add metrics about number of lines of code
-  metrics: [
-    {
-      name: 'TODO/FIXME',
-      pattern: /(TODO|FIXME):/i, // the i flag makes the regex case insensitive
-    },
-  ],
-}
-```
-
-For more info about CI/CD integration, refer to the Integrations section below.
+# CLI Commands 😌
 
 ## cherry run
 
@@ -281,9 +268,7 @@ cherry_push:
       - main
 ```
 
-# Feedback 🙏
+# Feedback 💌
 
-Any further question or suggestion?
-
-- report a bug or suggest new features via [GitHub Issues](https://github.com/cherrypush/cherry-cli/issues)
-- or shoot me a message on [twitter.com/fwuensche](https://twitter.com/fwuensche)
+We’d love to hear from you! If you find a bug or have a suggestion, please open an issue on our
+[GitHub Issues](https://github.com/cherrypush/cherry-cli/issues). Your input is what makes Cherry better for everyone.
