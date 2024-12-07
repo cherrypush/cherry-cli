@@ -5,7 +5,7 @@ import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import buildAndImport from './build-and-import.cjs'
 import { guessRepositoryInfo } from './repository.js'
-import { Configuration } from './types.js'
+import { Configuration, Repository } from './types.js'
 
 export const CONFIG_FILE_LOCAL_PATHS = ['.cherry.js', '.cherry.cjs', '.cherry.ts']
 export const WORKFLOW_FILE_LOCAL_PATH = '.github/workflows/cherry_push.yml'
@@ -16,10 +16,16 @@ export const WORKFLOW_FILE_FULL_PATH = `${process.cwd()}/${WORKFLOW_FILE_LOCAL_P
 const CONFIG_TEMPLATE_PATH = dirname(fileURLToPath(import.meta.url)) + '/templates/.cherry.js.template'
 const WORKFLOW_TEMPLATE_PATH = dirname(fileURLToPath(import.meta.url)) + '/templates/.cherry_push.yml.template'
 
-export const createConfigurationFile = (projectName: string) =>
+export const createConfigurationFile = (repositoryInfo: Repository) =>
   fs.writeFileSync(
     CONFIG_FILE_FULL_PATHS[0],
-    fs.readFileSync(CONFIG_TEMPLATE_PATH).toString().replace('PROJECT_NAME', projectName)
+    fs
+      .readFileSync(CONFIG_TEMPLATE_PATH)
+      .toString()
+      .replace('{{NAME}}', repositoryInfo.name)
+      .replace('{{OWNER}}', repositoryInfo.owner)
+      .replace('{{HOST}}', repositoryInfo.host)
+      .replace('{{SUBDIR}}', repositoryInfo.subdir)
   )
 
 export const createWorkflowFile = () => {

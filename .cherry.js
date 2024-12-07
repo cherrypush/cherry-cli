@@ -6,10 +6,10 @@
 
 module.exports = {
   repository: {
-    host: '{{HOST}}',
-    owner: '{{OWNER}}',
-    name: '{{NAME}}',
-    subdir: '{{SUBDIR}}',
+    host: 'github.com',
+    owner: 'cherrypush',
+    name: 'cherry-cli',
+    subdir: '',
   },
   plugins: { loc: {} },
   metrics: [

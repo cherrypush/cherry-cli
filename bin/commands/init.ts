@@ -1,11 +1,11 @@
 #! /usr/bin/env node
 
-import * as git from '../../src/git.js'
-
 import { createConfigurationFile, createWorkflowFile, getConfigFile, workflowExists } from '../../src/configuration.js'
 
 import { Command } from 'commander'
 import prompt from 'prompt'
+import { gitProjectRoot, gitRemoteUrl } from '../../src/git.js'
+import { guessRepositoryInfo } from '../../src/repository.js'
 
 export default function (program: Command) {
   program.command('init').action(async () => {
@@ -19,19 +19,15 @@ export default function (program: Command) {
     prompt.message = ''
     prompt.start()
 
-    const remoteUrl = await git.gitRemoteUrl()
-    let projectName = git.guessProjectName(remoteUrl)
+    const remoteUrl = await gitRemoteUrl()
+    const projectRoot = await gitProjectRoot()
+    const repositoryInfo = await guessRepositoryInfo({ remoteUrl, configFile: null, projectRoot })
 
-    if (projectName === null) {
-      const { repo } = await prompt.get({
-        properties: { repo: { message: 'Enter your project name', required: true } },
-      })
-      if (typeof repo === 'string') projectName = repo
-    }
+    if (!repositoryInfo.host || !repositoryInfo.owner || !repositoryInfo.name)
+      throw new Error('Could not guess repository info. Please setup your config file manually.')
 
-    if (!projectName) throw new Error('Project name is required')
-
-    createConfigurationFile(projectName)
+    console.log(`Creating configuration file for ${repositoryInfo.owner}/${repositoryInfo.name}...`)
+    createConfigurationFile(repositoryInfo)
 
     if (!workflowExists()) createWorkflowFile()
     console.log('Your initial setup is done! Now try the command `cherry run` to see your first metrics.')
