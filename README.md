@@ -236,7 +236,7 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2 // required to track contributions, i.e, the diff between commits
+          fetch-depth: 2 # required to track contributions, i.e, the diff between commits
 
       - name: Install cherry
         run: npm i -g cherrypush
