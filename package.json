@@ -50,7 +50,7 @@
     "madge": "^8.0.0",
     "minimatch": "^6.1.6",
     "p-limit": "^4.0.0",
-    "semver": "^7.6.3",
+    "semver": "^7.7.4",
     "spinnies": "^0.5.1",
     "true-case-path": "^2.2.1"
   },
@@ -59,7 +59,7 @@
     "@types/glob": "^8.1.0",
     "@types/lodash": "^4.17.7",
     "@types/prompt": "^1.1.9",
-    "@types/semver": "^7.5.8",
+    "@types/semver": "^7.7.1",
     "@types/spinnies": "^0.5.3",
     "@typescript-eslint/eslint-plugin": "8.x.x",
     "@typescript-eslint/parser": "8.x.x",
