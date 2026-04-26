@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.3.3](https://github.com/cherrypush/cherry-cli/compare/v2.3.2...v2.3.3) (2026-04-26)
+
+
+### Bug Fixes
+
+* bump semver and @types/semver ([#153](https://github.com/cherrypush/cherry-cli/issues/153)) ([b9402b7](https://github.com/cherrypush/cherry-cli/commit/b9402b77cb4c9fff63d7ba35bd4b17bcaba33348))
+* **dev:** bump @typescript-eslint/eslint-plugin from 8.5.0 to 8.58.2 ([#155](https://github.com/cherrypush/cherry-cli/issues/155)) ([8109960](https://github.com/cherrypush/cherry-cli/commit/810996065fb4b0fda70029b2dd836478f500bc3e))
+* **dev:** bump husky from 9.1.5 to 9.1.7 ([#137](https://github.com/cherrypush/cherry-cli/issues/137)) ([7f06ce1](https://github.com/cherrypush/cherry-cli/commit/7f06ce1bf5930597c2a8cca90e4f185dba17ef02))
+
 ## [2.3.2](https://github.com/cherrypush/cherry-cli/compare/v2.3.1...v2.3.2) (2024-12-07)
 
 
